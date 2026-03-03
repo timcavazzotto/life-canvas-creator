@@ -250,8 +250,11 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .text-center { text-align: center; }
 
 @media print {
-  body > *:not(.cfg-preview) { display: none !important; }
-  .cfg-preview { padding: 0; background: white; }
-  .poster { box-shadow: none; }
-  .cfg-preview-hint { display: none; }
+  @page { size: A3 landscape; margin: 0; }
+  nav, .hero, .how, .testimonials, .pricing, .config-header, .cfg-sidebar, .site-footer, .overlay, .cfg-preview-hint, .cfg-cta, .cfg-note { display: none !important; }
+  body { background: white !important; }
+  .config-section { padding: 0 !important; margin: 0 !important; }
+  .config-body { display: block !important; }
+  .cfg-preview { width: 100% !important; padding: 0 !important; background: white !important; }
+  .poster { box-shadow: none !important; max-width: 100% !important; width: 100% !important; margin: 0 auto !important; }
 }

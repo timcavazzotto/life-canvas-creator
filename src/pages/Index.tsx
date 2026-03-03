@@ -192,7 +192,7 @@ const Index = () => {
             <div className="config-header-title">Crie seu PROJETO 80<sup style={{ fontSize: 14, color: 'var(--gold)', verticalAlign: 'super' }}>+</sup></div>
             <div className="config-header-sub">Personalize ao vivo · o painel atualiza em tempo real</div>
           </div>
-          <button className="nav-cta" onClick={() => setModalOpen(true)}>▶ Quero meu painel</button>
+          <button className="nav-cta" onClick={() => window.print()}>▶ Quero meu painel</button>
         </div>
 
         <div className="config-body">
@@ -322,7 +322,7 @@ const Index = () => {
             </div>
 
             <div className="cfg-cta">
-              <button className="cfg-btn-gold" onClick={() => setModalOpen(true)}>▶ Quero meu painel</button>
+              <button className="cfg-btn-gold" onClick={() => window.print()}>▶ Quero meu painel</button>
               
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
