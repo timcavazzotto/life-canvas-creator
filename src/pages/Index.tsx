@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import '../App.css';
 import DemoGrid from '@/components/DemoGrid';
 import PosterPreview from '@/components/PosterPreview';
@@ -9,6 +9,23 @@ const Index = () => {
   const [st, setSt] = useState<PosterState>({
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
+  const posterRef = useRef<HTMLDivElement>(null);
+
+  const downloadPDF = useCallback(async () => {
+    if (!posterRef.current) return;
+    const { default: html2canvas } = await import('html2canvas');
+    const { default: jsPDF } = await import('jspdf');
+    const canvas = await html2canvas(posterRef.current, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+    const w = canvas.width * ratio;
+    const h = canvas.height * ratio;
+    pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.save('projeto80plus.pdf');
+  }, []);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
@@ -192,7 +209,7 @@ const Index = () => {
             <div className="config-header-title">Crie seu PROJETO 80<sup style={{ fontSize: 14, color: 'var(--gold)', verticalAlign: 'super' }}>+</sup></div>
             <div className="config-header-sub">Personalize ao vivo · o painel atualiza em tempo real</div>
           </div>
-          <button className="nav-cta" onClick={() => window.print()}>▶ Quero meu painel</button>
+          <button className="nav-cta" onClick={downloadPDF}>▶ Quero meu painel</button>
         </div>
 
         <div className="config-body">
@@ -322,7 +339,7 @@ const Index = () => {
             </div>
 
             <div className="cfg-cta">
-              <button className="cfg-btn-gold" onClick={() => window.print()}>▶ Quero meu painel</button>
+              <button className="cfg-btn-gold" onClick={downloadPDF}>▶ Quero meu painel</button>
               
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
@@ -330,7 +347,7 @@ const Index = () => {
 
           <div className="cfg-preview">
             <div className="cfg-preview-hint">Pré-visualização ao vivo</div>
-            <PosterPreview state={st} />
+            <PosterPreview ref={posterRef} state={st} />
           </div>
         </div>
       </section>
