@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, forwardRef } from 'react';
 import { WEEKS, WEEK_POS, MONTHS, TONES, LABELS, type PosterState } from '@/data/posterData';
 
 interface PosterPreviewProps {
   state: PosterState;
 }
 
-const PosterPreview = ({ state: st }: PosterPreviewProps) => {
+const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: st }, ref) => {
   const t = TONES[st.tone];
   const l = st.lang;
   const lb = LABELS[l];
@@ -51,7 +51,7 @@ const PosterPreview = ({ state: st }: PosterPreviewProps) => {
   const hasDedic = st.dedic.trim().length > 0;
 
   return (
-    <div className={`poster ${st.theme}`}>
+    <div ref={ref} className={`poster ${st.theme}`}>
       <div className="ph">
         <div>
           <div className="ph-eyebrow">{t.eyebrow[l]}</div>
@@ -141,6 +141,8 @@ const PosterPreview = ({ state: st }: PosterPreviewProps) => {
       </div>
     </div>
   );
-};
+});
+
+PosterPreview.displayName = 'PosterPreview';
 
 export default PosterPreview;
