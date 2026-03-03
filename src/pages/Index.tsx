@@ -13,18 +13,35 @@ const Index = () => {
 
   const downloadPDF = useCallback(async () => {
     if (!posterRef.current) return;
+    const { toast } = await import('sonner');
+    toast('Gerando PDF…');
+    const el = posterRef.current;
+    const origWidth = el.style.width;
+    const origMaxWidth = el.style.maxWidth;
+    const origBoxShadow = el.style.boxShadow;
+    el.style.width = '1800px';
+    el.style.maxWidth = 'none';
+    el.style.boxShadow = 'none';
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
-    const canvas = await html2canvas(posterRef.current, { scale: 2, useCORS: true });
+    const canvas = await html2canvas(el, { scale: 3, useCORS: true });
+    el.style.width = origWidth;
+    el.style.maxWidth = origMaxWidth;
+    el.style.boxShadow = origBoxShadow;
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const ratio = Math.min(pageW / canvas.width, pageH / canvas.height);
+    const margin = 10;
+    const usableW = pageW - margin * 2;
+    const usableH = pageH - margin * 2;
+    const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
     const w = canvas.width * ratio;
     const h = canvas.height * ratio;
     pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
     pdf.save('projeto80plus.pdf');
+    toast.success('PDF baixado!');
   }, []);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
