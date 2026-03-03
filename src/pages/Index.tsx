@@ -204,7 +204,7 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-field">
-                  <label className="text-primary-foreground">Nome completo</label>
+                  <label>Nome completo</label>
                   <input type="text" placeholder="Ex: Ana Souza" maxLength={30} value={st.name} onChange={(e) => update({ name: e.target.value })} />
                 </div>
                 <div className="cfg-field">
