@@ -49,7 +49,7 @@ const Index = () => {
       <section className="hero">
         <div className="hero-left">
           <div className="hero-eyebrow">Painel da vida em movimento</div>
-          <h1 className="hero-title">PROJETO<br />80<sup>+</sup></h1>
+          <h1 className="hero-title">PROJETO<br />80<sup style={{ verticalAlign: 'baseline', position: 'relative', top: '-0.3em' }}>+</sup></h1>
           <div className="hero-sub">
             Uma vida inteira em 4.160 quadrados.<br />
             Cada um é uma semana. Quantas você vai colorir?
