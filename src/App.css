@@ -127,7 +127,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .cfg-section.open .cfg-arrow { transform: rotate(180deg); }
 .cfg-body-inner { display: none; padding: 4px 22px 18px; flex-direction: column; gap: 12px; }
 .cfg-section.open .cfg-body-inner { display: flex; }
-.cfg-field label { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 5px; }
+.cfg-field label { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.2em; color: #c8c4b8; text-transform: uppercase; display: block; margin-bottom: 5px; }
 .cfg-field input, .cfg-field select, .cfg-field textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #f0ece0; font-family: 'Cormorant Garamond', serif; font-size: 14px; padding: 7px 10px; outline: none; border-radius: 2px; transition: border-color 0.18s; }
 .cfg-field input:focus, .cfg-field select:focus, .cfg-field textarea:focus { border-color: var(--gold); }
 .cfg-field select option { background: #1a1812; }
