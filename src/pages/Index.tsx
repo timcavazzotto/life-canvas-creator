@@ -63,7 +63,7 @@ const Index = () => {
     <>
       {/* NAV */}
       <nav>
-        <div className="nav-logo">PROJETO 80<sup>+</sup></div>
+        <div className="nav-logo">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
         <div className="nav-links">
           <button className="nav-link" onClick={() => scrollTo('how')}>Como funciona</button>
           <button className="nav-link" onClick={() => scrollTo('pricing')}>Preços</button>
@@ -76,7 +76,7 @@ const Index = () => {
       <section className="hero">
         <div className="hero-left">
           <div className="hero-eyebrow">Painel da vida em movimento</div>
-          <h1 className="hero-title">PROJETO<br />80<sup style={{ verticalAlign: 'baseline', position: 'relative', top: '-0.3em' }}>+</sup></h1>
+          <h1 className="hero-title">PROJETO<br />80<span style={{ fontSize: '0.6em' }}>+</span></h1>
           <div className="hero-sub">
             Uma vida inteira em 4.160 quadrados.<br />
             Cada um é uma semana. Quantas você vai colorir?
@@ -106,7 +106,7 @@ const Index = () => {
             <div className="demo-poster">
               <div className="dp-header">
                 <div>
-                  <div className="dp-title">PROJETO 80<sup>+</sup></div>
+                  <div className="dp-title">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
                   <div className="dp-sub">4.160 semanas · 80 anos · uma vida ativa</div>
                 </div>
                 <div className="dp-quote">"O corpo é o único lugar onde você sempre terá que viver."</div>
@@ -216,7 +216,7 @@ const Index = () => {
       <section className="config-section" id="config">
         <div className="config-header">
           <div>
-            <div className="config-header-title">Crie seu PROJETO 80<sup style={{ fontSize: 14, color: 'var(--gold)', verticalAlign: 'super' }}>+</sup></div>
+            <div className="config-header-title">Crie seu PROJETO 80<span style={{ fontSize: '0.7em', color: 'var(--gold)' }}>+</span></div>
             <div className="config-header-sub">Personalize ao vivo · o painel atualiza em tempo real</div>
           </div>
           <button className="nav-cta" onClick={downloadPDF}>▶ Quero meu painel</button>
@@ -364,7 +364,7 @@ const Index = () => {
 
       {/* FOOTER */}
       <footer className="site-footer">
-        <div className="footer-brand">PROJETO 80<sup>+</sup></div>
+        <div className="footer-brand">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
         <div className="footer-text">Mova-se enquanto há tempo · © 2025</div>
       </footer>
 
