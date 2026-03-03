@@ -55,7 +55,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       <div className="ph">
         <div>
           <div className="ph-eyebrow">{t.eyebrow[l]}</div>
-          <div className="ph-title">PROJETO 80<sup style={{ marginLeft: '-0.15em' }}>+</sup></div>
+          <div className="ph-title">PROJETO 80<span style={{ fontSize: '0.6em', verticalAlign: 'baseline', marginLeft: '0.05em' }}>+</span></div>
           <div className="ph-subtitle">{total.toLocaleString('pt-BR')} {wkLabel} · {st.expect} {yr} · {al}</div>
         </div>
         <div className="ph-right">
