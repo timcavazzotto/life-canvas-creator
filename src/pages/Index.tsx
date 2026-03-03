@@ -323,7 +323,7 @@ const Index = () => {
 
             <div className="cfg-cta">
               <button className="cfg-btn-gold" onClick={() => setModalOpen(true)}>▶ Quero meu painel</button>
-              <button className="cfg-btn-ghost" onClick={() => window.print()}>⎙ PDF gratuito</button>
+              
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
           </div>
