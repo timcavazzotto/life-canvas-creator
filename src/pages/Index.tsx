@@ -7,11 +7,11 @@ import { THEMES, TONES, LANGS, WEEKS, type PosterState } from '@/data/posterData
 
 const Index = () => {
   const [st, setSt] = useState<PosterState>({
-    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt',
+    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    identity: true, stats: true, color: true, tone: true, lang: false,
+    identity: true, stats: true, color: true, tone: true, lang: false
   });
 
   const scrollTo = useCallback((id: string) => {
@@ -19,11 +19,11 @@ const Index = () => {
   }, []);
 
   const toggleSection = useCallback((key: string) => {
-    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
   const update = useCallback((partial: Partial<PosterState>) => {
-    setSt(prev => ({ ...prev, ...partial }));
+    setSt((prev) => ({ ...prev, ...partial }));
   }, []);
 
   // Stats
@@ -204,19 +204,19 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-field">
-                  <label>Nome completo</label>
-                  <input type="text" placeholder="Ex: Ana Souza" maxLength={30} value={st.name} onChange={e => update({ name: e.target.value })} />
+                  <label className="text-primary-foreground">Nome completo</label>
+                  <input type="text" placeholder="Ex: Ana Souza" maxLength={30} value={st.name} onChange={(e) => update({ name: e.target.value })} />
                 </div>
                 <div className="cfg-field">
                   <label>Ano de nascimento</label>
-                  <input type="number" placeholder="Ex: 1985" min={1920} max={2010} onChange={e => {
+                  <input type="number" placeholder="Ex: 1985" min={1920} max={2010} onChange={(e) => {
                     const v = parseInt(e.target.value);
-                    update({ birth: (v >= 1920 && v <= 2010) ? v : null });
+                    update({ birth: v >= 1920 && v <= 2010 ? v : null });
                   }} />
                 </div>
                 <div className="cfg-field">
                   <label>Expectativa de vida</label>
-                  <select value={st.expect} onChange={e => update({ expect: parseInt(e.target.value) })}>
+                  <select value={st.expect} onChange={(e) => update({ expect: parseInt(e.target.value) })}>
                     <option value={75}>75 anos</option>
                     <option value={80}>80 anos</option>
                     <option value={85}>85 anos</option>
@@ -226,7 +226,7 @@ const Index = () => {
                 </div>
                 <div className="cfg-field">
                   <label>Dedicatória (opcional)</label>
-                  <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={e => update({ dedic: e.target.value })} />
+                  <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={(e) => update({ dedic: e.target.value })} />
                 </div>
               </div>
             </div>
@@ -254,29 +254,29 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-swatches">
-                  {THEMES.map(t => (
-                    <div
-                      key={t.id}
-                      className={`cfg-swatch${st.theme === t.id ? ' active' : ''}`}
-                      onClick={() => update({ theme: t.id })}
-                    >
+                  {THEMES.map((t) =>
+                  <div
+                    key={t.id}
+                    className={`cfg-swatch${st.theme === t.id ? ' active' : ''}`}
+                    onClick={() => update({ theme: t.id })}>
+                    
                       <div
-                        className="cfg-swatch-preview"
-                        style={{
-                          background: t.bg,
-                          borderBottom: `2px solid ${t.accent}`,
-                          display: 'flex',
-                          alignItems: 'flex-end',
-                          padding: '3px 4px',
-                          gap: 2,
-                        }}
-                      >
+                      className="cfg-swatch-preview"
+                      style={{
+                        background: t.bg,
+                        borderBottom: `2px solid ${t.accent}`,
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        padding: '3px 4px',
+                        gap: 2
+                      }}>
+                      
                         <div style={{ width: '55%', height: 4, background: t.lived, borderRadius: 1 }} />
                         <div style={{ width: '30%', height: 4, background: t.accent, borderRadius: 1, opacity: 0.35 }} />
                       </div>
                       <div className="cfg-swatch-lbl">{t.label}</div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -288,15 +288,15 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-pills">
-                  {Object.entries(TONES).map(([key, val]) => (
-                    <button
-                      key={key}
-                      className={`cfg-pill${st.tone === key ? ' active' : ''}`}
-                      onClick={() => update({ tone: key })}
-                    >
+                  {Object.entries(TONES).map(([key, val]) =>
+                  <button
+                    key={key}
+                    className={`cfg-pill${st.tone === key ? ' active' : ''}`}
+                    onClick={() => update({ tone: key })}>
+                    
                       {val.label}
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -308,15 +308,15 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-lang-pills">
-                  {LANGS.map(l => (
-                    <button
-                      key={l.id}
-                      className={`cfg-lang-pill${st.lang === l.id ? ' active' : ''}`}
-                      onClick={() => update({ lang: l.id })}
-                    >
+                  {LANGS.map((l) =>
+                  <button
+                    key={l.id}
+                    className={`cfg-lang-pill${st.lang === l.id ? ' active' : ''}`}
+                    onClick={() => update({ lang: l.id })}>
+                    
                       {l.label}
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -343,8 +343,8 @@ const Index = () => {
 
       {/* MODAL */}
       <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
-    </>
-  );
+    </>);
+
 };
 
 export default Index;
