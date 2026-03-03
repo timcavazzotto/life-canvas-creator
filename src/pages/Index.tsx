@@ -100,7 +100,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className="poster-badge">Exemplo · Floresta</div>
+            
           </div>
         </div>
       </section>
