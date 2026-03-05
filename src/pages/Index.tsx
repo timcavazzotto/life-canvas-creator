@@ -207,7 +207,7 @@ const Index = () => {
               <li>Personalizado com seus dados</li>
               <li>Pronto para imprimir</li>
             </ul>
-            <button className="price-btn fill bg-primary-foreground border-4 border-primary text-primary" onClick={() => scrollTo('config')}>Criar e encomendar</button>
+            <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e encomendar</button>
           </div>
         </div>
       </section>
