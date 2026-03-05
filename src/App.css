@@ -175,11 +175,11 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .poster.theme-roxo { --p-bg: #f8f4fc; --p-ink: #18082a; --p-ink-mid: #3c1a5a; --p-ink-faint: #a888cc; --p-border: #c8a8e0; --p-accent: #5a1e88; --p-lived: #d8b8f0; --p-lived-border: #b890d8; --p-future: #c8a8e0; --p-rule: #18082a; background: var(--p-bg); }
 .poster.theme-azul { --p-bg: #f2f6fa; --p-ink: #081828; --p-ink-mid: #183050; --p-ink-faint: #7098b8; --p-border: #90b8d8; --p-accent: #104878; --p-lived: #a8c8e8; --p-lived-border: #80a8d0; --p-future: #90b8d8; --p-rule: #081828; background: var(--p-bg); }
 
-.ph { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 13px; border-bottom: 1.5px solid var(--p-rule, #1e1408); margin-bottom: 16px; }
+.ph { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 16px; border-bottom: 1.5px solid var(--p-rule, #1e1408); margin-bottom: 16px; }
 .ph-eyebrow { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.28em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-bottom: 2px; }
-.ph-title { font-size: 42px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.04em; line-height: 0.92; }
+.ph-title { font-size: 42px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.04em; line-height: 1; padding-bottom: 2px; }
 .ph-title sup { font-size: 20px; color: var(--p-accent, #1a4a2e); vertical-align: super; }
-.ph-subtitle { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.16em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 7px; }
+.ph-subtitle { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.16em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 9px; }
 .ph-right { text-align: right; max-width: 185px; }
 .ph-quote { font-style: italic; font-size: 10px; line-height: 1.75; color: var(--p-ink-mid, #4a3c28); }
 .ph-attr { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 4px; }
@@ -210,8 +210,8 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pl-cell.c-future { border-color: var(--p-future, #c8c4b8); border-style: dashed; }
 .pl-text { font-family: 'DM Mono', monospace; font-size: 6px; color: var(--p-ink-mid, #4a3c28); letter-spacing: 0.1em; text-transform: uppercase; }
 .pl-note { font-style: italic; font-size: 8.5px; color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1.55; max-width: 175px; }
-.pfoot { display: flex; justify-content: space-between; align-items: center; padding-top: 11px; border-top: 0.5px solid var(--p-border, #c8c4b8); }
-.pfs-val { font-size: 21px; font-weight: 300; color: var(--p-ink, #1e1408); line-height: 1; }
+.pfoot { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 0.5px solid var(--p-border, #c8c4b8); }
+.pfs-val { font-size: 21px; font-weight: 300; color: var(--p-ink, #1e1408); line-height: 1.15; }
 .pfs-lbl { font-family: 'DM Mono', monospace; font-size: 5.5px; letter-spacing: 0.14em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 2px; }
 .pfb-name { font-size: 13px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.05em; }
 .pfb-name sup { color: var(--p-accent, #1a4a2e); font-size: 8px; }
