@@ -9,7 +9,6 @@ const Index = () => {
   const [st, setSt] = useState<PosterState>({
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
-  const [menuOpen, setMenuOpen] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
@@ -19,14 +18,11 @@ const Index = () => {
     const el = posterRef.current;
     const origBoxShadow = el.style.boxShadow;
     el.style.boxShadow = 'none';
-    el.style.willChange = 'transform';
-    void el.offsetHeight; // force reflow
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
-    const canvas = await html2canvas(el, { scale: 6, useCORS: true, logging: false });
+    const canvas = await html2canvas(el, { scale: 4, useCORS: true });
     el.style.boxShadow = origBoxShadow;
-    el.style.willChange = '';
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
@@ -36,7 +32,7 @@ const Index = () => {
     const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
     const w = canvas.width * ratio;
     const h = canvas.height * ratio;
-    pdf.addImage(imgData, 'JPEG', (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
   }, []);
@@ -44,7 +40,6 @@ const Index = () => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
   });
-  const [dedicOpen, setDedicOpen] = useState(false);
 
   const scrollTo = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -75,16 +70,7 @@ const Index = () => {
           <button className="nav-link" onClick={() => scrollTo('config')}>Criar meu painel</button>
           <button className="nav-cta" onClick={() => scrollTo('config')}>Começar →</button>
         </div>
-        <button className="nav-hamburger" onClick={() => setMenuOpen(p => !p)} aria-label="Menu">
-          <span /><span /><span />
-        </button>
       </nav>
-      <div className={`mobile-menu${menuOpen ? ' open' : ''}`}>
-        <button className="nav-link" onClick={() => { scrollTo('how'); setMenuOpen(false); }}>Como funciona</button>
-        <button className="nav-link" onClick={() => { scrollTo('pricing'); setMenuOpen(false); }}>Preços</button>
-        <button className="nav-link" onClick={() => { scrollTo('config'); setMenuOpen(false); }}>Criar meu painel</button>
-        <button className="nav-cta" onClick={() => { scrollTo('config'); setMenuOpen(false); }}>Começar →</button>
-      </div>
 
       {/* HERO */}
       <section className="hero">
@@ -210,7 +196,7 @@ const Index = () => {
             </ul>
             <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e baixar</button>
           </div>
-          <div className="price-card">
+          <div className="price-card featured">
             <div className="price-tag">✦ Mais popular</div>
             <div className="price-name">Quadro Impresso</div>
             <div className="price-val"><small>R$</small> 89</div>
@@ -219,9 +205,9 @@ const Index = () => {
               <li>Papel premium 250g/m²</li>
               <li>Tamanho A3 (42 × 30 cm)</li>
               <li>Personalizado com seus dados</li>
-              <li>Embalagem protetora para presente</li>
+              <li>Pronto para imprimir</li>
             </ul>
-            <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e encomendar</button>
+            <button className="price-btn fill" onClick={() => scrollTo('config')}>Criar e encomendar</button>
           </div>
         </div>
       </section>
@@ -266,32 +252,8 @@ const Index = () => {
                   </select>
                 </div>
                 <div className="cfg-field">
-                  <button type="button" className="cfg-section-head" style={{ padding: '6px 0', fontSize: '0.85rem' }} onClick={() => setDedicOpen(p => !p)}>
-                    <span className="cfg-lbl" style={{ fontSize: '0.85rem' }}>Dedicatória (opcional)</span><span className="cfg-arrow">▾</span>
-                  </button>
-                  {dedicOpen && (
-                    <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={(e) => update({ dedic: e.target.value })} />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Tone */}
-            <div className={`cfg-section${openSections.tone ? ' open' : ''}`}>
-              <div className="cfg-section-head" onClick={() => toggleSection('tone')}>
-                <span className="cfg-lbl">Tom das frases</span><span className="cfg-arrow">▾</span>
-              </div>
-              <div className="cfg-body-inner">
-                <div className="cfg-pills">
-                  {Object.entries(TONES).map(([key, val]) =>
-                  <button
-                    key={key}
-                    className={`cfg-pill${st.tone === key ? ' active' : ''}`}
-                    onClick={() => update({ tone: key })}>
-                    
-                      {val.label}
-                    </button>
-                  )}
+                  <label>Dedicatória (opcional)</label>
+                  <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={(e) => update({ dedic: e.target.value })} />
                 </div>
               </div>
             </div>
@@ -346,7 +308,25 @@ const Index = () => {
               </div>
             </div>
 
-            {/* (Tone moved above Stats) */}
+            {/* Tone */}
+            <div className={`cfg-section${openSections.tone ? ' open' : ''}`}>
+              <div className="cfg-section-head" onClick={() => toggleSection('tone')}>
+                <span className="cfg-lbl">Tom das frases</span><span className="cfg-arrow">▾</span>
+              </div>
+              <div className="cfg-body-inner">
+                <div className="cfg-pills">
+                  {Object.entries(TONES).map(([key, val]) =>
+                  <button
+                    key={key}
+                    className={`cfg-pill${st.tone === key ? ' active' : ''}`}
+                    onClick={() => update({ tone: key })}>
+                    
+                      {val.label}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* Lang */}
             <div className={`cfg-section${openSections.lang ? ' open' : ''}`}>
