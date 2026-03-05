@@ -59,7 +59,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
           <div className="ph-subtitle">{total.toLocaleString('pt-BR')} {wkLabel} · {st.expect} {yr} · {al}</div>
         </div>
         <div className="ph-right">
-          <div className="ph-quote">{t.quote[l]}</div>
+          <div className="ph-quote my-[13px]">{t.quote[l]}</div>
           <div className="ph-attr">{t.attr[l]}</div>
         </div>
       </div>
