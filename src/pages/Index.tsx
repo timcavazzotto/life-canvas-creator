@@ -23,10 +23,10 @@ const Index = () => {
     void el.offsetHeight; // force reflow
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
-    const canvas = await html2canvas(el, { scale: 15, useCORS: true, logging: false });
+    const canvas = await html2canvas(el, { scale: 6, useCORS: true, logging: false });
     el.style.boxShadow = origBoxShadow;
     el.style.willChange = '';
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
@@ -36,7 +36,7 @@ const Index = () => {
     const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
     const w = canvas.width * ratio;
     const h = canvas.height * ratio;
-    pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.addImage(imgData, 'JPEG', (pageW - w) / 2, (pageH - h) / 2, w, h);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
   }, []);
