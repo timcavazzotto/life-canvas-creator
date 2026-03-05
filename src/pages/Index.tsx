@@ -40,6 +40,7 @@ const Index = () => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
   });
+  const [dedicOpen, setDedicOpen] = useState(false);
 
   const scrollTo = useCallback((id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -252,8 +253,32 @@ const Index = () => {
                   </select>
                 </div>
                 <div className="cfg-field">
-                  <label>Dedicatória (opcional)</label>
-                  <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={(e) => update({ dedic: e.target.value })} />
+                  <button type="button" className="cfg-section-head" style={{ padding: '6px 0', fontSize: '0.85rem' }} onClick={() => setDedicOpen(p => !p)}>
+                    <span className="cfg-lbl" style={{ fontSize: '0.85rem' }}>Dedicatória (opcional)</span><span className="cfg-arrow">▾</span>
+                  </button>
+                  {dedicOpen && (
+                    <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={(e) => update({ dedic: e.target.value })} />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Tone */}
+            <div className={`cfg-section${openSections.tone ? ' open' : ''}`}>
+              <div className="cfg-section-head" onClick={() => toggleSection('tone')}>
+                <span className="cfg-lbl">Tom das frases</span><span className="cfg-arrow">▾</span>
+              </div>
+              <div className="cfg-body-inner">
+                <div className="cfg-pills">
+                  {Object.entries(TONES).map(([key, val]) =>
+                  <button
+                    key={key}
+                    className={`cfg-pill${st.tone === key ? ' active' : ''}`}
+                    onClick={() => update({ tone: key })}>
+                    
+                      {val.label}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -308,25 +333,7 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Tone */}
-            <div className={`cfg-section${openSections.tone ? ' open' : ''}`}>
-              <div className="cfg-section-head" onClick={() => toggleSection('tone')}>
-                <span className="cfg-lbl">Tom das frases</span><span className="cfg-arrow">▾</span>
-              </div>
-              <div className="cfg-body-inner">
-                <div className="cfg-pills">
-                  {Object.entries(TONES).map(([key, val]) =>
-                  <button
-                    key={key}
-                    className={`cfg-pill${st.tone === key ? ' active' : ''}`}
-                    onClick={() => update({ tone: key })}>
-                    
-                      {val.label}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
+            {/* (Tone moved above Stats) */}
 
             {/* Lang */}
             <div className={`cfg-section${openSections.lang ? ' open' : ''}`}>
