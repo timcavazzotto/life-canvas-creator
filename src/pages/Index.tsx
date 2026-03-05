@@ -196,7 +196,7 @@ const Index = () => {
             </ul>
             <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e baixar</button>
           </div>
-          <div className="price-card featured">
+          <div className="price-card">
             <div className="price-tag">✦ Mais popular</div>
             <div className="price-name">Quadro Impresso</div>
             <div className="price-val"><small>R$</small> 89</div>
