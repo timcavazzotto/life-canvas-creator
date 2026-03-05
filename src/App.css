@@ -101,7 +101,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pricing-cards { display: flex; gap: 20px; max-width: 700px; margin: 0 auto; justify-content: center; }
 .price-card { flex: 1; background: #fff; border: 1px solid var(--border); padding: 36px 32px; border-radius: 2px; transition: all 0.2s; max-width: 300px; }
 .price-card:hover { border-color: rgba(74,107,90,0.35); transform: translateY(-3px); }
-.price-card.featured { border-color: rgba(74,107,90,0.4); background: linear-gradient(160deg, #f9f8f5 0%, #fff 100%); }
+.price-card.featured { background: #fff; }
 .price-tag { font-family: 'DM Mono', monospace; font-size: 7.5px; letter-spacing: 0.24em; color: var(--accent); text-transform: uppercase; margin-bottom: 16px; }
 .price-name { font-size: 22px; font-weight: 500; color: var(--ink); margin-bottom: 6px; letter-spacing: -0.01em; }
 .price-val { font-size: 44px; font-weight: 500; color: var(--ink); line-height: 1; letter-spacing: -0.02em; margin-bottom: 4px; }
