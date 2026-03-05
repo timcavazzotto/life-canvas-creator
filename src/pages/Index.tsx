@@ -9,6 +9,7 @@ const Index = () => {
   const [st, setSt] = useState<PosterState>({
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
+  const [menuOpen, setMenuOpen] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
