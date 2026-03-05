@@ -19,10 +19,13 @@ const Index = () => {
     const el = posterRef.current;
     const origBoxShadow = el.style.boxShadow;
     el.style.boxShadow = 'none';
+    el.style.willChange = 'transform';
+    void el.offsetHeight; // force reflow
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
-    const canvas = await html2canvas(el, { scale: 4, useCORS: true });
+    const canvas = await html2canvas(el, { scale: 15, useCORS: true, logging: false });
     el.style.boxShadow = origBoxShadow;
+    el.style.willChange = '';
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
     const pageW = pdf.internal.pageSize.getWidth();
