@@ -79,45 +79,45 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         </div>
       </div>
 
-      {hasDedic && (
-        <div className="pf-row" style={{ marginTop: -10, marginBottom: 14 }}>
+      {hasDedic &&
+      <div className="pf-row" style={{ marginTop: -10, marginBottom: 14 }}>
           <div className="pf">
             <span className="pf-label">{lb.dedic}</span>
             <div className="pf-val italic">{st.dedic}</div>
           </div>
         </div>
-      )}
+      }
 
       <div className="pg">
         <div className="grid-wrap">
           <div className="decade-col">
-            {decadeLabels.map((d, i) => (
-              <div
-                key={i}
-                className="dec-lbl"
-                style={{
-                  height: `${d.rows * 10.3 + (d.isFirst ? 0 : 4)}px`,
-                  paddingTop: d.isFirst ? 0 : '4px',
-                }}
-              >
+            {decadeLabels.map((d, i) =>
+            <div
+              key={i}
+              className="dec-lbl"
+              style={{
+                height: `${d.rows * 10.3 + (d.isFirst ? 0 : 4)}px`,
+                paddingTop: d.isFirst ? 0 : '4px'
+              }}>
+              
                 {d.label}
               </div>
-            ))}
+            )}
           </div>
           <div className="grid-main">
             <div className="month-row">
-              {monthLabels.map((m, i) => (
-                <div key={i} className="m-lbl">{m}</div>
-              ))}
+              {monthLabels.map((m, i) =>
+              <div key={i} className="m-lbl">{m}</div>
+              )}
             </div>
             <div className="year-rows">
-              {yearRows.map((row) => (
-                <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
-                  {row.cells.map((cls, w) => (
-                    <div key={w} className={`wk ${cls}`} />
-                  ))}
+              {yearRows.map((row) =>
+              <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
+                  {row.cells.map((cls, w) =>
+                <div key={w} className={`wk ${cls}`} />
+                )}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       <div className="pl">
         <div className="pl-items">
           <div className="pl-item"><div className="pl-cell c-lived" /><span className="pl-text">{lb.lvd}</span></div>
-          <div className="pl-item"><div className="pl-cell c-active" /><span className="pl-text">{lb.act}</span></div>
+          
           <div className="pl-item"><div className="pl-cell c-future" /><span className="pl-text">{lb.fut}</span></div>
         </div>
         <div className="pl-note" dangerouslySetInnerHTML={{ __html: t.note[l].replace(/\n/g, '<br>') }} />
@@ -139,8 +139,8 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         <div><div className="pfs-val">{lived > 0 ? left.toLocaleString('pt-BR') : '—'}</div><div className="pfs-lbl">{lb.ainda}</div></div>
         <div><div className="pfs-val">≥150</div><div className="pfs-lbl">Min/sem · OMS</div></div>
       </div>
-    </div>
-  );
+    </div>);
+
 });
 
 PosterPreview.displayName = 'PosterPreview';
