@@ -191,7 +191,7 @@ const Index = () => {
             <ul className="price-features">
               <li>PDF em alta resolução (300 dpi)</li>
               <li>Personalizado com seus dados</li>
-              <li>Pronto para imprimir em qualquer gráfica</li>
+              <li>Pronto para imprimir </li>
               <li>Tamanho A3 ou A2</li>
             </ul>
             <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e baixar</button>
