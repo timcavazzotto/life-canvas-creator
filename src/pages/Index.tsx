@@ -187,7 +187,7 @@ const Index = () => {
             <div className="price-tag">PDF Digital</div>
             <div className="price-name">Digital</div>
             <div className="price-val"><small>R$</small> 29</div>
-            <div className="price-note">Entrega imediata por e-mail</div>
+            <div className="price-note">Entrega imediata </div>
             <ul className="price-features">
               <li>PDF em alta resolução (300 dpi)</li>
               <li>Personalizado com seus dados</li>
