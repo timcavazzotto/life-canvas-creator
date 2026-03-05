@@ -83,7 +83,7 @@ const Index = () => {
           </div>
           <div className="hero-tagline">Personalize · Imprima · Viva ativamente</div>
           <div className="hero-actions">
-            <button className="btn-hero" onClick={() => scrollTo('config')}>Fazer meu PROJETO 80+</button>
+            <button className="btn-hero bg-primary" onClick={() => scrollTo('config')}>Fazer meu PROJETO 80+</button>
             <button className="btn-hero-ghost" onClick={() => scrollTo('how')}>Como funciona</button>
           </div>
           <div className="hero-proof">
@@ -196,7 +196,7 @@ const Index = () => {
             </ul>
             <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e baixar</button>
           </div>
-          <div className="price-card">
+          <div className="price-card featured">
             <div className="price-tag">✦ Mais popular</div>
             <div className="price-name">Quadro Impresso</div>
             <div className="price-val"><small>R$</small> 89</div>
@@ -207,7 +207,7 @@ const Index = () => {
               <li>Personalizado com seus dados</li>
               <li>Embalagem protetora para presente</li>
             </ul>
-            <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e encomendar</button>
+            <button className="price-btn fill" onClick={() => scrollTo('config')}>Criar e encomendar</button>
           </div>
         </div>
       </section>
