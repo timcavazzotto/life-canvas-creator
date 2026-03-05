@@ -9,6 +9,7 @@ const Index = () => {
   const [st, setSt] = useState<PosterState>({
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
+  const [menuOpen, setMenuOpen] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
@@ -71,7 +72,16 @@ const Index = () => {
           <button className="nav-link" onClick={() => scrollTo('config')}>Criar meu painel</button>
           <button className="nav-cta" onClick={() => scrollTo('config')}>Começar →</button>
         </div>
+        <button className="nav-hamburger" onClick={() => setMenuOpen(p => !p)} aria-label="Menu">
+          <span /><span /><span />
+        </button>
       </nav>
+      <div className={`mobile-menu${menuOpen ? ' open' : ''}`}>
+        <button className="nav-link" onClick={() => { scrollTo('how'); setMenuOpen(false); }}>Como funciona</button>
+        <button className="nav-link" onClick={() => { scrollTo('pricing'); setMenuOpen(false); }}>Preços</button>
+        <button className="nav-link" onClick={() => { scrollTo('config'); setMenuOpen(false); }}>Criar meu painel</button>
+        <button className="nav-cta" onClick={() => { scrollTo('config'); setMenuOpen(false); }}>Começar →</button>
+      </div>
 
       {/* HERO */}
       <section className="hero">
