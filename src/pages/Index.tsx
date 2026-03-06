@@ -68,7 +68,7 @@ const Index = () => {
           <button className="nav-link" onClick={() => scrollTo('how')}>Como funciona</button>
           <button className="nav-link" onClick={() => scrollTo('pricing')}>Preços</button>
           <button className="nav-link" onClick={() => scrollTo('config')}>Criar meu painel</button>
-          <button className="nav-cta" onClick={() => scrollTo('config')}>Começar →</button>
+          <button className="nav-cta bg-primary" onClick={() => scrollTo('config')}>Começar →</button>
         </div>
       </nav>
 
