@@ -369,7 +369,7 @@ const Index = () => {
       </footer>
 
       {/* MODAL */}
-      <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+      <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} posterState={st} />
     </>);
 
 };
