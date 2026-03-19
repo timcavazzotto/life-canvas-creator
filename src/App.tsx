@@ -10,6 +10,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import AffiliateManager from "./pages/admin/AffiliateManager";
 import CampaignAnalytics from "./pages/admin/CampaignAnalytics";
+import OrderManager from "./pages/admin/OrderManager";
 
 const queryClient = new QueryClient();
 
