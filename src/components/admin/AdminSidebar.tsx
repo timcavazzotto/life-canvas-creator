@@ -1,4 +1,4 @@
-import { BarChart3, Users, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, TrendingUp, ShoppingCart } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import {
