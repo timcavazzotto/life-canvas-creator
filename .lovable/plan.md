@@ -1,60 +1,61 @@
 
-## Plano para corrigir o acesso ao admin
 
-### Diagnóstico
-O login em si está funcionando: os logs mostram autenticação bem-sucedida e o usuário `studio.mymoves@gmail.com` já tem role `admin` no backend.
+## Plano: Portal do Afiliado com Login e Controle de Pagamentos
 
-O problema mais provável está no fluxo do frontend:
-- `AdminLogin` faz `navigate('/admin')` logo após o `signIn`
-- `AdminLayout` roda uma nova checagem assíncrona de sessão + role
-- durante essa janela, o layout pode entender temporariamente que `!user || !isAdmin` e mandar de volta para `/admin/login`
+### Resumo
+Criar um portal onde cada afiliada faz login com email/senha e visualiza suas vendas, comissões e saldo pendente. O admin marca comissões como pagas no painel, atualizando o saldo.
 
-Também há fragilidade no hook:
-- lógica duplicada entre `onAuthStateChange` e `getSession()`
-- sem tratamento explícito de erro na leitura de `user_roles`
-- `loading` pode ser encerrado cedo demais em estados intermediários
+### Alterações no banco de dados
 
-### O que vou ajustar
+1. **Tabela `commission_payments`** — registra cada pagamento feito pelo admin
+   - `id`, `affiliate_id` (FK → affiliates), `amount_cents`, `paid_at`, `notes`, `created_by` (user_id do admin)
+   - RLS: admin pode INSERT/SELECT; afiliada pode SELECT apenas os seus
 
-1. **Refatorar `useAdminAuth`**
-   - centralizar a verificação em uma única função
-   - primeiro obter sessão/usuário
-   - depois consultar `user_roles`
-   - só então definir `loading = false`
-   - adicionar tratamento de erro e logs de depuração
+2. **Coluna `user_id` na tabela `affiliates`** — vincula a afiliada a uma conta de usuário
+   - `user_id uuid REFERENCES auth.users(id)` (nullable inicialmente, preenchido quando a afiliada se cadastra)
+   - RLS nova: afiliada pode SELECT o próprio registro (`user_id = auth.uid()`)
 
-2. **Melhorar o fluxo de `AdminLogin`**
-   - após `signIn`, não navegar cegamente
-   - validar se o usuário autenticado realmente tem role `admin`
-   - se tiver, navegar para `/admin`
-   - se não tiver, mostrar mensagem clara de permissão
+3. **Campo `commission_paid` na tabela `orders`** — boolean, default false
+   - Admin marca quando a comissão daquele pedido já foi paga
+   - RLS: já coberta pelas policies existentes de UPDATE para admin
 
-3. **Ajustar o guard de `AdminLayout`**
-   - evitar redirect enquanto a checagem ainda está em andamento
-   - redirecionar apenas quando a verificação estiver concluída com segurança
-   - manter estado de carregamento estável para não gerar “bounce” de rota
+### Novas páginas e rotas
 
-4. **Adicionar mensagens de erro úteis**
-   - diferenciar:
-     - credenciais inválidas
-     - usuário autenticado sem permissão admin
-     - falha ao consultar permissões
+| Rota | Componente | Descrição |
+|------|-----------|-----------|
+| `/afiliado/login` | `AffiliateLogin.tsx` | Login com email/senha |
+| `/afiliado` | `AffiliateDashboard.tsx` | Dashboard da afiliada |
 
-### Arquivos a alterar
-- `src/hooks/useAdminAuth.ts`
-- `src/pages/AdminLogin.tsx`
-- `src/components/admin/AdminLayout.tsx`
+### Dashboard da Afiliada (`/afiliado`)
+- **Cards resumo**: Total de vendas, comissão total, comissão paga, saldo pendente
+- **Tabela de vendas**: Pedidos com seu código, data, valor, comissão, status (pago/pendente)
+- **Histórico de pagamentos**: Lista de pagamentos recebidos do admin
+- Protegido por auth — redireciona para `/afiliado/login` se não logada
 
-### Resultado esperado
-```text
-/login admin
-→ autentica
-→ confirma role admin
-→ entra em /admin sem voltar para /admin/login
-```
+### Fluxo do Admin
+- Na página de Afiliados, adicionar botão "Registrar Pagamento" por afiliada
+- Modal simples: valor, data, observação
+- Insere em `commission_payments` e opcionalmente marca `commission_paid = true` nos pedidos cobertos
+- Visualização do saldo de cada afiliada na tabela existente
 
-### Detalhe técnico
-Hoje o backend está correto:
-- login funciona
-- `user_roles` contém `admin` para o usuário atual
-- a falha está no sincronismo entre autenticação, consulta de role e navegação protegida no React
+### Autenticação da Afiliada
+- Usa o mesmo sistema de auth (email/senha), sem role especial
+- A identificação é feita pelo `affiliates.user_id = auth.uid()`
+- O admin cadastra a afiliada e ela se registra com o mesmo email — o sistema vincula automaticamente
+
+### Arquivos a criar/alterar
+
+| Arquivo | Ação |
+|---------|------|
+| Migration SQL | Criar `commission_payments`, adicionar `user_id` em affiliates, adicionar `commission_paid` em orders |
+| `src/pages/AffiliateLogin.tsx` | Criar — login da afiliada |
+| `src/pages/AffiliateDashboard.tsx` | Criar — dashboard com vendas e saldo |
+| `src/hooks/useAffiliateAuth.ts` | Criar — hook de auth para afiliada |
+| `src/pages/admin/AffiliateManager.tsx` | Alterar — adicionar botão de registrar pagamento e mostrar saldo |
+| `src/App.tsx` | Adicionar rotas `/afiliado` e `/afiliado/login` |
+
+### Segurança (RLS)
+- `commission_payments`: admin pode tudo; afiliada pode SELECT onde `affiliate_id` bate com seu registro
+- `affiliates`: nova policy para afiliada ver apenas seu próprio registro via `user_id`
+- `orders`: afiliada pode SELECT pedidos onde `affiliate_id` = seu affiliate.id (via subquery)
+
