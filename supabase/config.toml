@@ -1,1 +1,10 @@
 project_id = "fvpunigieavoxgltrtsd"
+
+[functions.create-checkout]
+verify_jwt = false
+
+[functions.payment-webhook]
+verify_jwt = false
+
+[functions.send-to-printer]
+verify_jwt = false
