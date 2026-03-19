@@ -11,6 +11,8 @@ import Dashboard from "./pages/admin/Dashboard";
 import AffiliateManager from "./pages/admin/AffiliateManager";
 import CampaignAnalytics from "./pages/admin/CampaignAnalytics";
 import OrderManager from "./pages/admin/OrderManager";
+import AffiliateLogin from "./pages/AffiliateLogin";
+import AffiliateDashboard from "./pages/AffiliateDashboard";
 
 const queryClient = new QueryClient();
 
