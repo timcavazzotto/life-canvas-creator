@@ -15,6 +15,7 @@ import {
 
 const items = [
   { title: 'Dashboard', url: '/admin', icon: BarChart3 },
+  { title: 'Pedidos', url: '/admin/orders', icon: ShoppingCart },
   { title: 'Afiliados', url: '/admin/affiliates', icon: Users },
   { title: 'Analytics', url: '/admin/analytics', icon: TrendingUp },
 ];

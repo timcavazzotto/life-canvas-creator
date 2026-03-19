@@ -26,6 +26,7 @@ const App = () => (
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="affiliates" element={<AffiliateManager />} />
+            <Route path="orders" element={<OrderManager />} />
             <Route path="analytics" element={<CampaignAnalytics />} />
           </Route>
           <Route path="*" element={<NotFound />} />
