@@ -1,48 +1,31 @@
 
 
-## Plano: Painel Administrativo
+## Plano: Criar usuário admin
 
-### O que será construído
+### O que será feito
 
-Um painel admin protegido por login (rota `/admin`) com 4 seções:
+1. **Adicionar tela de cadastro** na rota `/admin/login` — um link "Criar conta" que alterna para um formulário de signup (email + senha), usando `supabase.auth.signUp()`
 
-### 1. Dashboard de Vendas
-- Cards com métricas: total de pedidos, receita total, pedidos pagos vs pendentes
-- Gráfico de vendas por período (últimos 7/30/90 dias) usando Recharts
-- Tabela de pedidos recentes com status, valor, data, cliente
+2. **Inserir role admin** — após você criar a conta com `studio.mymoves@gmail.com`, executarei um INSERT na tabela `user_roles` vinculando seu `user_id` ao papel `admin`
 
-### 2. Gestão de Afiliados
-- Tabela listando todas as afiliadas (nome, código, email, comissão %, ativo/inativo)
-- Formulário para adicionar nova afiliada
-- Botão para ativar/desativar afiliada
-- Edição inline de comissão %
-
-### 3. Analytics de Campanhas
-- Vendas por afiliada (ranking de quem mais vende)
-- Gráfico de conversão por código de cupom
-- Total de comissões pagas/pendentes por afiliada
-- Filtro por período
-
-### 4. Autenticação Admin
-- Login simples com email/senha (Lovable Cloud Auth)
-- Tabela `user_roles` para controle de acesso admin
-- Rota `/admin` protegida — redireciona para login se não autenticado
-- RLS policies ajustadas para admin poder ler/editar `orders` e `affiliates`
-
-### Mudanças técnicas
-
-- **Banco de dados**: Criar tabela `user_roles`, função `has_role()`, e policies de admin para `orders` e `affiliates`
-- **Edge Function**: Nenhuma nova necessária — leitura direta via Supabase client com RLS
-- **Novas páginas**: `/admin/login`, `/admin` (dashboard), com sidebar para navegar entre seções
-- **Componentes**: `AdminLayout`, `SalesDashboard`, `AffiliateManager`, `CampaignAnalytics`
-- **Gráficos**: Recharts (já disponível via shadcn/ui chart)
+3. **Habilitar auto-confirm temporariamente** (opcional) — para que o signup funcione sem verificação de email durante o setup inicial
 
 ### Fluxo
 
 ```text
-/admin/login → autenticação → /admin
-                                 ├── Dashboard (vendas, métricas)
-                                 ├── Afiliados (CRUD)
-                                 └── Analytics (campanhas)
+/admin/login → clicar "Criar conta" → signup com email/senha
+→ Eu insiro o role admin no banco
+→ Você faz login e acessa /admin
+```
+
+### Arquivos modificados
+
+- `src/pages/AdminLogin.tsx` — adicionar toggle entre login e signup
+
+### Ação no banco (após cadastro)
+
+```sql
+INSERT INTO user_roles (user_id, role)
+SELECT id, 'admin' FROM auth.users WHERE email = 'studio.mymoves@gmail.com';
 ```
 
