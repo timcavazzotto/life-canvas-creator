@@ -1,34 +1,60 @@
 
+## Plano para corrigir o acesso ao admin
 
-## Plano: Página de Gestão de Pedidos no Admin
+### Diagnóstico
+O login em si está funcionando: os logs mostram autenticação bem-sucedida e o usuário `studio.mymoves@gmail.com` já tem role `admin` no backend.
 
-### Problema
-Hoje o Dashboard mostra apenas um resumo dos pedidos recentes com poucos campos. Você precisa de uma página dedicada para consultar **todos os dados** de cada pedido — nome, email, endereço, observações, configuração do poster, status de pagamento, código de rastreio, etc. — para lidar com devoluções, trocas e suporte.
+O problema mais provável está no fluxo do frontend:
+- `AdminLogin` faz `navigate('/admin')` logo após o `signIn`
+- `AdminLayout` roda uma nova checagem assíncrona de sessão + role
+- durante essa janela, o layout pode entender temporariamente que `!user || !isAdmin` e mandar de volta para `/admin/login`
 
-### O que será feito
+Também há fragilidade no hook:
+- lógica duplicada entre `onAuthStateChange` e `getSession()`
+- sem tratamento explícito de erro na leitura de `user_roles`
+- `loading` pode ser encerrado cedo demais em estados intermediários
 
-1. **Nova página `src/pages/admin/OrderManager.tsx`**
-   - Tabela completa com todos os campos do pedido: data, cliente, email, endereço, tipo, valor, status de pagamento, status de impressão, código de rastreio, observações, cupom afiliado
-   - Busca por nome/email
-   - Filtros por status (paid/pending) e tipo de pedido
-   - Modal de detalhes ao clicar no pedido — mostra `poster_config` (dados inseridos pelo cliente) e todos os campos
-   - Possibilidade de editar campos como `print_status`, `tracking_code` e `observations` diretamente
+### O que vou ajustar
 
-2. **Rota e sidebar**
-   - Rota `/admin/orders` no `App.tsx`
-   - Item "Pedidos" na sidebar (`AdminSidebar.tsx`) com ícone `ShoppingCart`
+1. **Refatorar `useAdminAuth`**
+   - centralizar a verificação em uma única função
+   - primeiro obter sessão/usuário
+   - depois consultar `user_roles`
+   - só então definir `loading = false`
+   - adicionar tratamento de erro e logs de depuração
 
-3. **Query completa**
-   - SELECT de todas as colunas da tabela `orders` (já protegida por RLS para admins)
+2. **Melhorar o fluxo de `AdminLogin`**
+   - após `signIn`, não navegar cegamente
+   - validar se o usuário autenticado realmente tem role `admin`
+   - se tiver, navegar para `/admin`
+   - se não tiver, mostrar mensagem clara de permissão
 
-### Arquivos
+3. **Ajustar o guard de `AdminLayout`**
+   - evitar redirect enquanto a checagem ainda está em andamento
+   - redirecionar apenas quando a verificação estiver concluída com segurança
+   - manter estado de carregamento estável para não gerar “bounce” de rota
 
-| Arquivo | Ação |
-|---------|------|
-| `src/pages/admin/OrderManager.tsx` | Criar — página completa de pedidos |
-| `src/App.tsx` | Adicionar rota `/admin/orders` |
-| `src/components/admin/AdminSidebar.tsx` | Adicionar item "Pedidos" |
+4. **Adicionar mensagens de erro úteis**
+   - diferenciar:
+     - credenciais inválidas
+     - usuário autenticado sem permissão admin
+     - falha ao consultar permissões
 
-### Sem alterações no banco
-As RLS policies existentes já permitem SELECT e UPDATE de `orders` para admins.
+### Arquivos a alterar
+- `src/hooks/useAdminAuth.ts`
+- `src/pages/AdminLogin.tsx`
+- `src/components/admin/AdminLayout.tsx`
 
+### Resultado esperado
+```text
+/login admin
+→ autentica
+→ confirma role admin
+→ entra em /admin sem voltar para /admin/login
+```
+
+### Detalhe técnico
+Hoje o backend está correto:
+- login funciona
+- `user_roles` contém `admin` para o usuário atual
+- a falha está no sincronismo entre autenticação, consulta de role e navegação protegida no React
