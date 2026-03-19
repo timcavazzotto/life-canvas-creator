@@ -24,6 +24,7 @@ export type Database = {
           id: string
           name: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           active?: boolean
@@ -34,6 +35,7 @@ export type Database = {
           id?: string
           name: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           active?: boolean
@@ -44,8 +46,47 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
+      }
+      commission_payments: {
+        Row: {
+          affiliate_id: string
+          amount_cents: number
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          paid_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount_cents: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount_cents?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_payments_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       orders: {
         Row: {
@@ -54,6 +95,7 @@ export type Database = {
           affiliate_id: string | null
           amount_cents: number
           commission_cents: number | null
+          commission_paid: boolean
           created_at: string
           customer_name: string | null
           email: string
@@ -77,6 +119,7 @@ export type Database = {
           affiliate_id?: string | null
           amount_cents: number
           commission_cents?: number | null
+          commission_paid?: boolean
           created_at?: string
           customer_name?: string | null
           email: string
@@ -100,6 +143,7 @@ export type Database = {
           affiliate_id?: string | null
           amount_cents?: number
           commission_cents?: number | null
+          commission_paid?: boolean
           created_at?: string
           customer_name?: string | null
           email?: string
