@@ -14,7 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      affiliates: {
+        Row: {
+          active: boolean
+          code: string
+          commission_pct: number
+          created_at: string
+          email: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          commission_pct?: number
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          commission_pct?: number
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          address: string | null
+          affiliate_code: string | null
+          affiliate_id: string | null
+          amount_cents: number
+          commission_cents: number | null
+          created_at: string
+          customer_name: string | null
+          email: string
+          id: string
+          observations: string | null
+          order_type: string
+          paid_at: string | null
+          payment_id: string | null
+          payment_provider: string | null
+          payment_url: string | null
+          pdf_storage_path: string | null
+          poster_config: Json
+          print_status: string | null
+          status: string
+          tracking_code: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          affiliate_code?: string | null
+          affiliate_id?: string | null
+          amount_cents: number
+          commission_cents?: number | null
+          created_at?: string
+          customer_name?: string | null
+          email: string
+          id?: string
+          observations?: string | null
+          order_type: string
+          paid_at?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
+          payment_url?: string | null
+          pdf_storage_path?: string | null
+          poster_config?: Json
+          print_status?: string | null
+          status?: string
+          tracking_code?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          affiliate_code?: string | null
+          affiliate_id?: string | null
+          amount_cents?: number
+          commission_cents?: number | null
+          created_at?: string
+          customer_name?: string | null
+          email?: string
+          id?: string
+          observations?: string | null
+          order_type?: string
+          paid_at?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
+          payment_url?: string | null
+          pdf_storage_path?: string | null
+          poster_config?: Json
+          print_status?: string | null
+          status?: string
+          tracking_code?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
