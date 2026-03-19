@@ -1,4 +1,4 @@
-import { BarChart3, Users, TrendingUp } from 'lucide-react';
+import { BarChart3, Users, TrendingUp, ShoppingCart } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useLocation } from 'react-router-dom';
 import {
@@ -15,6 +15,7 @@ import {
 
 const items = [
   { title: 'Dashboard', url: '/admin', icon: BarChart3 },
+  { title: 'Pedidos', url: '/admin/orders', icon: ShoppingCart },
   { title: 'Afiliados', url: '/admin/affiliates', icon: Users },
   { title: 'Analytics', url: '/admin/analytics', icon: TrendingUp },
 ];

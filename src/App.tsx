@@ -10,6 +10,7 @@ import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import AffiliateManager from "./pages/admin/AffiliateManager";
 import CampaignAnalytics from "./pages/admin/CampaignAnalytics";
+import OrderManager from "./pages/admin/OrderManager";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="affiliates" element={<AffiliateManager />} />
+            <Route path="orders" element={<OrderManager />} />
             <Route path="analytics" element={<CampaignAnalytics />} />
           </Route>
           <Route path="*" element={<NotFound />} />
