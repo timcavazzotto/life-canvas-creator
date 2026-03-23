@@ -1,77 +1,49 @@
 
+Objetivo: voltar para PDF, trocar `html2canvas` por `dom-to-image-more`, mas sem repetir os mesmos erros de geometria e corte.
 
-## Plano: Exportar PNG em alta resolução (solução comercial definitiva)
+Plano
+1. Substituir a estratégia de captura em `src/pages/Index.tsx`
+- Remover a exportação atual baseada em `html2canvas`.
+- Passar a usar `dom-to-image-more` para gerar uma imagem do poster e embutir essa imagem em um PDF.
+- Manter a captura partindo do `.paper-sheet`, não do layout inteiro da página.
 
-### Por que mudar para PNG
+2. Corrigir a geometria antes da captura
+- Criar um container de exportação isolado, fora da viewport, com proporção A exata.
+- Clonar o `.paper-sheet` inteiro nesse container.
+- Remover no clone apenas efeitos de preview que atrapalham exportação, como `transform: scale`, sombra e margens negativas.
+- Fixar largura/altura reais do artboard para A3 e A2, para evitar esticamento lateral e corte do footer.
 
-Após múltiplas tentativas com `window.print()` e `html2canvas`+`jsPDF`, ficou claro que:
-- `window.print()` não controla bem o layout (2 páginas, esticamento)
-- `html2canvas`+`jsPDF` introduz diferenças de renderização no header
+3. Preservar fidelidade visual do header
+- Esperar as fontes carregarem antes da captura.
+- Capturar o clone já no tamanho final, em vez de reconstruir tipografia “na marra”.
+- Manter o CSS estrutural atual do header e só revisar se houver alguma regra de preview contaminando o clone.
 
-PNG em alta resolução é a solução mais confiável para um produto comercial de impressão:
-- Gráficas aceitam PNG em 300 DPI sem problemas
-- O `html2canvas` captura exatamente o que está na tela
-- Sem conversão intermediária para PDF (que distorce)
-- Resolução controlável com precisão
+4. Gerar PDF com tamanho físico correto
+- Usar `jsPDF` novamente apenas como contêiner final do arquivo.
+- Configurar página A2 ou A3 conforme a seleção.
+- Inserir a imagem no PDF com cálculo proporcional rígido, sem `stretch` e sem lógica que force cover/crop.
 
-### Como funciona
+5. Ajustar a interface para refletir o retorno ao PDF
+- Trocar os textos dos botões de download de volta para PDF.
+- Atualizar mensagens de feedback para deixar claro que o arquivo gerado é PDF em alta resolução.
 
-A3 a 300 DPI = 3508 x 4961 pixels
-A2 a 300 DPI = 4961 x 7016 pixels
+6. Limpeza técnica
+- Adicionar `dom-to-image-more` no `package.json`.
+- Remover `html2canvas` se ele não for mais usado.
+- Manter somente a cadeia de exportação final que estiver ativa, para parar a oscilação entre estratégias.
 
-O truque: em vez de capturar o preview escalado (que tem ~800px de largura), vamos:
-1. Clonar o poster no DOM
-2. Colocar em um container oculto com as dimensões reais em pixels (3508px ou 4961px de largura)
-3. Capturar com `html2canvas` em `scale: 1` (sem upscale, já está no tamanho certo)
-4. Gerar PNG e oferecer download direto
-5. Remover o clone
+Arquivos envolvidos
+- `src/pages/Index.tsx`
+- `src/App.css`
+- `package.json`
 
-Isso garante que o PNG tenha exatamente a resolução de impressão, com o layout idêntico ao preview.
+Resultado esperado
+- PDF em A2/A3 conforme seleção
+- sem bordas brancas externas
+- sem esticamento lateral
+- sem corte do footer
+- header muito mais próximo do preview
+- fluxo de exportação mais estável e comercial
 
-### Alterações
-
-#### 1. `src/pages/Index.tsx` — substituir `downloadPDF` por `downloadPNG`
-
-- Remover toda a lógica de `window.print()` e injeção de `@page`
-- Implementar:
-  - Criar container oculto (`position: fixed; left: -9999px`) com largura A3 ou A2 em pixels
-  - Clonar o `.poster` para dentro dele
-  - Usar `html2canvas` com `scale: 1`, `useCORS: true`
-  - Converter para blob PNG
-  - Acionar download automático com `<a download>`
-  - Limpar o clone
-
-- Alterar o texto do botão de "Exportar PDF" para "Exportar PNG (alta resolução)"
-
-#### 2. `src/App.css` — remover bloco `@media print`
-
-- Remover as linhas 354-382 (`@media print { ... }`) que não serão mais usadas
-- Manter todo o restante intacto
-
-#### 3. Manter `html2canvas` no `package.json`, remover `jspdf`
-
-- `jspdf` deixa de ser necessário (não geramos mais PDF)
-- `html2canvas` continua sendo usado para a captura
-
-### Resolução para impressão de parede
-
-| Formato | Largura (px) | Altura (px) | DPI |
-|---------|-------------|------------|-----|
-| A3      | 3508        | 4961       | 300 |
-| A2      | 4961        | 7016       | 300 |
-
-Esses tamanhos são adequados para impressão profissional em gráfica.
-
-### Resultado esperado
-- Download automático de PNG em alta resolução
-- Imagem idêntica ao preview (mesmo motor de renderização, sem conversão)
-- Resolução adequada para impressão A2/A3 em gráfica
-- Sem esticamento, sem bordas brancas, sem corte, sem 2 páginas
-- Solução simples e confiável para um produto comercial
-
-### Arquivos a alterar
-| Arquivo | Ação |
-|---------|------|
-| `src/pages/Index.tsx` | Substituir export por PNG em alta resolução |
-| `src/App.css` | Remover `@media print` |
-
+Risco principal
+- `dom-to-image-more` melhora a captura DOM, mas não resolve sozinho problemas de layout; por isso a parte crítica do plano é isolar e fixar o artboard de exportação antes de gerar o PDF.
