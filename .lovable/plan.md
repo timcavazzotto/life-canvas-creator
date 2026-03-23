@@ -1,23 +1,28 @@
 
 
-## Plano: Restaurar células quadradas no grid
+## Plano: Corrigir alinhamento dos labels de décadas com o grid
 
 ### Problema
-Quando migramos para o modelo de "folha real", o `.year-rows` recebeu `flex: 1` para preencher o espaço vertical da folha. Isso estica as linhas do grid verticalmente, e como `.wk` não tem mais `aspect-ratio: 1`, as células ficam achatadas (retangulares).
+Os labels de décadas (0, 10, 20...) usam altura fixa calculada em pixels (`rows * 10.3px + 4px`). Esse valor foi calibrado para a largura antiga de 660px. Com a folha de 800px, cada célula do grid tem tamanho diferente (determinado por `repeat(52, 1fr)` + `aspect-ratio: 1`), e os labels não acompanham mais.
 
 ### Solução
-Adicionar `aspect-ratio: 1` de volta às células `.wk` para garantir que sejam quadradas. Remover `flex: 1` do `.year-rows` para que o grid não seja esticado — ele terá sua altura natural baseada nas células quadradas.
+Remover a altura fixa em pixels dos labels de décadas e usar o mesmo sistema de layout do grid: cada label de década ocupa exatamente o mesmo espaço vertical que 10 linhas do grid (incluindo gaps e separadores de década).
 
-### Alterações em `src/App.css`
+**Abordagem**: Trocar a `decade-col` de heights fixos para um layout flex/grid que espelhe o `year-rows`. Cada label terá `flex` proporcional ao número de linhas que representa, e o container será alinhado com o grid via `align-items: stretch`.
 
-1. **`.year-rows`** (linha 201): remover `flex: 1`
-2. **`.wk`** (linha 204): adicionar `aspect-ratio: 1`
-3. **`.pg`** (linha 194): remover `flex: 1` — o grid não deve esticar para preencher a folha
+### Alterações
 
-O grid terá seu tamanho natural. O espaço restante na folha ficará como margem inferior, o que é visualmente aceitável e mantém a proporção correta.
+**`src/components/PosterPreview.tsx`**
+- Remover os `style={{ height: ..., paddingTop: ... }}` inline dos `dec-lbl`
+- Cada `dec-lbl` recebe `style={{ gridRow: 'span N' }}` ou simplesmente usa flex com proporção baseada em `d.rows`
 
-### Arquivos
+**`src/App.css`**
+- `.decade-col`: usar `display: flex; flex-direction: column` (já tem), remover `padding-top: 16px`
+- `.dec-lbl`: usar `flex: N` onde N = número de linhas, alinhando verticalmente ao início. Adicionar margin-top de 4px nos separadores de década (exceto o primeiro)
+
+### Arquivo alterado
 | Arquivo | Ação |
 |---------|------|
-| `src/App.css` | Restaurar `aspect-ratio: 1` em `.wk`, remover `flex: 1` de `.year-rows` e `.pg` |
+| `src/components/PosterPreview.tsx` | Remover heights fixos, usar flex proportion |
+| `src/App.css` | Ajustar `.decade-col` e `.dec-lbl` para flex proporcional |
 
