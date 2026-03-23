@@ -20,69 +20,70 @@ const Index = () => {
   const paperRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
-    const { toast } = await import('sonner');
-    const domToImage = await import('dom-to-image-more');
-    const { jsPDF } = await import('jspdf');
+  const { toast } = await import('sonner');
+  const domToImage = await import('dom-to-image-more');
+  const { jsPDF } = await import('jspdf');
 
-    if (!paperRef.current) return;
+  // Captura o poster diretamente (não o paper-sheet escalado)
+  if (!posterRef.current) return;
 
-    toast('Gerando PDF em alta resolução…', { duration: 3000 });
+  toast('Gerando PDF em alta resolução…', { duration: 4000 });
 
-    // A-series dimensions in mm
+  try {
+    // 1. Aguarda todas as fontes (Google Fonts etc)
+    await document.fonts.ready;
+
+    const el = posterRef.current;
+
+    // 2. Dimensões reais do elemento no DOM (sem transform de escala)
+    const baseW = el.offsetWidth;
+    const baseH = el.offsetHeight;
+
+    // 3. Scale para 300 DPI
+    // A3 portrait: 297 × 420 mm → 3508 × 4961 px
+    // A2 portrait: 420 × 594 mm → 4961 × 7016 px
+    const targetW = st.paperSize === 'a2' ? 4961 : 3508;
+    const targetH = st.paperSize === 'a2' ? 7016 : 4961;
+    const scale = targetW / baseW;
+
+    // 4. Snapshot em alta resolução
+    const dataUrl = await (domToImage as any).toPng(el, {
+      width: targetW,
+      height: targetH,
+      bgcolor: '#ffffff',
+      style: {
+        transform: `scale(${scale})`,
+        transformOrigin: 'top left',
+        width: `${baseW}px`,
+        height: `${baseH}px`,
+        margin: '0',
+        padding: '0',
+        boxShadow: 'none',
+        // garante que borders e backgrounds são capturados
+        borderRadius: '0',
+      },
+    });
+
+    // 5. Monta PDF
     const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
     const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
 
-    // Target pixels at 300 DPI
-    const targetW = st.paperSize === 'a2' ? 4961 : 3508;
-    const targetH = st.paperSize === 'a2' ? 7016 : 4961;
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [pageW_mm, pageH_mm],
+    });
 
-    // Use offsetWidth/Height (untransformed layout size) — NOT getBoundingClientRect
-    // which returns the visually transformed (scaled down) size
-    const baseW = paperRef.current.offsetWidth;
-    const baseH = paperRef.current.offsetHeight;
+    pdf.addImage(dataUrl, 'PNG', 0, 0, pageW_mm, pageH_mm);
+    pdf.save(`projeto80plus-${st.paperSize.toUpperCase()}-300dpi.pdf`);
+    toast.success('PDF gerado com sucesso!');
 
-    // Scale factor to reach 300 DPI from the layout size
-    const scale = targetW / baseW;
-
-    try {
-      // Wait for fonts
-      await document.fonts.ready;
-
-      // Use dom-to-image-more to capture at high resolution
-      const dataUrl = await domToImage.toPng(paperRef.current, {
-        width: Math.round(baseW * scale),
-        height: Math.round(baseH * scale),
-        style: {
-          transform: 'none',
-          transformOrigin: 'top left',
-          margin: '0',
-          marginBottom: '0',
-          boxShadow: 'none',
-        },
-        filter: (node: Node) => {
-          if (node instanceof HTMLElement && node.classList?.contains('cfg-preview-hint')) return false;
-          return true;
-        },
-      });
-
-      // Create PDF with exact page dimensions
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [pageW_mm, pageH_mm],
-      });
-
-      // Add the image filling the entire page — proportions match because
-      // paper-sheet uses aspect-ratio: 297/420 which is exactly A-series
-      pdf.addImage(dataUrl, 'PNG', 0, 0, pageW_mm, pageH_mm);
-
-      pdf.save(`projeto80-${st.paperSize.toUpperCase()}-300dpi.pdf`);
-      toast.success('PDF em alta resolução baixado!');
-    } catch (err) {
-      console.error('Export error:', err);
-      toast.error('Erro ao gerar PDF. Tente novamente.');
-    }
-  }, [st.paperSize]);
+  } catch (err) {
+    console.error('Export error:', err);
+    toast.error('Erro ao gerar PDF. Tente novamente.');
+  }
+}, [st.paperSize]);
+  
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
