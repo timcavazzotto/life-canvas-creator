@@ -27,18 +27,31 @@ const Index = () => {
     el.style.boxShadow = 'none';
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
-    const canvas = await html2canvas(el, { scale: 4, useCORS: true });
-    el.style.boxShadow = origBoxShadow;
-    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: st.paperSize });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
     const margin = 3;
+
+    // Temporarily resize poster to match paper aspect ratio
+    const origWidth = el.style.width;
+    const paperRatio = (pageW - margin * 2) / (pageH - margin * 2);
+    const currentH = el.scrollHeight;
+    const targetW = Math.round(currentH * paperRatio);
+    el.style.width = targetW + 'px';
+
+    // Wait for re-layout
+    await new Promise(r => setTimeout(r, 150));
+
+    const canvas = await html2canvas(el, { scale: 4, useCORS: true });
+
+    // Restore original width
+    el.style.width = origWidth || '';
+    el.style.boxShadow = origBoxShadow;
+
+    const imgData = canvas.toDataURL('image/png');
     const usableW = pageW - margin * 2;
     const usableH = pageH - margin * 2;
-    const ratioW = usableW / canvas.width;
-    const ratioH = usableH / canvas.height;
-    const ratio = (canvas.height * ratioW <= usableH) ? ratioW : ratioH;
+    const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
     const w = canvas.width * ratio;
     const h = canvas.height * ratio;
     pdf.addImage(imgData, 'PNG', (pageW - w) / 2, margin, w, h);
