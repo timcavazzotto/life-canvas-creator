@@ -212,7 +212,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pl-cell.c-active { background: var(--p-ink, #1e1408); border-color: var(--p-ink, #1e1408); }
 .pl-cell.c-future { border-color: var(--p-future, #c8c4b8); border-style: dashed; border-width: 1px; }
 .pl-text { font-family: 'DM Mono', monospace; font-size: 6px; color: var(--p-ink-mid, #4a3c28); letter-spacing: 0.08em; text-transform: uppercase; }
-.pl-note { font-size: 8.5px; color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1.55; max-width: 280px; } color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1.55; max-width: 280px; }
+.pl-note { font-size: 8.5px; color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1.55; max-width: 280px; }
 .pfoot { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 0.5px solid var(--p-border, #c8c4b8); }
 .pfs-val { font-size: 21px; font-weight: 300; color: var(--p-ink, #1e1408); line-height: 1.15; }
 .pfs-lbl { font-family: 'DM Mono', monospace; font-size: 5.5px; letter-spacing: 0.12em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 2px; }
