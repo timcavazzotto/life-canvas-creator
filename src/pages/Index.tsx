@@ -36,12 +36,12 @@ const Index = () => {
     const targetW = st.paperSize === 'a2' ? 4961 : 3508;
     const targetH = st.paperSize === 'a2' ? 7016 : 4961;
 
-    // Get the actual rendered size of the paper-sheet element
-    const rect = paperRef.current.getBoundingClientRect();
-    const baseW = rect.width;
-    const baseH = rect.height;
+    // Use offsetWidth/Height (untransformed layout size) — NOT getBoundingClientRect
+    // which returns the visually transformed (scaled down) size
+    const baseW = paperRef.current.offsetWidth;
+    const baseH = paperRef.current.offsetHeight;
 
-    // Scale factor to reach 300 DPI from the preview size
+    // Scale factor to reach 300 DPI from the layout size
     const scale = targetW / baseW;
 
     try {
