@@ -1,33 +1,42 @@
 
 
-## Plano: Corrigir margens laterais no PDF
+## Plano: Ajustar largura do poster para preencher a folha no PDF
 
-### Problema
-O poster tem proporção mais estreita que o papel A3/A2. O `Math.min()` na escala escolhe o fator de altura (menor), fazendo a imagem caber na altura mas ficando estreita demais — sobrando ~40mm de margem lateral.
+### Problema raiz
+O poster HTML tem 660px de largura fixa, mas sua altura total (com grid de 80 anos × 52 semanas) cria uma proporção mais "alta e estreita" que o papel A3 (297×420mm, ratio ~0.707). O código de escala já prioriza a largura, mas como `canvas.height * ratioW > usableH`, ele recua para `ratioH` — e a largura volta a ficar estreita.
 
 ### Solução
-Escalar prioritariamente pela **largura** (`usableW / canvas.width`), e se a altura ultrapassar a página, recalcular pela altura. Mas o principal ajuste é: o poster no HTML precisa ter proporção mais próxima do papel, ou a escala deve priorizar preencher a largura total.
+Antes de capturar com `html2canvas`, **temporariamente redimensionar o poster** para ter a proporção exata do papel selecionado. Isso garante que o canvas capturado preencha a folha inteira.
 
-A abordagem mais simples: usar `Math.min` como está, mas **ajustar a largura do poster renderizado** para ser proporcional ao papel antes de capturar com html2canvas. Alternativamente, escalar para preencher a largura e deixar o excesso de altura cortar ou ajustar.
+### Alterações em `src/pages/Index.tsx` (função `downloadPDF`)
 
-**Abordagem escolhida**: Escalar pela largura (`usableW / canvas.width`) e posicionar o topo do poster no topo da página (com margem de 3mm). Se a altura exceder a página, reduzir a escala.
+1. Antes do `html2canvas`, calcular a largura ideal do poster para a proporção do papel:
+   - Obter a altura atual do elemento (`el.scrollHeight`)
+   - Calcular a largura proporcional: `targetWidth = el.scrollHeight * (pageW / pageH)`
+   - Temporariamente setar `el.style.width = targetWidth + 'px'`
 
-### Alteração
+2. Após capturar o canvas, restaurar a largura original (660px)
 
-**`src/pages/Index.tsx`** — função `downloadPDF` (~linha 39-42):
-- Calcular `ratio` priorizando a largura: `usableW / canvas.width`
-- Verificar se `h` resultante cabe em `usableH`; se não, usar `usableH / canvas.height`
-- Posicionar horizontalmente centralizado, verticalmente no topo (margem 3mm) em vez de centralizado
+3. Manter a escala pelo `Math.min(ratioW, ratioH)` — agora ambos serão praticamente iguais, pois a proporção já bate
 
-```
-const ratioW = usableW / canvas.width;
-const ratioH = usableH / canvas.height;
-const ratio = (canvas.height * ratioW <= usableH) ? ratioW : ratioH;
-const w = canvas.width * ratio;
-const h = canvas.height * ratio;
-pdf.addImage(imgData, 'PNG', (pageW - w) / 2, margin, w, h);
+### Código aproximado
+```typescript
+// Temporariamente ajustar proporção do poster ao papel
+const origWidth = el.style.width;
+const paperRatio = pageW / pageH;
+const currentH = el.scrollHeight;
+const targetW = Math.round(currentH * paperRatio);
+el.style.width = targetW + 'px';
+
+// Aguardar re-layout
+await new Promise(r => setTimeout(r, 100));
+
+const canvas = await html2canvas(el, { scale: 4, useCORS: true });
+
+// Restaurar
+el.style.width = origWidth;
 ```
 
 ### Resultado
-O poster preencherá a largura total da folha (com 3mm de margem), eliminando as bordas laterais excessivas.
+O poster será capturado com proporção idêntica à da folha, eliminando margens laterais excessivas no PDF.
 
