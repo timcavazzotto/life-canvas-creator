@@ -67,9 +67,9 @@ export const MONTHS: Record<string, string[]> = {
 };
 
 export const LABELS: Record<string, Record<string, string>> = {
-  pt: { nome: 'Nome', nasc: 'Nascimento', exp: 'Expectativa', dedic: 'Dedicatória', lvd: 'Semanas vividas', act: 'Para colorir', fut: 'Por viver', total: 'Semanas totais', jv: 'Já vividas', ainda: 'Ainda por viver' },
-  en: { nome: 'Name', nasc: 'Birth year', exp: 'Life expectancy', dedic: 'Dedication', lvd: 'Weeks lived', act: 'To color', fut: 'Yet to live', total: 'Total weeks', jv: 'Already lived', ainda: 'Still to live' },
-  es: { nome: 'Nombre', nasc: 'Nacimiento', exp: 'Expectativa', dedic: 'Dedicatoria', lvd: 'Semanas vividas', act: 'Para colorear', fut: 'Por vivir', total: 'Semanas totales', jv: 'Ya vividas', ainda: 'Aún por vivir' },
+  pt: { nome: 'Nome', nasc: 'Nascimento', exp: 'Expectativa', dedic: 'Dedicatória', lvd: 'Semanas vividas', act: 'Para colorir', fut: 'Por viver', total: 'Semanas totais', jv: 'Já vividas' },
+  en: { nome: 'Name', nasc: 'Birth date', exp: 'Life expectancy', dedic: 'Dedication', lvd: 'Weeks lived', act: 'To color', fut: 'Yet to live', total: 'Total weeks', jv: 'Already lived' },
+  es: { nome: 'Nombre', nasc: 'Nacimiento', exp: 'Expectativa', dedic: 'Dedicatoria', lvd: 'Semanas vividas', act: 'Para colorear', fut: 'Por vivir', total: 'Semanas totales', jv: 'Ya vividas' },
 };
 
 export const WEEK_POS = [0, 4, 9, 13, 17, 21, 26, 30, 34, 38, 43, 47];
