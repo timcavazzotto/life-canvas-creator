@@ -31,19 +31,13 @@ const Index = () => {
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
     el.style.boxShadow = origBoxShadow;
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: paperSize });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const margin = 10;
-    const usableW = pageW - margin * 2;
-    const usableH = pageH - margin * 2;
-    const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
-    const w = canvas.width * ratio;
-    const h = canvas.height * ratio;
-    pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
-  }, []);
+  }, [paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
