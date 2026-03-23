@@ -191,7 +191,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pf-label { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; display: block; margin-bottom: 4px; }
 .pf-val { font-size: 13px; color: var(--p-ink, #1e1408); border-bottom: 1px solid var(--p-rule, #1e1408); padding-bottom: 8px; min-height: 20px; opacity: 0.9; }
 .pf-val.italic { font-style: italic; font-size: 11.5px; color: var(--p-ink-mid, #4a3c28); }
-.pg { margin-bottom: 13px; flex: 1; display: flex; flex-direction: column; }
+.pg { margin-bottom: 13px; display: flex; flex-direction: column; }
 .grid-wrap { display: flex; flex: 1; }
 .decade-col { width: 20px; flex-shrink: 0; margin-right: 6px; padding-top: 16px; display: flex; flex-direction: column; }
 .dec-lbl { font-family: 'DM Mono', monospace; font-size: 6px; color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1; }
