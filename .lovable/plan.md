@@ -1,75 +1,77 @@
 
 
-## Plano: Corrigir exportação PDF via `window.print()` e garantir resolução para impressão A2/A3
+## Plano: Exportar PNG em alta resolução (solução comercial definitiva)
 
-### Problema raiz identificado
-O CSS atual tem **sintaxe inválida** para as regras `@page`:
+### Por que mudar para PNG
 
-```css
-/* INVÁLIDO — browser ignora completamente */
-body.print-a3 @page { size: A3 portrait; }
-body.print-a2 @page { size: A2 portrait; }
-```
+Após múltiplas tentativas com `window.print()` e `html2canvas`+`jsPDF`, ficou claro que:
+- `window.print()` não controla bem o layout (2 páginas, esticamento)
+- `html2canvas`+`jsPDF` introduz diferenças de renderização no header
 
-A spec CSS não permite `@page` aninhado dentro de um seletor. O resultado: o browser ignora o tamanho da página e usa o padrão (Letter/A4), causando corte, bordas e proporção errada.
+PNG em alta resolução é a solução mais confiável para um produto comercial de impressão:
+- Gráficas aceitam PNG em 300 DPI sem problemas
+- O `html2canvas` captura exatamente o que está na tela
+- Sem conversão intermediária para PDF (que distorce)
+- Resolução controlável com precisão
 
-### Solução
+### Como funciona
 
-Usar **JavaScript para injetar dinamicamente** a regra `@page` correta antes de chamar `window.print()`, e removê-la depois.
+A3 a 300 DPI = 3508 x 4961 pixels
+A2 a 300 DPI = 4961 x 7016 pixels
+
+O truque: em vez de capturar o preview escalado (que tem ~800px de largura), vamos:
+1. Clonar o poster no DOM
+2. Colocar em um container oculto com as dimensões reais em pixels (3508px ou 4961px de largura)
+3. Capturar com `html2canvas` em `scale: 1` (sem upscale, já está no tamanho certo)
+4. Gerar PNG e oferecer download direto
+5. Remover o clone
+
+Isso garante que o PNG tenha exatamente a resolução de impressão, com o layout idêntico ao preview.
 
 ### Alterações
 
-#### 1. `src/pages/Index.tsx` — injetar `@page` via JS
+#### 1. `src/pages/Index.tsx` — substituir `downloadPDF` por `downloadPNG`
 
-Substituir o `downloadPDF` atual por:
-```typescript
-const downloadPDF = useCallback(() => {
-  import('sonner').then(({ toast }) => {
-    // Inject @page rule dynamically
-    const size = st.paperSize === 'a2' ? 'A2' : 'A3';
-    const style = document.createElement('style');
-    style.id = 'print-page-size';
-    style.textContent = `@page { size: ${size} portrait; margin: 0; }`;
-    document.head.appendChild(style);
-    
-    document.body.classList.add('printing');
-    
-    toast('Use "Salvar como PDF" no diálogo de impressão', { duration: 5000 });
-    
-    setTimeout(() => {
-      window.print();
-      document.body.classList.remove('printing');
-      style.remove();
-    }, 200);
-  });
-}, [st.paperSize]);
-```
+- Remover toda a lógica de `window.print()` e injeção de `@page`
+- Implementar:
+  - Criar container oculto (`position: fixed; left: -9999px`) com largura A3 ou A2 em pixels
+  - Clonar o `.poster` para dentro dele
+  - Usar `html2canvas` com `scale: 1`, `useCORS: true`
+  - Converter para blob PNG
+  - Acionar download automático com `<a download>`
+  - Limpar o clone
 
-#### 2. `src/App.css` — simplificar `@media print`
+- Alterar o texto do botão de "Exportar PDF" para "Exportar PNG (alta resolução)"
 
-- Remover as regras `@page` inválidas (linhas 354-396)
-- Manter apenas o bloco `@media print` com:
-  - `@page { margin: 0; }` como fallback
-  - Esconder tudo exceto o poster
-  - `.paper-sheet` e `.poster` preenchem 100% da página
-- Remover as regras `body.print-a3 @page` e `body.print-a2 @page` (inválidas)
-- Usar classe `.printing` em vez de `print-a2`/`print-a3`
+#### 2. `src/App.css` — remover bloco `@media print`
 
-#### 3. Resolução para impressão de parede
+- Remover as linhas 354-382 (`@media print { ... }`) que não serão mais usadas
+- Manter todo o restante intacto
 
-Com `window.print()`, a renderização usa a resolução nativa do browser (tipicamente 300 DPI para "Salvar como PDF"). Para A2 (420×594mm) a 300 DPI isso dá ~4960×7016 pixels — resolução adequada para impressão de parede.
+#### 3. Manter `html2canvas` no `package.json`, remover `jspdf`
 
-O poster já usa vetores (texto, bordas CSS) que escalam infinitamente. Apenas o grid de quadrados precisa renderizar bem, e com CSS puro isso é vetorial.
+- `jspdf` deixa de ser necessário (não geramos mais PDF)
+- `html2canvas` continua sendo usado para a captura
+
+### Resolução para impressão de parede
+
+| Formato | Largura (px) | Altura (px) | DPI |
+|---------|-------------|------------|-----|
+| A3      | 3508        | 4961       | 300 |
+| A2      | 4961        | 7016       | 300 |
+
+Esses tamanhos são adequados para impressão profissional em gráfica.
+
+### Resultado esperado
+- Download automático de PNG em alta resolução
+- Imagem idêntica ao preview (mesmo motor de renderização, sem conversão)
+- Resolução adequada para impressão A2/A3 em gráfica
+- Sem esticamento, sem bordas brancas, sem corte, sem 2 páginas
+- Solução simples e confiável para um produto comercial
 
 ### Arquivos a alterar
 | Arquivo | Ação |
 |---------|------|
-| `src/App.css` | Corrigir `@media print`, remover `@page` inválidos |
-| `src/pages/Index.tsx` | Injetar `@page` dinâmico via JS |
-
-### Resultado esperado
-- PDF em A2 ou A3 conforme seleção real
-- Sem bordas brancas, sem esticamento, sem corte
-- Resolução vetorial adequada para impressão de parede
-- Header idêntico ao preview (mesmo engine de renderização)
+| `src/pages/Index.tsx` | Substituir export por PNG em alta resolução |
+| `src/App.css` | Remover `@media print` |
 
