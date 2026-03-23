@@ -32,6 +32,7 @@ export const TONES: Record<string, {
     note: { pt: 'Preencha com cor cada semana em que você se moveu.\n≥ 150 min de atividade moderada = semana ativa (OMS).', en: 'Color each week you moved.\n≥ 150 min of moderate activity = active week (WHO).', es: 'Colorea cada semana que te moviste.\n≥ 150 min de actividad moderada = semana activa (OMS).' },
     tag: { pt: 'Cada semana é uma vitória', en: 'Every week is a victory', es: 'Cada semana es una victoria' },
     eyebrow: { pt: 'Painel da vida em movimento', en: 'Life in motion panel', es: 'Panel de vida en movimiento' },
+    ainda: { pt: 'Por celebrar', en: 'To celebrate', es: 'Por celebrar' },
   },
   cientifico: {
     label: 'Científico',
