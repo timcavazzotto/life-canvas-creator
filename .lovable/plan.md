@@ -1,15 +1,23 @@
 
 
-## Plano: Corrigir duplicação de data no calendário
+## Plano: Preenchimento sequencial sem labels de mês
 
-### Problema
-Quando `captionLayout="dropdown-buttons"` está ativo, o `react-day-picker` renderiza **tanto** os dropdowns de mês/ano **quanto** o label de texto padrão do caption (ex: "March 2026" em inglês). Resultado: duas indicações de data, uma em inglês e uma em português.
+### O que muda
+Remover os labels de mês do topo do grid. O preenchimento de semanas vividas passa a ser puramente sequencial: calcula o total de semanas vividas desde a data de nascimento e preenche da esquerda pra direita, de cima pra baixo, sem alinhamento mensal.
 
-### Solução
-Esconder o `caption_label` no componente `Calendar` quando dropdowns estão presentes, adicionando `hidden` à classe.
+### Alterações
 
-### Arquivo alterado
-- `src/components/ui/calendar.tsx` — alterar a classe `caption_label` de `"text-sm font-medium"` para `"text-sm font-medium hidden"`
+**1. `src/components/PosterPreview.tsx`**
+- Remover o bloco `monthLabels` (useMemo que calcula labels de mês)
+- Remover a `<div className="month-row">` e seus filhos do JSX
+- Manter o cálculo de `lived` como está (já usa data completa)
+- Manter `yearRows` como está (já preenche sequencialmente: `idx < lived`)
 
-Isso remove o texto duplicado e mantém apenas os dropdowns localizados.
+**2. `src/data/posterData.ts`**
+- Manter `MONTHS` e `WEEK_POS` exports (podem ser usados em outros lugares), mas não são mais referenciados no poster
+
+### Resultado
+- Grid limpo, sem linha de meses no topo
+- Preenchimento correto baseado na data exata de nascimento
+- Visualmente mais simples e sem ambiguidade sobre quando a vida começa
 
