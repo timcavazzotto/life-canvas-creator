@@ -1,23 +1,31 @@
 
 
-## Plano: Preenchimento sequencial sem labels de mês
+## Plano: Label "ainda por viver" dinâmico por tom
 
-### O que muda
-Remover os labels de mês do topo do grid. O preenchimento de semanas vividas passa a ser puramente sequencial: calcula o total de semanas vividas desde a data de nascimento e preenche da esquerda pra direita, de cima pra baixo, sem alinhamento mensal.
+### Ideia
+Em vez de um label fixo, o texto do rodapé ("Ainda por viver") muda conforme o tom selecionado, alinhando com a filosofia de cada um.
+
+### Textos propostos por tom
+
+| Tom | PT | EN | ES |
+|-----|----|----|-----|
+| Filosófico | Por conquistar | Yet to conquer | Por conquistar |
+| Otimista | Por celebrar | To celebrate | Por celebrar |
+| Científico | Por registrar | To record | Por registrar |
+| Espiritual | Por honrar | To honor | Por honrar |
 
 ### Alterações
 
-**1. `src/components/PosterPreview.tsx`**
-- Remover o bloco `monthLabels` (useMemo que calcula labels de mês)
-- Remover a `<div className="month-row">` e seus filhos do JSX
-- Manter o cálculo de `lived` como está (já usa data completa)
-- Manter `yearRows` como está (já preenche sequencialmente: `idx < lived`)
+**1. `src/data/posterData.ts`**
+- Adicionar campo `ainda` ao objeto `TONES` (dentro de cada tom), com as 3 línguas
+- Remover `ainda` do `LABELS` fixo
 
-**2. `src/data/posterData.ts`**
-- Manter `MONTHS` e `WEEK_POS` exports (podem ser usados em outros lugares), mas não são mais referenciados no poster
+**2. `src/components/PosterPreview.tsx`**
+- No rodapé, trocar `lb.ainda` por `t.ainda[l]` (onde `t` já é `TONES[st.tone]`)
 
-### Resultado
-- Grid limpo, sem linha de meses no topo
-- Preenchimento correto baseado na data exata de nascimento
-- Visualmente mais simples e sem ambiguidade sobre quando a vida começa
+### Arquivos
+| Arquivo | Ação |
+|---------|------|
+| `src/data/posterData.ts` | Adicionar `ainda` em cada tom de `TONES`; remover de `LABELS` |
+| `src/components/PosterPreview.tsx` | Usar `t.ainda[l]` no rodapé |
 
