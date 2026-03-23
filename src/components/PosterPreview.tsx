@@ -88,12 +88,8 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
             {decadeLabels.map((d, i) =>
             <div
               key={i}
-              className="dec-lbl"
-              style={{
-                height: `${d.rows * 10.3 + (d.isFirst ? 0 : 4)}px`,
-                paddingTop: d.isFirst ? 0 : '4px'
-              }}>
-              
+              className={`dec-lbl${!d.isFirst && i > 0 ? ' dec-sep' : ''}`}
+              style={{ flex: d.rows }}>
                 {d.label}
               </div>
             )}

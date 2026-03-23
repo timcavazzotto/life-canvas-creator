@@ -16,6 +16,7 @@ const Index = () => {
   const [st, setSt] = useState<PosterState>({
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
+  const [paperSize, setPaperSize] = useState<'a2' | 'a3'>('a3');
   const posterRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
@@ -30,19 +31,13 @@ const Index = () => {
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
     el.style.boxShadow = origBoxShadow;
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: paperSize });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const margin = 10;
-    const usableW = pageW - margin * 2;
-    const usableH = pageH - margin * 2;
-    const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
-    const w = canvas.width * ratio;
-    const h = canvas.height * ratio;
-    pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
-  }, []);
+  }, [paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
@@ -376,6 +371,19 @@ const Index = () => {
                       {l.label}
                     </button>
                   )}
+                </div>
+              </div>
+            </div>
+
+            {/* Paper Size */}
+            <div className="cfg-section open">
+              <div className="cfg-section-head">
+                <span className="cfg-lbl">Formato do papel</span>
+              </div>
+              <div className="cfg-body-inner" style={{ display: 'flex' }}>
+                <div className="cfg-pills">
+                  <button className={`cfg-pill${paperSize === 'a3' ? ' active' : ''}`} onClick={() => setPaperSize('a3')}>A3 (297×420mm)</button>
+                  <button className={`cfg-pill${paperSize === 'a2' ? ' active' : ''}`} onClick={() => setPaperSize('a2')}>A2 (420×594mm)</button>
                 </div>
               </div>
             </div>
