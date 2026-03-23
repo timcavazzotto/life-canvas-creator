@@ -50,8 +50,8 @@ const Index = () => {
 
       // Use dom-to-image-more to capture at high resolution
       const dataUrl = await domToImage.toPng(paperRef.current, {
-        width: baseW,
-        height: baseH,
+        width: Math.round(baseW * scale),
+        height: Math.round(baseH * scale),
         style: {
           transform: 'none',
           transformOrigin: 'top left',
@@ -59,10 +59,7 @@ const Index = () => {
           marginBottom: '0',
           boxShadow: 'none',
         },
-        width: baseW * scale,
-        height: baseH * scale,
         filter: (node: Node) => {
-          // Remove any preview-only decorations
           if (node instanceof HTMLElement && node.classList?.contains('cfg-preview-hint')) return false;
           return true;
         },
