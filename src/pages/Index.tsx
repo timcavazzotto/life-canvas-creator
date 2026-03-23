@@ -21,68 +21,66 @@ const Index = () => {
 
   const downloadPDF = useCallback(async () => {
     const { toast } = await import('sonner');
-    const html2canvas = (await import('html2canvas')).default;
+    const domToImage = await import('dom-to-image-more');
+    const { jsPDF } = await import('jspdf');
 
     if (!paperRef.current) return;
 
-    toast('Gerando PNG em alta resolução…', { duration: 2500 });
+    toast('Gerando PDF em alta resolução…', { duration: 3000 });
 
+    // A-series dimensions in mm
+    const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
+    const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
+
+    // Target pixels at 300 DPI
     const targetW = st.paperSize === 'a2' ? 4961 : 3508;
     const targetH = st.paperSize === 'a2' ? 7016 : 4961;
 
-    const baseWidth = paperRef.current.offsetWidth;
-    const baseHeight = Math.round(baseWidth * (420 / 297));
-    const exportScale = targetW / baseWidth;
+    // Get the actual rendered size of the paper-sheet element
+    const rect = paperRef.current.getBoundingClientRect();
+    const baseW = rect.width;
+    const baseH = rect.height;
 
-    const container = document.createElement('div');
-    container.style.cssText = `position:fixed;left:-99999px;top:0;width:${baseWidth}px;height:${baseHeight}px;overflow:hidden;background:transparent;pointer-events:none;z-index:-1;`;
-    document.body.appendChild(container);
-
-    const clone = paperRef.current.cloneNode(true) as HTMLDivElement;
-    clone.style.width = `${baseWidth}px`;
-    clone.style.height = `${baseHeight}px`;
-    clone.style.margin = '0';
-    clone.style.transformOrigin = 'top left';
-    clone.style.setProperty('transform', 'none', 'important');
-    clone.style.setProperty('box-shadow', 'none', 'important');
-    clone.style.setProperty('margin-bottom', '0', 'important');
-    container.appendChild(clone);
+    // Scale factor to reach 300 DPI from the preview size
+    const scale = targetW / baseW;
 
     try {
-      if ('fonts' in document) {
-        await (document as Document & { fonts: { ready: Promise<unknown> } }).fonts.ready;
-      }
+      // Wait for fonts
+      await document.fonts.ready;
 
-      const canvas = await html2canvas(clone, {
-        scale: exportScale,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        width: baseWidth,
-        height: baseHeight,
-        windowWidth: baseWidth,
-        windowHeight: baseHeight,
-        logging: false,
+      // Use dom-to-image-more to capture at high resolution
+      const dataUrl = await domToImage.toPng(paperRef.current, {
+        width: Math.round(baseW * scale),
+        height: Math.round(baseH * scale),
+        style: {
+          transform: 'none',
+          transformOrigin: 'top left',
+          margin: '0',
+          marginBottom: '0',
+          boxShadow: 'none',
+        },
+        filter: (node: Node) => {
+          if (node instanceof HTMLElement && node.classList?.contains('cfg-preview-hint')) return false;
+          return true;
+        },
       });
 
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          toast.error('Erro ao gerar imagem.');
-          return;
-        }
+      // Create PDF with exact page dimensions
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [pageW_mm, pageH_mm],
+      });
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `projeto80-${st.paperSize.toUpperCase()}-300dpi.png`;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        toast.success('PNG em alta resolução baixado!');
-      }, 'image/png');
+      // Add the image filling the entire page — proportions match because
+      // paper-sheet uses aspect-ratio: 297/420 which is exactly A-series
+      pdf.addImage(dataUrl, 'PNG', 0, 0, pageW_mm, pageH_mm);
+
+      pdf.save(`projeto80-${st.paperSize.toUpperCase()}-300dpi.pdf`);
+      toast.success('PDF em alta resolução baixado!');
     } catch (err) {
       console.error('Export error:', err);
-      toast.error('Erro ao gerar imagem. Tente novamente.');
-    } finally {
-      container.remove();
+      toast.error('Erro ao gerar PDF. Tente novamente.');
     }
   }, [st.paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -268,7 +266,7 @@ const Index = () => {
             <div className="config-header-title">Crie seu PROJETO 80<span style={{ fontSize: '0.7em', color: 'var(--accent)' }}>+</span></div>
             <div className="config-header-sub">Personalize ao vivo · o painel atualiza em tempo real</div>
           </div>
-          <button className="nav-cta" onClick={downloadPDF}>▶ Baixar PNG alta resolução</button>
+          <button className="nav-cta" onClick={downloadPDF}>▶ Baixar PDF alta resolução</button>
         </div>
 
         <div className="config-body">
