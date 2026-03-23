@@ -1,6 +1,6 @@
 import { useMemo, forwardRef } from 'react';
 import { format } from 'date-fns';
-import { WEEKS, WEEK_POS, MONTHS, TONES, LABELS, type PosterState } from '@/data/posterData';
+import { WEEKS, TONES, LABELS, type PosterState } from '@/data/posterData';
 
 interface PosterPreviewProps {
   state: PosterState;
@@ -18,7 +18,6 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
   const lived = st.birth ? Math.min(Math.floor((Date.now() - new Date(st.birth).getTime()) / 6048e5), total) : 0;
   const left = Math.max(0, total - lived);
   const pct = lived > 0 ? Math.round(lived / total * 100) : 0;
-  const ms = MONTHS[l];
 
   const decadeLabels = useMemo(() => {
     const labels = [];
@@ -29,12 +28,6 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
     return labels;
   }, [st.expect]);
 
-  const monthLabels = useMemo(() => {
-    return Array.from({ length: WEEKS }, (_, w) => {
-      const mi = WEEK_POS.indexOf(w);
-      return mi >= 0 ? ms[mi] : '';
-    });
-  }, [ms]);
 
   const yearRows = useMemo(() => {
     const rows = [];
@@ -106,11 +99,6 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
             )}
           </div>
           <div className="grid-main">
-            <div className="month-row">
-              {monthLabels.map((m, i) =>
-              <div key={i} className="m-lbl">{m}</div>
-              )}
-            </div>
             <div className="year-rows">
               {yearRows.map((row) =>
               <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
