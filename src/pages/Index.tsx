@@ -266,7 +266,7 @@ const Index = () => {
             <div className="config-header-title">Crie seu PROJETO 80<span style={{ fontSize: '0.7em', color: 'var(--accent)' }}>+</span></div>
             <div className="config-header-sub">Personalize ao vivo · o painel atualiza em tempo real</div>
           </div>
-          <button className="nav-cta" onClick={downloadPDF}>▶ Baixar PNG alta resolução</button>
+          <button className="nav-cta" onClick={downloadPDF}>▶ Baixar PDF alta resolução</button>
         </div>
 
         <div className="config-body">
