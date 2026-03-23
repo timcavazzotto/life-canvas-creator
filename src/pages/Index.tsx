@@ -43,15 +43,7 @@ const Index = () => {
     el.style.marginBottom = origMargin;
     el.style.boxShadow = origShadow;
     const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    const canvasRatio = canvas.width / canvas.height;
-    const pageRatio = pageW / pageH;
-    let w: number, h: number, x: number, y: number;
-    if (canvasRatio > pageRatio) {
-      w = pageW; h = pageW / canvasRatio; x = 0; y = (pageH - h) / 2;
-    } else {
-      h = pageH; w = pageH * canvasRatio; x = (pageW - w) / 2; y = 0;
-    }
-    pdf.addImage(imgData, 'JPEG', x, y, w, h);
+    pdf.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
   }, [st.paperSize]);
