@@ -1,60 +1,73 @@
 
-Plano: estabilizar o poster para que preview e PDF usem a mesma geometria e o header tenha alinhamento estrutural
 
-Diagnóstico da varredura
-- O problema não é um “ajuste fino” isolado: hoje o layout do header ainda depende de compensações visuais (`padding-top: 14px` no bloco direito e tipografia grande no título), então o navegador e o raster do PDF não leem esse alinhamento da mesma forma.
-- O PDF também oscila entre 3 comportamentos ruins: preencher tudo, preservar proporção com borda, ou cobrir com corte. Isso acontece porque a captura não parte de uma área de exportação rigidamente controlada.
-- A seleção A2/A3 hoje muda a página do PDF, mas não define uma malha de exportação própria; isso facilita diferença visual entre preview e arquivo final.
+## Plano: Trocar a estratégia de exportação para `window.print()` com CSS `@media print`
 
-O que vou implementar
-1. Separar “preview visual” de “área real de exportação”
-- Em `src/pages/Index.tsx`, manter a moldura de preview só para tela.
-- Capturar no PDF apenas a área interna do poster, sem depender do wrapper escalado/sombreado.
-- Isso elimina a diferença entre o que é styling de preview e o que realmente vira PDF.
+### Por que trocar
 
-2. Tornar o tamanho do artboard determinístico para A2 e A3
-- Em `src/App.css` e `src/pages/Index.tsx`, definir uma área de poster com proporção A-series exata e dimensões controladas.
-- A2 e A3 continuarão com o mesmo layout visual, mas a exportação passará a usar geometria/resolução coerentes com a seleção.
-- Com isso, o `addImage` poderá preencher a página sem esticar lateralmente, sem borda branca e sem corte.
+O problema fundamental é que `html2canvas` rasteriza o DOM com diferenças sutis de renderização (fontes, espaçamento, grid) em relação ao que o navegador mostra. Nenhum ajuste de CSS resolve isso porque a ferramenta de captura é a fonte da divergência. Já tentamos múltiplas combinações de alinhamento e escala sem sucesso estável.
 
-3. Refatorar o header para alinhamento estrutural
-- Em `src/App.css`, substituir compensações atuais do header por um grid explícito:
-```text
-[ eyebrow   ][          ]
-[ título    ][ frase    ]
-[ subtítulo ][ autoria  ]
+### Nova estratégia
+
+Usar o motor de renderização do **próprio navegador** para gerar o PDF, via `window.print()`. O navegador renderiza a versão de impressão usando exatamente o mesmo engine que mostra o preview — eliminando 100% das diferenças de fidelidade.
+
+### O que implementar
+
+#### 1. Adicionar CSS `@media print` em `src/App.css`
+
+- Esconder tudo exceto o poster: nav, hero, how, testimonials, pricing, config sidebar, footer — tudo `display: none`
+- O `.paper-sheet` perde sombra, transform e margem — ocupa a página inteira
+- O `.poster` ocupa 100% da largura e altura da página
+- Definir `@page` com tamanho dinâmico (A3 por padrão, A2 via classe no body)
+- Zerar margens da página: `@page { margin: 0 }`
+
+Exemplo conceitual:
+```css
+@media print {
+  body > *:not(.config-section) { display: none !important; }
+  .config-section { display: block !important; }
+  .cfg-sidebar, .cfg-preview-hint { display: none !important; }
+  .paper-sheet { 
+    transform: none !important; 
+    width: 100% !important; 
+    height: 100% !important;
+    box-shadow: none !important; 
+    margin: 0 !important; 
+  }
+  @page { size: A3 portrait; margin: 0; }
+}
+body.print-a2 @page { size: A2 portrait; }
 ```
-- A frase motivacional ficará ancorada na linha do título, não “aproximada” por padding.
-- Remover hacks de alinhamento vertical/horizontal do bloco direito.
 
-4. Limpar a tipografia do título
-- Em `src/components/PosterPreview.tsx`, isolar melhor o `+` do título para não distorcer o alinhamento óptico.
-- Em `src/App.css`, zerar margens implícitas e controlar tudo por `gap`, `line-height` e um único microajuste óptico, se ainda necessário.
-- Objetivo: eyebrow, título e subtítulo compartilharem a mesma borda esquerda visual.
+#### 2. Trocar o `downloadPDF` em `src/pages/Index.tsx`
 
-5. Recalibrar a exportação para ficar igual ao preview
-- Em `src/pages/Index.tsx`, parar de alternar entre lógica de “contain” e “cover”.
-- A exportação passará a usar uma origem com proporção já correta; por isso o PDF poderá ocupar a folha inteira com fidelidade.
-- Também vou amarrar a captura a um tamanho fixo antes do `html2canvas`, para reduzir diferença de renderização.
+Substituir toda a lógica de `html2canvas` + `jsPDF` por:
+1. Adicionar classe `print-a2` ou `print-a3` no `<body>` conforme `st.paperSize`
+2. Chamar `window.print()`
+3. Remover a classe após impressão
 
-Arquivos envolvidos
-- `src/pages/Index.tsx`
-- `src/App.css`
-- `src/components/PosterPreview.tsx`
+Isso elimina `html2canvas` e `jsPDF` da equação. O usuário usa o diálogo nativo "Salvar como PDF" do navegador.
 
-Resultado esperado
-- PDF realmente em A2 ou A3 conforme seleção
-- sem esticamento lateral
-- sem borda branca externa
-- sem corte
-- header com título, subtítulo e frase motivacional alinhados de forma consistente
-- preview e PDF visualmente muito mais próximos
+#### 3. Manter o header como está
 
-Critério de validação
-- gerar A3 e A2
-- comparar preview vs PDF
-- conferir:
-  - bordas externas
-  - proporção do poster
-  - alinhamento do título com a frase
-  - alinhamento lateral entre eyebrow, título e subtítulo
+O grid atual do header (3 linhas, 2 colunas) está estruturalmente correto. O problema de alinhamento era causado pelo `html2canvas`, não pelo CSS. Com `window.print()`, o que aparece no preview é exatamente o que sai no PDF.
+
+### Limitação e mitigação
+
+O usuário verá o diálogo de impressão do navegador em vez de um download automático. Para mitigar:
+- Mostrar um toast explicando: "Use 'Salvar como PDF' no diálogo de impressão"
+- Garantir que as configurações de `@page` já definem o tamanho correto
+
+### Arquivos a alterar
+
+| Arquivo | Ação |
+|---|---|
+| `src/App.css` | Adicionar bloco `@media print` completo |
+| `src/pages/Index.tsx` | Substituir `downloadPDF` por `window.print()` |
+
+### Resultado esperado
+- O PDF é idêntico ao preview — mesma engine de renderização
+- Sem esticamento, sem bordas brancas, sem corte
+- Header perfeitamente alinhado
+- Tamanho A2 ou A3 conforme seleção
+- Código muito mais simples e sem dependências frágeis
+
