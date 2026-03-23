@@ -77,7 +77,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       <div className="pf-row" style={{ marginTop: -10, marginBottom: 14 }}>
           <div className="pf">
             <span className="pf-label">{lb.dedic}</span>
-            <div className="pf-val italic">{st.dedic}</div>
+            <div className="pf-val">{st.dedic}</div>
           </div>
         </div>
       }
