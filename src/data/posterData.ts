@@ -83,4 +83,5 @@ export interface PosterState {
   theme: string;
   tone: string;
   lang: string;
+  paperSize: 'a2' | 'a3';
 }

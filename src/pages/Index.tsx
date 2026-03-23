@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 
 const Index = () => {
   const [st, setSt] = useState<PosterState>({
-    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
+    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt', paperSize: 'a3'
   });
   const posterRef = useRef<HTMLDivElement>(null);
 
@@ -30,10 +30,10 @@ const Index = () => {
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
     el.style.boxShadow = origBoxShadow;
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: st.paperSize });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const margin = 10;
+    const margin = 3;
     const usableW = pageW - margin * 2;
     const usableH = pageH - margin * 2;
     const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
@@ -42,7 +42,7 @@ const Index = () => {
     pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
-  }, []);
+  }, [st.paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
@@ -381,6 +381,13 @@ const Index = () => {
             </div>
 
             <div className="cfg-cta">
+              <div className="cfg-field" style={{ marginBottom: 8 }}>
+                <label>Formato do papel</label>
+                <select value={st.paperSize} onChange={(e) => update({ paperSize: e.target.value as 'a2' | 'a3' })}>
+                  <option value="a3">A3 (297 × 420 mm)</option>
+                  <option value="a2">A2 (420 × 594 mm)</option>
+                </select>
+              </div>
               <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Quero meu painel</button>
               
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
