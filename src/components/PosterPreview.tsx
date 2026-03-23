@@ -19,13 +19,12 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
   const left = Math.max(0, total - lived);
   const pct = lived > 0 ? Math.round(lived / total * 100) : 0;
 
-  const decadeLabels = useMemo(() => {
-    const labels = [];
-    for (let d = 0; d < Math.ceil(st.expect / 10); d++) {
-      const rows = Math.min(10, st.expect - d * 10);
-      labels.push({ label: d * 10, rows, isFirst: d === 0 });
+  const decadeItems = useMemo(() => {
+    const items = [];
+    for (let y = 0; y < st.expect; y++) {
+      items.push({ year: y, label: y % 10 === 0 ? y : null, decSep: y > 0 && y % 10 === 0 });
     }
-    return labels;
+    return items;
   }, [st.expect]);
 
 
