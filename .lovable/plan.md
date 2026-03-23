@@ -1,18 +1,23 @@
 
 
-## Plano: Aumentar espaçamentos no título e footer
+## Plano: Alinhar título horizontalmente e verticalmente
+
+### Problema
+O título "PROJETO 80+" tem `margin-top` implícito do fluxo normal e o subtítulo tem `margin-top: 14px`, empurrando o bloco esquerdo para baixo. O título em 42px cria espaço visual interno que o desalinha tanto horizontalmente (recuado) quanto verticalmente (parece mais baixo que deveria entre o eyebrow e subtitle).
+
+### Solução
+Duas correções no `.ph-title` em `src/App.css` (linha 183):
+
+1. **Horizontal**: `margin-left: -2px` — compensar espaço visual da fonte grande
+2. **Vertical**: `margin-top: -2px` — subir levemente o título para ficar opticamente centrado entre eyebrow e subtitle
+
+Também reduzir o `margin-top` do subtitle de `14px` para `8px` — o espaço atual é excessivo e contribui para o título parecer deslocado para cima.
 
 ### Alterações em `src/App.css`
 
-**1. Distância título → subtítulo (linha 185)**
-- `.ph-subtitle`: `margin-top: 9px` → `margin-top: 14px`
-
-**2. Distância números → labels no footer (linha 218)**
-- `.pfs-lbl`: `margin-top: 2px` → `margin-top: 6px`
-- `.pfb-tag` (linha 221): `margin-top: 2px` → `margin-top: 6px`
-
-### Arquivo alterado
-| Arquivo | Ação |
-|---------|------|
-| `src/App.css` | Aumentar margin-top em `.ph-subtitle`, `.pfs-lbl` e `.pfb-tag` |
+| Seletor | Propriedade | De | Para |
+|---------|------------|-----|------|
+| `.ph-title` (L183) | `margin-left` | — | `-2px` |
+| `.ph-title` (L183) | `margin-top` | — | `-2px` |
+| `.ph-subtitle` (L185) | `margin-top` | `14px` | `8px` |
 
