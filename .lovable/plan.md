@@ -1,49 +1,44 @@
 
-Objetivo: voltar para PDF, trocar `html2canvas` por `dom-to-image-more`, mas sem repetir os mesmos erros de geometria e corte.
 
-Plano
-1. Substituir a estratégia de captura em `src/pages/Index.tsx`
-- Remover a exportação atual baseada em `html2canvas`.
-- Passar a usar `dom-to-image-more` para gerar uma imagem do poster e embutir essa imagem em um PDF.
-- Manter a captura partindo do `.paper-sheet`, não do layout inteiro da página.
+## Plano: Corrigir exportação PDF com html2canvas — foco na proporção
 
-2. Corrigir a geometria antes da captura
-- Criar um container de exportação isolado, fora da viewport, com proporção A exata.
-- Clonar o `.paper-sheet` inteiro nesse container.
-- Remover no clone apenas efeitos de preview que atrapalham exportação, como `transform: scale`, sombra e margens negativas.
-- Fixar largura/altura reais do artboard para A3 e A2, para evitar esticamento lateral e corte do footer.
+### Diagnóstico
 
-3. Preservar fidelidade visual do header
-- Esperar as fontes carregarem antes da captura.
-- Capturar o clone já no tamanho final, em vez de reconstruir tipografia “na marra”.
-- Manter o CSS estrutural atual do header e só revisar se houver alguma regra de preview contaminando o clone.
+O código atual já usa `html2canvas` + `jsPDF`. Os dois problemas reais são:
 
-4. Gerar PDF com tamanho físico correto
-- Usar `jsPDF` novamente apenas como contêiner final do arquivo.
-- Configurar página A2 ou A3 conforme a seleção.
-- Inserir a imagem no PDF com cálculo proporcional rígido, sem `stretch` e sem lógica que force cover/crop.
+1. **Grid colapsado**: As células `.wk` perderam `aspect-ratio: 1` (linha 212 do CSS), então o grid não renderiza — as células têm altura 0. A página parece "não abrir".
 
-5. Ajustar a interface para refletir o retorno ao PDF
-- Trocar os textos dos botões de download de volta para PDF.
-- Atualizar mensagens de feedback para deixar claro que o arquivo gerado é PDF em alta resolução.
+2. **Proporção no PDF**: O `html2canvas` captura o `.poster` (que tem `height: 100%` do `.paper-sheet`), mas o conteúdo interno pode não preencher exatamente a proporção A-series. A solução é garantir que o grid (`.pg`) ocupe todo o espaço restante via flexbox, sem overflow.
 
-6. Limpeza técnica
-- Adicionar `dom-to-image-more` no `package.json`.
-- Remover `html2canvas` se ele não for mais usado.
-- Manter somente a cadeia de exportação final que estiver ativa, para parar a oscilação entre estratégias.
+### Alterações
 
-Arquivos envolvidos
-- `src/pages/Index.tsx`
-- `src/App.css`
-- `package.json`
+#### 1. `src/App.css` — Restaurar `.wk` e garantir flex no grid
 
-Resultado esperado
-- PDF em A2/A3 conforme seleção
-- sem bordas brancas externas
-- sem esticamento lateral
-- sem corte do footer
-- header muito mais próximo do preview
-- fluxo de exportação mais estável e comercial
+- **Restaurar `aspect-ratio: 1`** nas células `.wk` (linha 212) — sem isso o grid colapsa
+- Adicionar `overflow: hidden` no `.poster` para que nenhum conteúdo vaze além da área do papel
+- O `.pg` já tem `flex: 1` — manter isso para que o grid ocupe o espaço disponível
+- Adicionar `overflow: hidden` no `.pg` e `.year-rows` para que linhas em excesso sejam contidas em vez de empurrar o footer para fora
 
-Risco principal
-- `dom-to-image-more` melhora a captura DOM, mas não resolve sozinho problemas de layout; por isso a parte crítica do plano é isolar e fixar o artboard de exportação antes de gerar o PDF.
+#### 2. `src/pages/Index.tsx` — Ajuste fino da captura
+
+- Capturar `paperEl` (`.paper-sheet`) em vez de `posterEl` (`.poster`), pois o `.paper-sheet` tem as dimensões fixas com `aspect-ratio: 297/420`. Isso garante que a imagem capturada tenha exatamente a proporção A-series, eliminando o problema de proporção no PDF.
+- Calcular `scale` a partir de `paperEl.offsetWidth` (800px)
+- O PDF recebe a imagem com dimensões exatas em mm
+
+#### 3. Sem mudança de dependências
+
+Manter `html2canvas` e `jspdf` como estão. Não adicionar `dom-to-image-more`.
+
+### Arquivos
+
+| Arquivo | Ação |
+|---------|------|
+| `src/App.css` | Restaurar `aspect-ratio: 1` em `.wk`, adicionar `overflow: hidden` no poster e grid |
+| `src/pages/Index.tsx` | Capturar `paperEl` em vez de `posterEl` |
+
+### Resultado esperado
+- Página volta a renderizar o grid
+- PDF com proporção A-series exata (sem esticamento, sem bordas extras)
+- Footer contido dentro da área do papel
+- Header preservado (mesma captura html2canvas, sem mudança)
+
