@@ -393,7 +393,9 @@ const Index = () => {
 
           <div className="cfg-preview">
             <div className="cfg-preview-hint">Pré-visualização ao vivo</div>
-            <PosterPreview ref={posterRef} state={st} />
+            <div className="paper-sheet" ref={paperRef}>
+              <PosterPreview ref={posterRef} state={st} />
+            </div>
           </div>
         </div>
       </section>
