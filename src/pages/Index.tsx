@@ -21,15 +21,23 @@ const Index = () => {
 
   const downloadPDF = useCallback(() => {
     import('sonner').then(({ toast }) => {
-      const printClass = st.paperSize === 'a2' ? 'print-a2' : 'print-a3';
-      document.body.classList.add(printClass);
+      // Inject @page rule dynamically (CSS spec doesn't allow @page inside selectors)
+      const size = st.paperSize === 'a2' ? 'A2' : 'A3';
+      const style = document.createElement('style');
+      style.id = 'print-page-size';
+      style.textContent = `@page { size: ${size} portrait; margin: 0; }`;
+      document.head.appendChild(style);
+
+      document.body.classList.add('printing');
 
       toast('Use "Salvar como PDF" no diálogo de impressão', { duration: 5000 });
 
       setTimeout(() => {
         window.print();
-        document.body.classList.remove(printClass);
-      }, 100);
+        document.body.classList.remove('printing');
+        const injected = document.getElementById('print-page-size');
+        if (injected) injected.remove();
+      }, 200);
     });
   }, [st.paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
