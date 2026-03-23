@@ -27,28 +27,27 @@ const Index = () => {
     const el = posterRef.current;
     if (!el) return;
 
-    toast('Gerando PDF…', { duration: 6000 });
+    toast('Gerando PDF…', { duration: 8000 });
 
     try {
       await document.fonts.ready;
 
-      const baseW = el.offsetWidth;
+      // pixelRatio escala o elemento para 300 DPI sem conflito com canvasWidth/canvasHeight
+      // A3: 3508 px / 800 px base = 4.385 | A2: 4961 px / 800 px base = 6.201
       const targetW = st.paperSize === 'a2' ? 4961 : 3508;
-      const targetH = st.paperSize === 'a2' ? 7016 : 4961;
-      const pixelRatio = targetW / baseW;
+      const pixelRatio = targetW / el.offsetWidth;
       const bgColor = window.getComputedStyle(el).backgroundColor || '#ffffff';
 
-      const dataUrl = await toPng(el, {
-        canvasWidth: targetW,
-        canvasHeight: targetH,
+      const opts = {
         pixelRatio,
         backgroundColor: bgColor,
-        style: {
-          transform: 'none',
-          boxShadow: 'none',
-        },
-        skipFonts: false,
-      });
+        style: { transform: 'none', boxShadow: 'none' },
+      };
+
+      // Primeira chamada preaquece o cache de recursos de fonte (pode falhar — ignorar)
+      await toPng(el, opts).catch(() => {});
+      // Segunda chamada captura com fontes já em cache
+      const dataUrl = await toPng(el, opts);
 
       const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
       const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
