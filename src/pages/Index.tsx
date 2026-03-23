@@ -19,26 +19,56 @@ const Index = () => {
   const posterRef = useRef<HTMLDivElement>(null);
   const paperRef = useRef<HTMLDivElement>(null);
 
-  const downloadPDF = useCallback(() => {
-    import('sonner').then(({ toast }) => {
-      // Inject @page rule dynamically (CSS spec doesn't allow @page inside selectors)
-      const size = st.paperSize === 'a2' ? 'A2' : 'A3';
-      const style = document.createElement('style');
-      style.id = 'print-page-size';
-      style.textContent = `@page { size: ${size} portrait; margin: 0; }`;
-      document.head.appendChild(style);
+  const downloadPDF = useCallback(async () => {
+    const { toast } = await import('sonner');
+    const html2canvas = (await import('html2canvas')).default;
 
-      document.body.classList.add('printing');
+    if (!posterRef.current) return;
 
-      toast('Use "Salvar como PDF" no diálogo de impressão', { duration: 5000 });
+    toast('Gerando imagem em alta resolução…', { duration: 3000 });
 
-      setTimeout(() => {
-        window.print();
-        document.body.classList.remove('printing');
-        const injected = document.getElementById('print-page-size');
-        if (injected) injected.remove();
-      }, 200);
-    });
+    // A3 = 297×420mm, A2 = 420×594mm at 300 DPI
+    const targetW = st.paperSize === 'a2' ? 4961 : 3508;
+    const targetH = st.paperSize === 'a2' ? 7016 : 4961;
+
+    // Clone the poster into a hidden container at print resolution
+    const container = document.createElement('div');
+    container.style.cssText = `position:fixed;left:-99999px;top:0;width:${targetW}px;height:${targetH}px;overflow:hidden;background:white;z-index:-1;`;
+    document.body.appendChild(container);
+
+    const clone = posterRef.current.cloneNode(true) as HTMLElement;
+    clone.style.cssText = `width:${targetW}px;height:${targetH}px;transform:none;margin:0;padding:40px 44px 32px;box-sizing:border-box;`;
+    container.appendChild(clone);
+
+    // Wait for layout to settle
+    await new Promise(r => setTimeout(r, 500));
+
+    try {
+      const canvas = await html2canvas(clone, {
+        scale: 1,
+        useCORS: true,
+        backgroundColor: null,
+        width: targetW,
+        height: targetH,
+        logging: false,
+      });
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `projeto80-${st.paperSize.toUpperCase()}-300dpi.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast.success('PNG em alta resolução baixado!');
+      }, 'image/png');
+    } catch (err) {
+      console.error('Export error:', err);
+      toast.error('Erro ao gerar imagem. Tente novamente.');
+    } finally {
+      container.remove();
+    }
   }, [st.paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -223,7 +253,7 @@ const Index = () => {
             <div className="config-header-title">Crie seu PROJETO 80<span style={{ fontSize: '0.7em', color: 'var(--accent)' }}>+</span></div>
             <div className="config-header-sub">Personalize ao vivo · o painel atualiza em tempo real</div>
           </div>
-          <button className="nav-cta" onClick={downloadPDF}>▶ Quero meu painel</button>
+          <button className="nav-cta" onClick={downloadPDF}>▶ Baixar PNG alta resolução</button>
         </div>
 
         <div className="config-body">
@@ -385,7 +415,7 @@ const Index = () => {
                   <option value="a2">A2 (420 × 594 mm)</option>
                 </select>
               </div>
-              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Quero meu painel</button>
+              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Baixar PNG alta resolução</button>
               
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
