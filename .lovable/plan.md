@@ -1,35 +1,45 @@
 
 
-## Plano: Ajustar proporção da prévia para combinar com o papel
+## Plano: Ajustar prévia na tela e corrigir PDF
 
-### Problema raiz
-O poster tem largura fixa de `660px`. Com o grid de 80×52 células quadradas, a proporção resultante é ~0.6 (largura/altura). O papel A2/A3 tem proporção ~0.707. Nenhum hack de exportação resolve isso — a prévia precisa **já ter** a proporção correta do papel.
+### Problema 1 — Prévia grande demais na tela
+O poster tem `780px` de largura fixa. No desktop, o painel de prévia (`cfg-preview`) não escala o poster, então ele transborda ou exige scroll. No mobile, o `scale(0.44)` pode não ser suficiente.
+
+### Problema 2 — Bordas laterais no PDF
+O `downloadPDF` usa `Math.min(ratioW, ratioH)` — como a altura do poster ainda domina, o fator de altura é menor e as laterais ficam vazias.
 
 ### Solução
-Fazer a largura do poster variar conforme o `paperSize` selecionado, de forma que a proporção natural do conteúdo se aproxime da folha. Como A2 e A3 têm a mesma proporção (1:√2), basta uma largura. Remover o hack de achatamento de células no `downloadPDF`.
 
-Cálculo: com padding lateral de 84px e coluna de décadas de 26px, cada célula ≈ `(W - 110) / 52`. A altura do grid ≈ `80 * cellSize + 107` (gaps + decade separators). Mais ~200px de header/footer. Para ratio 0.707: `W / (80 * (W-110)/52 + 307) = 0.707`. Resolvendo: **W ≈ 780px**.
+**1. Desktop: escalar o poster dentro da área de prévia**
+Usar CSS `transform: scale()` no desktop também, para que o poster de 780px caiba na área visível. A `cfg-preview` tem `flex: 1` (~700-780px de largura disponível). Um `scale(0.85)` fará o poster caber sem scroll.
+
+**2. Mobile: ajustar escala**
+Reduzir de `scale(0.44)` para `scale(0.42)` e ajustar `margin-bottom` proporcionalmente.
+
+**3. PDF: priorizar preenchimento pela largura**
+Trocar a lógica de escala de `Math.min()` para priorizar a largura: usar `ratioW` e, se a altura estourar, recuar para `ratioH`. Posicionar no topo (margem 3mm) em vez de centralizado verticalmente.
 
 ### Alterações
 
-**1. `src/App.css`**
-- Alterar `.poster` de `width: 660px` para `width: 780px`
-- Ajustar o `transform: scale()` na media query mobile para caber na tela (de 0.52 para ~0.44)
+**`src/App.css`**
+- Adicionar ao `.poster` (desktop): `transform: scale(0.85); transform-origin: top center; margin-bottom: -120px;`
+- Mobile: ajustar `scale(0.42)` e `margin-bottom: -400px`
 
-**2. `src/pages/Index.tsx`**
-- Remover o bloco de `tempStyle` que achata as células (linhas 35-51 e 56)
-- Manter a lógica simples de escala `Math.min(ratioW, ratioH)` — agora ambos ratios serão próximos
-- Remover restauração de `boxShadow` complexa, manter apenas `boxShadow: 'none'` temporário
-
-### Resultado
-- Prévia na tela já terá proporção próxima à folha A2/A3
-- PDF preencherá a folha com margens mínimas sem hacks
-- Células permanecem quadradas
-- Visual mais largo e elegante
+**`src/pages/Index.tsx`**
+- Na função `downloadPDF`, trocar a lógica de escala:
+```typescript
+const ratioW = usableW / canvas.width;
+const ratioH = usableH / canvas.height;
+const ratio = (canvas.height * ratioW <= usableH) ? ratioW : ratioH;
+const w = canvas.width * ratio;
+const h = canvas.height * ratio;
+pdf.addImage(imgData, 'PNG', (pageW - w) / 2, margin, w, h);
+```
+Isso posiciona o poster no topo com largura máxima. Se ainda couber na altura, usa a largura total.
 
 ### Arquivos alterados
 | Arquivo | Ação |
 |---------|------|
-| `src/App.css` | Largura do poster: 660px → 780px, ajustar scale mobile |
-| `src/pages/Index.tsx` | Remover hack de achatamento de células no downloadPDF |
+| `src/App.css` | Escalar poster no desktop e ajustar mobile |
+| `src/pages/Index.tsx` | Priorizar largura na escala do PDF |
 
