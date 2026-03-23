@@ -181,7 +181,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .ph { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; border-bottom: 1.5px solid var(--p-rule, #1e1408); margin-bottom: 16px; }
 .ph-left { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
 .ph-eyebrow { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; }
-.ph-title { font-size: 42px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.04em; line-height: 1; margin-left: -2px; }
+.ph-title { font-size: 42px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.04em; line-height: 1; margin-left: -2px; padding-bottom: 2px; }
 .ph-title sup { font-size: 20px; color: var(--p-accent, #1a4a2e); vertical-align: super; }
 .ph-subtitle { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.16em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; }
 .ph-right { text-align: right; max-width: 260px; display: flex; flex-direction: column; justify-content: center; align-self: stretch; }
