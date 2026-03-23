@@ -20,70 +20,69 @@ const Index = () => {
   const paperRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
-  const { toast } = await import('sonner');
-  const domToImage = await import('dom-to-image-more');
-  const { jsPDF } = await import('jspdf');
+    const { toast } = await import('sonner');
+    const domToImage = await import('dom-to-image-more');
+    const { jsPDF } = await import('jspdf');
 
-  // Captura o poster diretamente (não o paper-sheet escalado)
-  if (!posterRef.current) return;
-
-  toast('Gerando PDF em alta resolução…', { duration: 4000 });
-
-  try {
-    // 1. Aguarda todas as fontes (Google Fonts etc)
-    await document.fonts.ready;
-
+    // ✅ Captura o .poster diretamente — não o .paper-sheet que está escalado via CSS
     const el = posterRef.current;
+    if (!el) return;
 
-    // 2. Dimensões reais do elemento no DOM (sem transform de escala)
-    const baseW = el.offsetWidth;
-    const baseH = el.offsetHeight;
+    toast('Gerando PDF em alta resolução…', { duration: 4000 });
 
-    // 3. Scale para 300 DPI
-    // A3 portrait: 297 × 420 mm → 3508 × 4961 px
-    // A2 portrait: 420 × 594 mm → 4961 × 7016 px
-    const targetW = st.paperSize === 'a2' ? 4961 : 3508;
-    const targetH = st.paperSize === 'a2' ? 7016 : 4961;
-    const scale = targetW / baseW;
+    try {
+      // 1. Aguarda todas as fontes (Google Fonts, DM Mono, etc.)
+      await document.fonts.ready;
 
-    // 4. Snapshot em alta resolução
-    const dataUrl = await (domToImage as any).toPng(el, {
-      width: targetW,
-      height: targetH,
-      bgcolor: '#ffffff',
-      style: {
-        transform: `scale(${scale})`,
-        transformOrigin: 'top left',
-        width: `${baseW}px`,
-        height: `${baseH}px`,
-        margin: '0',
-        padding: '0',
-        boxShadow: 'none',
-        // garante que borders e backgrounds são capturados
-        borderRadius: '0',
-      },
-    });
+      // 2. Dimensões reais do .poster no DOM (sem transform de escala)
+      const baseW = el.offsetWidth;
+      const baseH = el.offsetHeight;
 
-    // 5. Monta PDF
-    const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
-    const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
+      // 3. Escala para 300 DPI
+      // A3 portrait: 297 × 420 mm → 3508 × 4961 px a 300 DPI
+      // A2 portrait: 420 × 594 mm → 4961 × 7016 px a 300 DPI
+      const targetW = st.paperSize === 'a2' ? 4961 : 3508;
+      const targetH = st.paperSize === 'a2' ? 7016 : 4961;
+      const scale = targetW / baseW;
 
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: [pageW_mm, pageH_mm],
-    });
+      // 4. Snapshot em alta resolução direto do .poster
+      const dataUrl = await (domToImage as any).toPng(el, {
+        width: targetW,
+        height: targetH,
+        bgcolor: '#ffffff',
+        style: {
+          // Aplica o scale dentro do snapshot — não herda o scale visual do paper-sheet
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+          width: `${baseW}px`,
+          height: `${baseH}px`,
+          margin: '0',
+          padding: '0',
+          boxShadow: 'none',
+          borderRadius: '0',
+        },
+      });
 
-    pdf.addImage(dataUrl, 'PNG', 0, 0, pageW_mm, pageH_mm);
-    pdf.save(`projeto80plus-${st.paperSize.toUpperCase()}-300dpi.pdf`);
-    toast.success('PDF gerado com sucesso!');
+      // 5. Monta o PDF com as dimensões exatas do papel
+      const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
+      const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
 
-  } catch (err) {
-    console.error('Export error:', err);
-    toast.error('Erro ao gerar PDF. Tente novamente.');
-  }
-}, [st.paperSize]);
-  
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [pageW_mm, pageH_mm],
+      });
+
+      pdf.addImage(dataUrl, 'PNG', 0, 0, pageW_mm, pageH_mm);
+      pdf.save(`projeto80plus-${st.paperSize.toUpperCase()}-300dpi.pdf`);
+      toast.success('PDF gerado com sucesso!');
+
+    } catch (err) {
+      console.error('Export error:', err);
+      toast.error('Erro ao gerar PDF. Tente novamente.');
+    }
+  }, [st.paperSize]);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
@@ -175,7 +174,6 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </section>
@@ -235,11 +233,11 @@ const Index = () => {
             <div className="price-tag">PDF Digital</div>
             <div className="price-name">Digital</div>
             <div className="price-val"><small>R$</small> 29</div>
-            <div className="price-note">Entrega imediata </div>
+            <div className="price-note">Entrega imediata</div>
             <ul className="price-features">
               <li>PDF em alta resolução (300 dpi)</li>
               <li>Personalizado com seus dados</li>
-              <li>Pronto para imprimir </li>
+              <li>Pronto para imprimir</li>
               <li>Tamanho A3 ou A2</li>
             </ul>
             <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e baixar</button>
@@ -272,6 +270,7 @@ const Index = () => {
 
         <div className="config-body">
           <div className="cfg-sidebar">
+
             {/* Identity */}
             <div className={`cfg-section${openSections.identity ? ' open' : ''}`}>
               <div className="cfg-section-head" onClick={() => toggleSection('identity')}>
@@ -288,10 +287,7 @@ const Index = () => {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !st.birth && "text-muted-foreground"
-                        )}
+                        className={cn("w-full justify-start text-left font-normal", !st.birth && "text-muted-foreground")}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {st.birth ? format(new Date(st.birth), "dd/MM/yyyy") : <span>Selecione a data</span>}
@@ -354,29 +350,29 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-swatches">
-                  {THEMES.map((t) =>
-                  <div
-                    key={t.id}
-                    className={`cfg-swatch${st.theme === t.id ? ' active' : ''}`}
-                    onClick={() => update({ theme: t.id })}>
-                    
+                  {THEMES.map((t) => (
+                    <div
+                      key={t.id}
+                      className={`cfg-swatch${st.theme === t.id ? ' active' : ''}`}
+                      onClick={() => update({ theme: t.id })}
+                    >
                       <div
-                      className="cfg-swatch-preview"
-                      style={{
-                        background: t.bg,
-                        borderBottom: `2px solid ${t.accent}`,
-                        display: 'flex',
-                        alignItems: 'flex-end',
-                        padding: '3px 4px',
-                        gap: 2
-                      }}>
-                      
+                        className="cfg-swatch-preview"
+                        style={{
+                          background: t.bg,
+                          borderBottom: `2px solid ${t.accent}`,
+                          display: 'flex',
+                          alignItems: 'flex-end',
+                          padding: '3px 4px',
+                          gap: 2
+                        }}
+                      >
                         <div style={{ width: '55%', height: 4, background: t.lived, borderRadius: 1 }} />
                         <div style={{ width: '30%', height: 4, background: t.accent, borderRadius: 1, opacity: 0.35 }} />
                       </div>
                       <div className="cfg-swatch-lbl">{t.label}</div>
                     </div>
-                  )}
+                  ))}
                 </div>
               </div>
             </div>
@@ -388,15 +384,15 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-pills">
-                  {Object.entries(TONES).map(([key, val]) =>
-                  <button
-                    key={key}
-                    className={`cfg-pill${st.tone === key ? ' active' : ''}`}
-                    onClick={() => update({ tone: key })}>
-                    
+                  {Object.entries(TONES).map(([key, val]) => (
+                    <button
+                      key={key}
+                      className={`cfg-pill${st.tone === key ? ' active' : ''}`}
+                      onClick={() => update({ tone: key })}
+                    >
                       {val.label}
                     </button>
-                  )}
+                  ))}
                 </div>
               </div>
             </div>
@@ -408,15 +404,15 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-lang-pills">
-                  {LANGS.map((l) =>
-                  <button
-                    key={l.id}
-                    className={`cfg-lang-pill${st.lang === l.id ? ' active' : ''}`}
-                    onClick={() => update({ lang: l.id })}>
-                    
+                  {LANGS.map((l) => (
+                    <button
+                      key={l.id}
+                      className={`cfg-lang-pill${st.lang === l.id ? ' active' : ''}`}
+                      onClick={() => update({ lang: l.id })}
+                    >
                       {l.label}
                     </button>
-                  )}
+                  ))}
                 </div>
               </div>
             </div>
@@ -429,18 +425,22 @@ const Index = () => {
                   <option value="a2">A2 (420 × 594 mm)</option>
                 </select>
               </div>
-              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Baixar PNG alta resolução</button>
-              
+              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>
+                ▶ Baixar PDF alta resolução
+              </button>
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
+
           </div>
 
+          {/* Poster preview */}
           <div className="cfg-preview">
             <div className="cfg-preview-hint">Pré-visualização ao vivo</div>
             <div className="paper-sheet" ref={paperRef}>
               <PosterPreview ref={posterRef} state={st} />
             </div>
           </div>
+
         </div>
       </section>
 
@@ -452,8 +452,8 @@ const Index = () => {
 
       {/* MODAL */}
       <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} posterState={st} />
-    </>);
-
+    </>
+  );
 };
 
 export default Index;
