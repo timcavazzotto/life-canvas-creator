@@ -218,7 +218,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pfs-lbl { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.12em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 6px; }
 .pfb-name { font-size: 15px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.05em; }
 .pfb-name sup { color: var(--p-accent, #1a4a2e); font-size: 8px; }
-.pfb-tag { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 2px; }
+.pfb-tag { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 6px; }
 
 /* FOOTER */
 .site-footer { padding: 48px; background: #1a1815; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
