@@ -14,6 +14,7 @@ export const TONES: Record<string, {
   note: Record<string, string>;
   tag: Record<string, string>;
   eyebrow: Record<string, string>;
+  ainda: Record<string, string>;
 }> = {
   filosofico: {
     label: 'Filosófico',
