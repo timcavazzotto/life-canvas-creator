@@ -84,12 +84,12 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       <div className="pg">
         <div className="grid-wrap">
           <div className="decade-col">
-            {decadeLabels.map((d, i) =>
+            {decadeItems.map((d) =>
             <div
-              key={i}
-              className={`dec-lbl${!d.isFirst && i > 0 ? ' dec-sep' : ''}`}
-              style={{ flex: d.rows }}>
-                {d.label}
+              key={d.year}
+              className={`dec-lbl${d.decSep ? ' dec-sep' : ''}`}
+              style={{ flex: 1 }}>
+                {d.label !== null ? d.label : ''}
               </div>
             )}
           </div>
