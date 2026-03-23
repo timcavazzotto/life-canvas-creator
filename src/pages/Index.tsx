@@ -20,19 +20,17 @@ const Index = () => {
   const paperRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(() => {
-    const { toast } = require('sonner');
-    // Add print class for correct page size
-    const printClass = st.paperSize === 'a2' ? 'print-a2' : 'print-a3';
-    document.body.classList.add(printClass);
+    import('sonner').then(({ toast }) => {
+      const printClass = st.paperSize === 'a2' ? 'print-a2' : 'print-a3';
+      document.body.classList.add(printClass);
 
-    toast('Use "Salvar como PDF" no diálogo de impressão', { duration: 5000 });
+      toast('Use "Salvar como PDF" no diálogo de impressão', { duration: 5000 });
 
-    // Small delay to let the class apply
-    setTimeout(() => {
-      window.print();
-      // Clean up after print dialog closes
-      document.body.classList.remove(printClass);
-    }, 100);
+      setTimeout(() => {
+        window.print();
+        document.body.classList.remove(printClass);
+      }, 100);
+    });
   }, [st.paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
