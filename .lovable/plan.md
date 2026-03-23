@@ -1,41 +1,26 @@
 
 
-## Plano: Corrigir alinhamento do header e bordas brancas no PDF
+## Plano: Alinhar verticalmente título e frase motivacional no header
 
-### Problemas visíveis no PDF
+### Problema
+O `.ph-right` usa `justify-content: flex-start` com `padding-top: 0`, fazendo a quote colar no topo absoluto do container. Enquanto isso, o título no bloco esquerdo fica abaixo do eyebrow (8px + gap 6px), criando um desnivelamento — a quote começa mais alta que o título.
 
-1. **Bordas brancas laterais**: O código de posicionamento no PDF calcula a proporção do canvas e centraliza a imagem se não bater exatamente com a página. Como a `.paper-sheet` já tem `aspect-ratio: 1/1.4142` (igual ao papel A-series), basta preencher a página inteira com `addImage(0, 0, pageW, pageH)` — sem cálculo de ratio.
+No preview isso é sutil, mas no PDF (rasterizado) fica evidente.
 
-2. **Subtítulo cortado/sobreposto**: O subtítulo ("4.160 semanas · 80 anos · uma vida ativa") fica parcialmente escondido atrás do título porque o `gap: 4px` no `.ph-left` é pequeno demais para a fonte de 42px do título. O `line-height: 1` do título não deixa espaço natural abaixo dele.
+### Solução
+Centralizar verticalmente o bloco direito em relação ao bloco esquerdo. O bloco esquerdo tem ~60px de altura total (eyebrow 8px + gap 6px + título 42px + gap 6px + subtitle 8px). A quote centralizada ficará alinhada visualmente com o título.
 
-3. **Título visualmente mais baixo que a frase motivacional**: O `.ph-right` usa `justify-content: center` + `align-self: stretch`, centralizando a quote no eixo vertical total do bloco esquerdo. Como o eyebrow é pequeno (8px), o centro visual fica abaixo do título. Solução: alinhar o `.ph-right` pelo topo (`flex-start`) em vez de centralizar.
-
-### Alterações
-
-**`src/App.css`**
+### Alterações em `src/App.css`
 
 | Seletor | De | Para |
 |---------|-----|------|
-| `.ph-left` (L182) | `gap: 4px` | `gap: 6px` |
-| `.ph-title` (L184) | `line-height: 1` | `line-height: 1; padding-bottom: 2px` |
-| `.ph-right` (L187) | `justify-content: center` | `justify-content: flex-start; padding-top: 0` |
+| `.ph` (L181) | `align-items: flex-start` | `align-items: center` |
+| `.ph-right` (L187) | `justify-content: flex-start; padding-top: 0` | `justify-content: center` |
 
-**`src/pages/Index.tsx`** (linhas 46-54)
+Apenas 2 propriedades alteradas. O `align-items: center` no `.ph` alinha ambos os blocos pelo centro vertical. O `justify-content: center` no `.ph-right` centraliza a quote+attr dentro do seu próprio bloco.
 
-Substituir o cálculo de ratio por preenchimento direto:
-```typescript
-pdf.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);
-```
-Remover as variáveis `canvasRatio`, `pageRatio`, `w`, `h`, `x`, `y`.
-
-### Resultado
-- PDF preenche a página sem bordas brancas
-- Subtítulo visível com espaçamento adequado abaixo do título
-- Frase motivacional alinha pelo topo com o eyebrow, na mesma altura visual que o título
-
-### Arquivos alterados
+### Arquivo alterado
 | Arquivo | Ação |
 |---------|------|
-| `src/App.css` | Ajustar gap, padding do título, alinhamento do bloco direito |
-| `src/pages/Index.tsx` | Simplificar addImage para preencher página inteira |
+| `src/App.css` | Centralizar verticalmente ambos os blocos do header |
 
