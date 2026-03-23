@@ -75,10 +75,10 @@ const Index = () => {
       // Aguarda dois frames para o browser recalcular o layout após a mudança de transform
       await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-      const canvas = await html2canvas(posterEl, {
+      const canvas = await html2canvas(paperEl, {
         scale,
-        useCORS: true,      // Permite carregar recursos cross-origin se existirem
-        allowTaint: false,  // Não contamina o canvas com recursos sem CORS
+        useCORS: true,
+        allowTaint: false,
         backgroundColor: bgColor,
         logging: false,
       });
