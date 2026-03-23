@@ -24,44 +24,90 @@ const Index = () => {
     const domToImage = await import('dom-to-image-more');
     const { jsPDF } = await import('jspdf');
 
-    // ✅ Captura o .poster diretamente — não o .paper-sheet que está escalado via CSS
     const el = posterRef.current;
     if (!el) return;
 
-    toast('Gerando PDF em alta resolução…', { duration: 4000 });
+    toast('Gerando PDF em alta resolução…', { duration: 8000 });
 
+    let clone: HTMLElement | null = null;
     try {
-      // 1. Aguarda todas as fontes (Google Fonts, DM Mono, etc.)
+      // 1. Aguarda fontes Google (DM Mono, Inter) estarem prontas
       await document.fonts.ready;
 
-      // 2. Dimensões reais do .poster no DOM (sem transform de escala)
-      const baseW = el.offsetWidth;
-      const baseH = el.offsetHeight;
+      // 2. Dimensões base absolutas — proporção A3 exata (297:420)
+      const BASE_W = 800;
+      const BASE_H = Math.round(BASE_W * 420 / 297); // 1128 px
 
-      // 3. Escala para 300 DPI — calcula pela largura e mantém proporção
-      // A3 portrait: 297 × 420 mm → 3508 × 4961 px a 300 DPI
-      // A2 portrait: 420 × 594 mm → 4961 × 7016 px a 300 DPI
+      // 3. Ler variáveis CSS do tema atual a partir do .poster real
+      const computed = getComputedStyle(el);
+      const cssVarNames = [
+        '--p-bg', '--p-ink', '--p-ink-mid', '--p-ink-faint',
+        '--p-border', '--p-accent', '--p-lived', '--p-lived-border',
+        '--p-future', '--p-rule',
+      ];
+      const cssVars: Record<string, string> = {};
+      for (const varName of cssVarNames) {
+        cssVars[varName] = computed.getPropertyValue(varName).trim();
+      }
+      const bgColor = cssVars['--p-bg'] || '#ffffff';
+
+      // 4. Criar clone isolado fora do viewport com dimensões absolutas
+      clone = el.cloneNode(true) as HTMLElement;
+
+      // Posição fora da tela
+      clone.style.position = 'fixed';
+      clone.style.top = '-9999px';
+      clone.style.left = '-9999px';
+      clone.style.zIndex = '-1';
+
+      // Dimensões absolutas (elimina dependência do paper-sheet pai)
+      clone.style.width = `${BASE_W}px`;
+      clone.style.height = `${BASE_H}px`;
+      clone.style.minHeight = `${BASE_H}px`;
+      clone.style.maxHeight = `${BASE_H}px`;
+
+      // Aparência limpa
+      clone.style.visibility = 'hidden';
+      clone.style.backgroundColor = bgColor;
+      clone.style.margin = '0';
+      clone.style.padding = '';
+      clone.style.boxShadow = 'none';
+      clone.style.borderRadius = '0';
+      clone.style.transform = 'none';
+      clone.style.overflow = 'hidden';
+
+      // Aplicar variáveis CSS do tema inline para que dom-to-image as resolva
+      for (const [k, v] of Object.entries(cssVars)) {
+        clone.style.setProperty(k, v);
+      }
+
+      document.body.appendChild(clone);
+
+      // 5. Escala para resolução alvo (300 DPI)
+      // A3: 3508 × 4961 px | A2: 4961 × 7016 px
       const targetW = st.paperSize === 'a2' ? 4961 : 3508;
-      const scale = targetW / baseW;
-      const targetH = Math.round(baseH * scale);
+      const targetH = st.paperSize === 'a2' ? 7016 : 4961;
+      const scale = targetW / BASE_W;
 
-      // 4. Snapshot em alta resolução direto do .poster
-      const dataUrl = await (domToImage as any).toPng(el, {
+      // 6. Captura em alta resolução via clone isolado
+      const dataUrl = await (domToImage as any).toPng(clone, {
         width: targetW,
         height: targetH,
-        bgcolor: '#ffffff',
+        bgcolor: bgColor,
         style: {
           transform: `scale(${scale})`,
           transformOrigin: 'top left',
-          width: `${baseW}px`,
-          height: `${baseH}px`,
-          margin: '0',
-          boxShadow: 'none',
-          borderRadius: '0',
+          width: `${BASE_W}px`,
+          height: `${BASE_H}px`,
+          visibility: 'visible',
         },
       });
 
-      // 5. Monta o PDF com as dimensões exatas do papel
+      // 7. Remover clone após captura
+      document.body.removeChild(clone);
+      clone = null;
+
+      // 8. Montar PDF com dimensões exatas do papel
       const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
       const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
 
@@ -76,6 +122,10 @@ const Index = () => {
       toast.success('PDF gerado com sucesso!');
 
     } catch (err) {
+      // Garantir remoção do clone em caso de erro
+      if (clone && clone.parentNode) {
+        clone.parentNode.removeChild(clone);
+      }
       console.error('Export error:', err);
       toast.error('Erro ao gerar PDF. Tente novamente.');
     }
