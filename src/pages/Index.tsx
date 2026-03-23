@@ -38,7 +38,9 @@ const Index = () => {
     const imgData = canvas.toDataURL('image/png');
     const usableW = pageW - margin * 2;
     const usableH = pageH - margin * 2;
-    const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
+    const ratioW = usableW / canvas.width;
+    const ratioH = usableH / canvas.height;
+    const ratio = (canvas.height * ratioW <= usableH) ? ratioW : ratioH;
     const w = canvas.width * ratio;
     const h = canvas.height * ratio;
     pdf.addImage(imgData, 'PNG', (pageW - w) / 2, margin, w, h);
