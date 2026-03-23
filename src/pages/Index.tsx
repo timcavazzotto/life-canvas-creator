@@ -242,11 +242,35 @@ const Index = () => {
                   <input type="text" placeholder="Ex: Ana Souza" maxLength={30} value={st.name} onChange={(e) => update({ name: e.target.value })} />
                 </div>
                 <div className="cfg-field">
-                  <label>Ano de nascimento</label>
-                  <input type="number" placeholder="Ex: 1985" min={1920} max={2010} onChange={(e) => {
-                    const v = parseInt(e.target.value);
-                    update({ birth: v >= 1920 && v <= 2010 ? v : null });
-                  }} />
+                  <label>Data de nascimento</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !st.birth && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {st.birth ? format(new Date(st.birth), "dd/MM/yyyy") : <span>Selecione a data</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={st.birth ? new Date(st.birth) : undefined}
+                        onSelect={(date) => update({ birth: date ? format(date, 'yyyy-MM-dd') : null })}
+                        disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                        captionLayout="dropdown-buttons"
+                        fromYear={1920}
+                        toYear={new Date().getFullYear()}
+                        locale={ptBR}
+                      />
+                    </PopoverContent>
+                  </Popover>
                 </div>
                 <div className="cfg-field">
                   <label>Expectativa de vida</label>
