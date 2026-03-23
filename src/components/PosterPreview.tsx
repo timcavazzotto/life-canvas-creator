@@ -47,11 +47,13 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
   return (
     <div ref={ref} className={`poster ${st.theme}`}>
       <div className="ph">
-        <div className="ph-eyebrow">{t.eyebrow[l]}</div>
-        <div className="ph-title">PROJETO 80<span style={{ fontSize: '0.6em', verticalAlign: 'baseline', marginLeft: '0.05em' }}>+</span></div>
-        <div className="ph-subtitle">{total.toLocaleString('pt-BR')} {wkLabel} · {st.expect} {yr} · {al}</div>
+        <div>
+          <div className="ph-eyebrow">{t.eyebrow[l]}</div>
+          <div className="ph-title">PROJETO 80<span style={{ fontSize: '0.6em', verticalAlign: 'baseline', marginLeft: '0.05em' }}>+</span></div>
+          <div className="ph-subtitle">{total.toLocaleString('pt-BR')} {wkLabel} · {st.expect} {yr} · {al}</div>
+        </div>
         <div className="ph-right">
-          <div className="ph-quote">{t.quote[l]}</div>
+          <div className="ph-quote my-[13px]">{t.quote[l]}</div>
           <div className="ph-attr">{t.attr[l]}</div>
         </div>
       </div>
@@ -75,7 +77,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       <div className="pf-row" style={{ marginTop: -10, marginBottom: 14 }}>
           <div className="pf">
             <span className="pf-label">{lb.dedic}</span>
-            <div className="pf-val">{st.dedic}</div>
+            <div className="pf-val italic">{st.dedic}</div>
           </div>
         </div>
       }
@@ -83,11 +85,15 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       <div className="pg">
         <div className="grid-wrap">
           <div className="decade-col">
-          {decadeLabels.map((d, i) =>
+            {decadeLabels.map((d, i) =>
             <div
               key={i}
-              className={`dec-lbl${!d.isFirst ? ' dec-sep' : ''}`}
-              style={{ flex: d.rows }}>
+              className="dec-lbl"
+              style={{
+                height: `${d.rows * 10.3 + (d.isFirst ? 0 : 4)}px`,
+                paddingTop: d.isFirst ? 0 : '4px'
+              }}>
+              
                 {d.label}
               </div>
             )}

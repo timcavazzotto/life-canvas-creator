@@ -14,103 +14,35 @@ import { cn } from '@/lib/utils';
 
 const Index = () => {
   const [st, setSt] = useState<PosterState>({
-    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt', paperSize: 'a3'
+    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
   const posterRef = useRef<HTMLDivElement>(null);
-  const paperRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
+    if (!posterRef.current) return;
     const { toast } = await import('sonner');
-    // html2canvas lê getComputedStyle() em vez de serializar SVG:
-    // - CSS variables (--p-bg, --p-ink…) são resolvidas pelo browser antes da captura
-    // - Fontes Google já carregadas (document.fonts.ready) são usadas diretamente
-    // - Sem fetch de fontes externas → sem CORS, sem falha de rede
-    const html2canvas = (await import('html2canvas')).default;
-    const { jsPDF } = await import('jspdf');
-
-    const posterEl = posterRef.current;
-    const paperEl = paperRef.current;
-    if (!posterEl || !paperEl) return;
-
-    toast('Gerando PDF…', { duration: 15000 });
-
-    // Overlay branco oculta o flash visual causado pela remoção temporária do transform
-    const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:9998;pointer-events:none;';
-    document.body.appendChild(overlay);
-
-    // Salva estilos inline atuais (podem estar vazios — CSS class assume o controle)
-    const savedTransform = paperEl.style.transform;
-    const savedMarginBottom = paperEl.style.marginBottom;
-
-    try {
-      // Aguarda DM Mono e Inter (Google Fonts) estarem prontas
-      await document.fonts.ready;
-
-      // Dimensões base: .paper-sheet tem width:800px e aspect-ratio:297/420
-      // Height = 800 × 420/297 ≈ 1131 px
-      const BASE_W = 800;
-      const targetW = st.paperSize === 'a2' ? 4961 : 3508;
-      const scale = targetW / BASE_W; // A3: ~4.385 | A2: ~6.201
-
-      // Lê a cor de fundo ANTES de remover o transform (resolve var(--p-bg) via computed style)
-      const bgColor = window.getComputedStyle(posterEl).backgroundColor || '#ffffff';
-
-      console.log('[PDF Export]', {
-        paperSize: st.paperSize,
-        BASE_W,
-        posterOffsetW: posterEl.offsetWidth,
-        posterOffsetH: posterEl.offsetHeight,
-        targetW,
-        scale,
-        bgColor,
-      });
-
-      // Remove o transform do .paper-sheet para que o .poster renderize em tamanho real (1:1)
-      // Isso é necessário porque html2canvas captura o elemento em suas coordenadas de layout reais.
-      // Com scale(0.68) no pai, o .poster apareceria a 68% do tamanho → captura corrompida.
-      paperEl.style.transform = 'none';
-      paperEl.style.marginBottom = '0';
-
-      // Aguarda dois frames para o browser recalcular o layout após a mudança de transform
-      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-      const canvas = await html2canvas(paperEl, {
-        scale,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: bgColor,
-        logging: false,
-      });
-
-      // Restaura o transform antes de qualquer throw
-      paperEl.style.transform = savedTransform;
-      paperEl.style.marginBottom = savedMarginBottom;
-      document.body.removeChild(overlay);
-
-      const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
-      const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: [pageW_mm, pageH_mm],
-      });
-
-      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageW_mm, pageH_mm);
-      pdf.save(`projeto80plus-${st.paperSize.toUpperCase()}-300dpi.pdf`);
-      toast.success('PDF gerado com sucesso!');
-
-    } catch (err) {
-      // Garante restauração mesmo em caso de erro
-      paperEl.style.transform = savedTransform;
-      paperEl.style.marginBottom = savedMarginBottom;
-      if (overlay.parentNode) document.body.removeChild(overlay);
-      console.error('[PDF Export] Erro:', err);
-      toast.error('Erro ao gerar PDF. Tente novamente.');
-    }
-  }, [st.paperSize]);
-
+    toast('Gerando PDF…');
+    const el = posterRef.current;
+    const origBoxShadow = el.style.boxShadow;
+    el.style.boxShadow = 'none';
+    const { default: html2canvas } = await import('html2canvas');
+    const { default: jsPDF } = await import('jspdf');
+    const canvas = await html2canvas(el, { scale: 4, useCORS: true });
+    el.style.boxShadow = origBoxShadow;
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a3' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const usableW = pageW - margin * 2;
+    const usableH = pageH - margin * 2;
+    const ratio = Math.min(usableW / canvas.width, usableH / canvas.height);
+    const w = canvas.width * ratio;
+    const h = canvas.height * ratio;
+    pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
+    pdf.save('projeto80plus.pdf');
+    toast.success('PDF baixado!');
+  }, []);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
@@ -202,6 +134,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
+            
           </div>
         </div>
       </section>
@@ -261,11 +194,11 @@ const Index = () => {
             <div className="price-tag">PDF Digital</div>
             <div className="price-name">Digital</div>
             <div className="price-val"><small>R$</small> 29</div>
-            <div className="price-note">Entrega imediata</div>
+            <div className="price-note">Entrega imediata </div>
             <ul className="price-features">
               <li>PDF em alta resolução (300 dpi)</li>
               <li>Personalizado com seus dados</li>
-              <li>Pronto para imprimir</li>
+              <li>Pronto para imprimir </li>
               <li>Tamanho A3 ou A2</li>
             </ul>
             <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e baixar</button>
@@ -293,12 +226,11 @@ const Index = () => {
             <div className="config-header-title">Crie seu PROJETO 80<span style={{ fontSize: '0.7em', color: 'var(--accent)' }}>+</span></div>
             <div className="config-header-sub">Personalize ao vivo · o painel atualiza em tempo real</div>
           </div>
-          <button className="nav-cta" onClick={downloadPDF}>▶ Baixar PDF alta resolução</button>
+          <button className="nav-cta" onClick={downloadPDF}>▶ Quero meu painel</button>
         </div>
 
         <div className="config-body">
           <div className="cfg-sidebar">
-
             {/* Identity */}
             <div className={`cfg-section${openSections.identity ? ' open' : ''}`}>
               <div className="cfg-section-head" onClick={() => toggleSection('identity')}>
@@ -315,7 +247,10 @@ const Index = () => {
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
-                        className={cn("w-full justify-start text-left font-normal", !st.birth && "text-muted-foreground")}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !st.birth && "text-muted-foreground"
+                        )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {st.birth ? format(new Date(st.birth), "dd/MM/yyyy") : <span>Selecione a data</span>}
@@ -378,29 +313,29 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-swatches">
-                  {THEMES.map((t) => (
-                    <div
-                      key={t.id}
-                      className={`cfg-swatch${st.theme === t.id ? ' active' : ''}`}
-                      onClick={() => update({ theme: t.id })}
-                    >
+                  {THEMES.map((t) =>
+                  <div
+                    key={t.id}
+                    className={`cfg-swatch${st.theme === t.id ? ' active' : ''}`}
+                    onClick={() => update({ theme: t.id })}>
+                    
                       <div
-                        className="cfg-swatch-preview"
-                        style={{
-                          background: t.bg,
-                          borderBottom: `2px solid ${t.accent}`,
-                          display: 'flex',
-                          alignItems: 'flex-end',
-                          padding: '3px 4px',
-                          gap: 2
-                        }}
-                      >
+                      className="cfg-swatch-preview"
+                      style={{
+                        background: t.bg,
+                        borderBottom: `2px solid ${t.accent}`,
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        padding: '3px 4px',
+                        gap: 2
+                      }}>
+                      
                         <div style={{ width: '55%', height: 4, background: t.lived, borderRadius: 1 }} />
                         <div style={{ width: '30%', height: 4, background: t.accent, borderRadius: 1, opacity: 0.35 }} />
                       </div>
                       <div className="cfg-swatch-lbl">{t.label}</div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -412,15 +347,15 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-pills">
-                  {Object.entries(TONES).map(([key, val]) => (
-                    <button
-                      key={key}
-                      className={`cfg-pill${st.tone === key ? ' active' : ''}`}
-                      onClick={() => update({ tone: key })}
-                    >
+                  {Object.entries(TONES).map(([key, val]) =>
+                  <button
+                    key={key}
+                    className={`cfg-pill${st.tone === key ? ' active' : ''}`}
+                    onClick={() => update({ tone: key })}>
+                    
                       {val.label}
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -432,43 +367,30 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-lang-pills">
-                  {LANGS.map((l) => (
-                    <button
-                      key={l.id}
-                      className={`cfg-lang-pill${st.lang === l.id ? ' active' : ''}`}
-                      onClick={() => update({ lang: l.id })}
-                    >
+                  {LANGS.map((l) =>
+                  <button
+                    key={l.id}
+                    className={`cfg-lang-pill${st.lang === l.id ? ' active' : ''}`}
+                    onClick={() => update({ lang: l.id })}>
+                    
                       {l.label}
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="cfg-cta">
-              <div className="cfg-field" style={{ marginBottom: 8 }}>
-                <label>Formato do papel</label>
-                <select value={st.paperSize} onChange={(e) => update({ paperSize: e.target.value as 'a2' | 'a3' })}>
-                  <option value="a3">A3 (297 × 420 mm)</option>
-                  <option value="a2">A2 (420 × 594 mm)</option>
-                </select>
-              </div>
-              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>
-                ▶ Baixar PDF alta resolução
-              </button>
+              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Quero meu painel</button>
+              
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
-
           </div>
 
-          {/* Poster preview */}
           <div className="cfg-preview">
             <div className="cfg-preview-hint">Pré-visualização ao vivo</div>
-            <div className="paper-sheet" ref={paperRef}>
-              <PosterPreview ref={posterRef} state={st} />
-            </div>
+            <PosterPreview ref={posterRef} state={st} />
           </div>
-
         </div>
       </section>
 
@@ -480,8 +402,8 @@ const Index = () => {
 
       {/* MODAL */}
       <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} posterState={st} />
-    </>
-  );
+    </>);
+
 };
 
 export default Index;
