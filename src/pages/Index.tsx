@@ -375,6 +375,19 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Paper Size */}
+            <div className="cfg-section open">
+              <div className="cfg-section-head">
+                <span className="cfg-lbl">Formato do papel</span>
+              </div>
+              <div className="cfg-body-inner" style={{ display: 'flex' }}>
+                <div className="cfg-pills">
+                  <button className={`cfg-pill${paperSize === 'a3' ? ' active' : ''}`} onClick={() => setPaperSize('a3')}>A3 (297×420mm)</button>
+                  <button className={`cfg-pill${paperSize === 'a2' ? ' active' : ''}`} onClick={() => setPaperSize('a2')}>A2 (420×594mm)</button>
+                </div>
+              </div>
+            </div>
+
             <div className="cfg-cta">
               <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Quero meu painel</button>
               
