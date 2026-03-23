@@ -23,6 +23,7 @@ export const TONES: Record<string, {
     note: { pt: 'Preencha com caneta as semanas em que você se moveu.\n≥ 150 min de atividade moderada = semana ativa (OMS).', en: 'Mark the weeks you moved.\n≥ 150 min of moderate activity = active week (WHO).', es: 'Marca las semanas que te moviste.\n≥ 150 min de actividad moderada = semana activa (OMS).' },
     tag: { pt: 'Mova-se enquanto há tempo', en: 'Move while there is time', es: 'Muévete mientras hay tiempo' },
     eyebrow: { pt: 'Painel da vida em movimento', en: 'Life in motion panel', es: 'Panel de vida en movimiento' },
+    ainda: { pt: 'Por conquistar', en: 'Yet to conquer', es: 'Por conquistar' },
   },
   otimista: {
     label: 'Otimista',
