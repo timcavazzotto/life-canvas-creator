@@ -1,37 +1,23 @@
 
 
-## Plano: Conteúdo proporcional dentro da folha real
+## Plano: Restaurar células quadradas no grid
 
 ### Problema
-A `.paper-sheet` agora tem a proporção correta do papel (1:√2), mas o conteúdo interno do poster usa tamanhos fixos em px (título 42px, textos 13px, paddings de 28px, etc.). No `max-width: 560px`, a altura da folha fica ~792px — insuficiente para acomodar todo esse conteúdo fixo. Resultado: grid achatado e textos cortados pelo `overflow: hidden`.
-
-### Causa raiz
-O conteúdo foi desenhado para ~780px de largura. A 560px, o conteúdo não cabe na altura proporcional da folha.
+Quando migramos para o modelo de "folha real", o `.year-rows` recebeu `flex: 1` para preencher o espaço vertical da folha. Isso estica as linhas do grid verticalmente, e como `.wk` não tem mais `aspect-ratio: 1`, as células ficam achatadas (retangulares).
 
 ### Solução
-Combinar a folha real com escala visual:
+Adicionar `aspect-ratio: 1` de volta às células `.wk` para garantir que sejam quadradas. Remover `flex: 1` do `.year-rows` para que o grid não seja esticado — ele terá sua altura natural baseada nas células quadradas.
 
-1. **`.paper-sheet`** — largura fixa de 800px (onde o conteúdo cabe naturalmente na proporção A-series)
-2. **Preview na tela** — escalar a folha com `transform: scale()` + `transform-origin: top center` para caber na área de preview
-3. **PDF** — capturar a folha no tamanho real (800px), sem transform. Como a proporção já é a do papel, a imagem preenche a página inteira
+### Alterações em `src/App.css`
 
-### Diferença vs tentativas anteriores
-Antes: poster com largura fixa + transform, sem folha → proporção errada no PDF.
-Agora: **folha com proporção correta** + poster dentro dela no tamanho natural → PDF correto.
+1. **`.year-rows`** (linha 201): remover `flex: 1`
+2. **`.wk`** (linha 204): adicionar `aspect-ratio: 1`
+3. **`.pg`** (linha 194): remover `flex: 1` — o grid não deve esticar para preencher a folha
 
-### Alterações
+O grid terá seu tamanho natural. O espaço restante na folha ficará como margem inferior, o que é visualmente aceitável e mantém a proporção correta.
 
-**`src/App.css`**
-- `.paper-sheet`: trocar `max-width: 560px` por `width: 800px`, adicionar `transform: scale(0.7)`, `transform-origin: top center`, `margin-bottom` negativo para compensar espaço visual
-- Mobile: `transform: scale(0.42)` na `.paper-sheet`
-- `.poster`: remover `overflow: hidden` (não é mais necessário com o tamanho correto)
-
-**`src/pages/Index.tsx`**
-- No `downloadPDF`: antes do `html2canvas`, temporariamente remover `transform` e `margin-bottom` da `.paper-sheet`, capturar, restaurar
-
-### Resultado
-- Preview mostra a folha real, escalada para caber na tela
-- Conteúdo não é cortado nem achatado
-- PDF preenche a folha inteira sem bordas laterais
-- Grid e textos mantêm suas proporções originais
+### Arquivos
+| Arquivo | Ação |
+|---------|------|
+| `src/App.css` | Restaurar `aspect-ratio: 1` em `.wk`, remover `flex: 1` de `.year-rows` e `.pg` |
 
