@@ -333,7 +333,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
   .config-body { flex-direction: column; }
   .cfg-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); overflow-y: visible; }
   .cfg-preview { width: 100%; overflow-x: hidden; padding: 16px 8px 32px; display: flex; flex-direction: column; align-items: center; }
-  .paper-sheet { max-width: 100%; }
+  .paper-sheet { transform: scale(0.42); transform-origin: top center; margin-bottom: -660px; }
   .poster { padding: 20px 22px 16px; }
 
   /* FOOTER */
