@@ -1,89 +1,60 @@
 
-## Plano: corrigir de forma definitiva o header do PDF e remover o esticamento lateral
+Plano: estabilizar o poster para que preview e PDF usem a mesma geometria e o header tenha alinhamento estrutural
 
-### Diagnóstico
-O problema agora está em 2 pontos diferentes:
+Diagnóstico da varredura
+- O problema não é um “ajuste fino” isolado: hoje o layout do header ainda depende de compensações visuais (`padding-top: 14px` no bloco direito e tipografia grande no título), então o navegador e o raster do PDF não leem esse alinhamento da mesma forma.
+- O PDF também oscila entre 3 comportamentos ruins: preencher tudo, preservar proporção com borda, ou cobrir com corte. Isso acontece porque a captura não parte de uma área de exportação rigidamente controlada.
+- A seleção A2/A3 hoje muda a página do PDF, mas não define uma malha de exportação própria; isso facilita diferença visual entre preview e arquivo final.
 
-1. **Título mais baixo no PDF**
-   - Hoje o header usa `.ph { align-items: center }` e `.ph-right { justify-content: center }`.
-   - Isso centraliza o bloco direito pela **altura total** do lado esquerdo (eyebrow + título + subtítulo), então a frase motivacional não acompanha a linha real do título.
-   - Resultado: no PDF o título parece mais baixo, mesmo quando a prévia parece “quase certa”.
+O que vou implementar
+1. Separar “preview visual” de “área real de exportação”
+- Em `src/pages/Index.tsx`, manter a moldura de preview só para tela.
+- Capturar no PDF apenas a área interna do poster, sem depender do wrapper escalado/sombreado.
+- Isso elimina a diferença entre o que é styling de preview e o que realmente vira PDF.
 
-2. **Poster esticado lateralmente**
-   - Em `src/pages/Index.tsx`, o PDF voltou a usar `pdf.addImage(..., 0, 0, pageW, pageH)`.
-   - Isso força a imagem a preencher a página inteira, mesmo se o canvas tiver proporção ligeiramente diferente.
-   - Resultado: o PDF perde proporção e parece alargado.
+2. Tornar o tamanho do artboard determinístico para A2 e A3
+- Em `src/App.css` e `src/pages/Index.tsx`, definir uma área de poster com proporção A-series exata e dimensões controladas.
+- A2 e A3 continuarão com o mesmo layout visual, mas a exportação passará a usar geometria/resolução coerentes com a seleção.
+- Com isso, o `addImage` poderá preencher a página sem esticar lateralmente, sem borda branca e sem corte.
 
-### Solução
-Parar de alinhar o header “por centro geral” e passar a alinhar a frase motivacional **pela linha do título**.  
-Ao mesmo tempo, restaurar a exportação com preservação de proporção, mas corrigindo a origem para evitar bordas.
-
-### O que implementar
-
-#### 1. Reestruturar o header com grid
-Em `src/App.css`:
-- trocar `.ph` de flex para **CSS Grid**
-- usar 2 colunas:
-  - esquerda: conteúdo principal
-  - direita: bloco da frase
-- usar 3 linhas visuais:
-  - eyebrow
-  - título
-  - subtítulo
-
-Exemplo de comportamento:
+3. Refatorar o header para alinhamento estrutural
+- Em `src/App.css`, substituir compensações atuais do header por um grid explícito:
 ```text
 [ eyebrow   ][          ]
 [ título    ][ frase    ]
 [ subtítulo ][ autoria  ]
 ```
+- A frase motivacional ficará ancorada na linha do título, não “aproximada” por padding.
+- Remover hacks de alinhamento vertical/horizontal do bloco direito.
 
-Isso resolve a causa principal: a frase passa a começar na altura do título, não no centro do bloco inteiro.
+4. Limpar a tipografia do título
+- Em `src/components/PosterPreview.tsx`, isolar melhor o `+` do título para não distorcer o alinhamento óptico.
+- Em `src/App.css`, zerar margens implícitas e controlar tudo por `gap`, `line-height` e um único microajuste óptico, se ainda necessário.
+- Objetivo: eyebrow, título e subtítulo compartilharem a mesma borda esquerda visual.
 
-#### 2. Posicionar o bloco direito na linha do título
-Em `src/App.css`:
-- `.ph-right` deve ocupar a área da direita, começando na **segunda linha** do grid
-- remover o `justify-content: center`
-- remover compensações herdadas de alinhamento global
+5. Recalibrar a exportação para ficar igual ao preview
+- Em `src/pages/Index.tsx`, parar de alternar entre lógica de “contain” e “cover”.
+- A exportação passará a usar uma origem com proporção já correta; por isso o PDF poderá ocupar a folha inteira com fidelidade.
+- Também vou amarrar a captura a um tamanho fixo antes do `html2canvas`, para reduzir diferença de renderização.
 
-Assim o bloco da frase fica ancorado ao título, tanto na tela quanto no PDF.
+Arquivos envolvidos
+- `src/pages/Index.tsx`
+- `src/App.css`
+- `src/components/PosterPreview.tsx`
 
-#### 3. Limpar offsets que atrapalham a leitura óptica
-Em `src/App.css`:
-- revisar `.ph-title`
-- remover dependência de compensações verticais artificiais
-- manter no máximo **um ajuste óptico horizontal pequeno** no título, se ainda parecer recuado
+Resultado esperado
+- PDF realmente em A2 ou A3 conforme seleção
+- sem esticamento lateral
+- sem borda branca externa
+- sem corte
+- header com título, subtítulo e frase motivacional alinhados de forma consistente
+- preview e PDF visualmente muito mais próximos
 
-Objetivo:
-- eyebrow, título e subtítulo com a mesma borda esquerda visual
-- sem depender de centralização do container inteiro
-
-#### 4. Corrigir a exportação do PDF sem esticar
-Em `src/pages/Index.tsx`:
-- remover o preenchimento forçado `pageW, pageH`
-- voltar a calcular largura/altura com base na proporção real do canvas
-- centralizar apenas se houver diferença mínima
-
-#### 5. Corrigir a origem da proporção do poster
-Em `src/App.css`:
-- ajustar `.paper-sheet` para usar uma proporção A-series mais precisa
-- isso reduz a diferença entre preview/canvas/página e evita o reaparecimento das bordas quando o PDF preservar proporção
-
-### Arquivos a alterar
-| Arquivo | Ação |
-|---|---|
-| `src/App.css` | refatorar o header para grid, alinhar a frase na linha do título, ajustar proporção da folha |
-| `src/pages/Index.tsx` | restaurar exportação com preservação de proporção do canvas |
-
-### Resultado esperado
-- o título deixa de ficar “mais baixo” no PDF
-- a frase motivacional alinha pela mesma faixa vertical do título
-- eyebrow, título e subtítulo ficam coerentes lateralmente
-- o PDF volta a manter a proporção correta, sem aparência esticada
-
-### Ajuste mais eficiente
-Em vez de continuar movendo milímetros no bloco direito ou no título, a correção precisa ser:
-1. **estrutural no header**
-2. **proporcional no export**
-
-É isso que estabiliza preview e PDF ao mesmo tempo.
+Critério de validação
+- gerar A3 e A2
+- comparar preview vs PDF
+- conferir:
+  - bordas externas
+  - proporção do poster
+  - alinhamento do título com a frase
+  - alinhamento lateral entre eyebrow, título e subtítulo
