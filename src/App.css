@@ -199,17 +199,17 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pf-label { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; display: block; margin-bottom: 4px; }
 .pf-val { font-size: 15px; color: var(--p-ink, #1e1408); border-bottom: 1px solid var(--p-rule, #1e1408); padding-bottom: 8px; min-height: 20px; opacity: 0.9; }
 .pf-val.italic { font-size: 13px; color: var(--p-ink-mid, #4a3c28); }
-.pg { margin-bottom: 13px; display: flex; flex-direction: column; }
-.grid-wrap { display: flex; flex: 1; }
+.pg { margin-bottom: 13px; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.grid-wrap { display: flex; flex: 1; min-height: 0; }
 .decade-col { width: 20px; flex-shrink: 0; margin-right: 6px; display: flex; flex-direction: column; }
 .dec-lbl { font-family: 'DM Mono', monospace; font-size: 6px; color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1; }
-.grid-main { flex: 1; display: flex; flex-direction: column; }
+.grid-main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .month-row { display: grid; grid-template-columns: repeat(52, 1fr); gap: 1px; margin-bottom: 4px; }
 .m-lbl { font-family: 'DM Mono', monospace; font-size: 5.5px; color: var(--p-ink-faint, #9a9488); text-align: center; text-transform: uppercase; }
-.year-rows { display: flex; flex-direction: column; gap: 1px; }
-.yr { display: grid; grid-template-columns: repeat(52, 1fr); gap: 1px; }
+.year-rows { display: flex; flex-direction: column; gap: 1px; flex: 1; min-height: 0; }
+.yr { display: grid; grid-template-columns: repeat(52, 1fr); gap: 1px; flex: 1; min-height: 0; }
 .yr.dec-sep { margin-top: 4px; }
-.wk { border: 1px solid var(--p-border, #c8c4b8); background: transparent; border-radius: 0.5px; aspect-ratio: 1; }
+.wk { border: 1px solid var(--p-border, #c8c4b8); background: transparent; border-radius: 0.5px; min-height: 0; }
 .wk.lived { background: var(--p-lived, #b8d8c0); border-color: var(--p-lived-border, #8ab898); }
 .wk.future { border-color: var(--p-future, #c8c4b8); border-style: dashed; }
 .pl { display: flex; justify-content: space-between; align-items: center; padding-top: 11px; border-top: 0.75px solid var(--p-rule, #1e1408); margin-bottom: 12px; }
