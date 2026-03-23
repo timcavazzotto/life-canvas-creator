@@ -179,11 +179,12 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .poster.theme-azul { --p-bg: #f2f6fa; --p-ink: #081828; --p-ink-mid: #183050; --p-ink-faint: #7098b8; --p-border: #90b8d8; --p-accent: #104878; --p-lived: #a8c8e8; --p-lived-border: #80a8d0; --p-future: #90b8d8; --p-rule: #081828; background: var(--p-bg); }
 
 .ph { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 16px; border-bottom: 1.5px solid var(--p-rule, #1e1408); margin-bottom: 16px; }
-.ph-eyebrow { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-bottom: 2px; }
-.ph-title { font-size: 42px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.04em; line-height: 1; padding-bottom: 2px; }
+.ph-left { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.ph-eyebrow { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.2em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; }
+.ph-title { font-size: 42px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.04em; line-height: 1; margin-left: -2px; }
 .ph-title sup { font-size: 20px; color: var(--p-accent, #1a4a2e); vertical-align: super; }
-.ph-subtitle { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.16em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 8px; }
-.ph-right { text-align: right; max-width: 260px; padding-top: 2px; }
+.ph-subtitle { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.16em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; }
+.ph-right { text-align: right; max-width: 260px; display: flex; flex-direction: column; justify-content: center; align-self: stretch; }
 .ph-quote { font-size: 12px; line-height: 1.75; color: var(--p-ink-mid, #4a3c28); }
 .ph-attr { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 4px; }
 .pf-row { display: flex; gap: 18px; margin-bottom: 16px; }
