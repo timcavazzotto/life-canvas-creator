@@ -1,61 +1,36 @@
 
 
-## Plano: Portal do Afiliado com Login e Controle de Pagamentos
+## Plano: Trocar ano de nascimento por data completa
 
-### Resumo
-Criar um portal onde cada afiliada faz login com email/senha e visualiza suas vendas, comissões e saldo pendente. O admin marca comissões como pagas no painel, atualizando o saldo.
+### Problema
+Hoje o campo `birth` armazena apenas o ano (ex: 1976), e o cálculo assume 1 de janeiro. Isso gera imprecisão — alguém nascido em dezembro de 1976 aparece com quase 1 ano a mais de semanas vividas. Além disso, para presentes de aniversário, a data exata é importante.
 
-### Alterações no banco de dados
+### O que será feito
 
-1. **Tabela `commission_payments`** — registra cada pagamento feito pelo admin
-   - `id`, `affiliate_id` (FK → affiliates), `amount_cents`, `paid_at`, `notes`, `created_by` (user_id do admin)
-   - RLS: admin pode INSERT/SELECT; afiliada pode SELECT apenas os seus
+1. **Alterar `PosterState.birth`** de `number | null` para `string | null` (formato `YYYY-MM-DD`)
 
-2. **Coluna `user_id` na tabela `affiliates`** — vincula a afiliada a uma conta de usuário
-   - `user_id uuid REFERENCES auth.users(id)` (nullable inicialmente, preenchido quando a afiliada se cadastra)
-   - RLS nova: afiliada pode SELECT o próprio registro (`user_id = auth.uid()`)
+2. **Trocar o input** no configurador (`Index.tsx`):
+   - Substituir o `<input type="number">` de ano por um date picker (usando Popover + Calendar do shadcn)
+   - Exibir a data formatada no poster (dia/mês/ano)
 
-3. **Campo `commission_paid` na tabela `orders`** — boolean, default false
-   - Admin marca quando a comissão daquele pedido já foi paga
-   - RLS: já coberta pelas policies existentes de UPDATE para admin
+3. **Ajustar o cálculo de semanas vividas** em `PosterPreview.tsx` e `Index.tsx`:
+   - Usar a data completa para calcular milissegundos vividos
+   - `Math.floor((Date.now() - new Date(birth).getTime()) / 6048e5)`
 
-### Novas páginas e rotas
+4. **Atualizar o poster** para exibir a data formatada no campo "Nascimento" (ex: "15/03/1976") em vez de apenas "1976"
 
-| Rota | Componente | Descrição |
-|------|-----------|-----------|
-| `/afiliado/login` | `AffiliateLogin.tsx` | Login com email/senha |
-| `/afiliado` | `AffiliateDashboard.tsx` | Dashboard da afiliada |
+5. **Atualizar labels** em `posterData.ts`: "Nascimento" / "Birth date" / "Nacimiento" (já existem, apenas ajustar se necessário)
 
-### Dashboard da Afiliada (`/afiliado`)
-- **Cards resumo**: Total de vendas, comissão total, comissão paga, saldo pendente
-- **Tabela de vendas**: Pedidos com seu código, data, valor, comissão, status (pago/pendente)
-- **Histórico de pagamentos**: Lista de pagamentos recebidos do admin
-- Protegido por auth — redireciona para `/afiliado/login` se não logada
+### Arquivos alterados
 
-### Fluxo do Admin
-- Na página de Afiliados, adicionar botão "Registrar Pagamento" por afiliada
-- Modal simples: valor, data, observação
-- Insere em `commission_payments` e opcionalmente marca `commission_paid = true` nos pedidos cobertos
-- Visualização do saldo de cada afiliada na tabela existente
+| Arquivo | Mudança |
+|---------|---------|
+| `src/data/posterData.ts` | `birth: string \| null` no `PosterState` |
+| `src/pages/Index.tsx` | Trocar input de ano por date picker; ajustar cálculo |
+| `src/components/PosterPreview.tsx` | Ajustar cálculo de `lived` para usar data completa; formatar exibição |
 
-### Autenticação da Afiliada
-- Usa o mesmo sistema de auth (email/senha), sem role especial
-- A identificação é feita pelo `affiliates.user_id = auth.uid()`
-- O admin cadastra a afiliada e ela se registra com o mesmo email — o sistema vincula automaticamente
-
-### Arquivos a criar/alterar
-
-| Arquivo | Ação |
-|---------|------|
-| Migration SQL | Criar `commission_payments`, adicionar `user_id` em affiliates, adicionar `commission_paid` em orders |
-| `src/pages/AffiliateLogin.tsx` | Criar — login da afiliada |
-| `src/pages/AffiliateDashboard.tsx` | Criar — dashboard com vendas e saldo |
-| `src/hooks/useAffiliateAuth.ts` | Criar — hook de auth para afiliada |
-| `src/pages/admin/AffiliateManager.tsx` | Alterar — adicionar botão de registrar pagamento e mostrar saldo |
-| `src/App.tsx` | Adicionar rotas `/afiliado` e `/afiliado/login` |
-
-### Segurança (RLS)
-- `commission_payments`: admin pode tudo; afiliada pode SELECT onde `affiliate_id` bate com seu registro
-- `affiliates`: nova policy para afiliada ver apenas seu próprio registro via `user_id`
-- `orders`: afiliada pode SELECT pedidos onde `affiliate_id` = seu affiliate.id (via subquery)
+### Resultado
+- Campo de data completa (dia/mês/ano) no configurador
+- Cálculo preciso de semanas vividas
+- Poster exibe data formatada (ex: "15/03/1976")
 
