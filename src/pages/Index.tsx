@@ -42,7 +42,7 @@ const Index = () => {
     pdf.addImage(imgData, 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
-  }, []);
+  }, [st.paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     identity: true, stats: true, color: true, tone: true, lang: false
