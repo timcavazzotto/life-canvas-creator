@@ -1,31 +1,13 @@
 
 
-## Plano: Label "ainda por viver" dinâmico por tom
+## Plano: Aumentar espaço entre texto e linha inferior nos campos do poster
 
-### Ideia
-Em vez de um label fixo, o texto do rodapé ("Ainda por viver") muda conforme o tom selecionado, alinhando com a filosofia de cada um.
+### Problema
+No PDF, os campos Nome, Nascimento e Expectativa de vida têm o texto muito colado na linha inferior (`border-bottom`). Atualmente o `padding-bottom` é apenas `3px`.
 
-### Textos propostos por tom
+### Solução
+Aumentar o `padding-bottom` de `.pf-val` em `src/App.css` de `3px` para `8px`. Como o PDF é gerado via html2canvas (captura do HTML renderizado), essa mudança se aplica automaticamente ao PDF.
 
-| Tom | PT | EN | ES |
-|-----|----|----|-----|
-| Filosófico | Por conquistar | Yet to conquer | Por conquistar |
-| Otimista | Por celebrar | To celebrate | Por celebrar |
-| Científico | Por registrar | To record | Por registrar |
-| Espiritual | Por honrar | To honor | Por honrar |
-
-### Alterações
-
-**1. `src/data/posterData.ts`**
-- Adicionar campo `ainda` ao objeto `TONES` (dentro de cada tom), com as 3 línguas
-- Remover `ainda` do `LABELS` fixo
-
-**2. `src/components/PosterPreview.tsx`**
-- No rodapé, trocar `lb.ainda` por `t.ainda[l]` (onde `t` já é `TONES[st.tone]`)
-
-### Arquivos
-| Arquivo | Ação |
-|---------|------|
-| `src/data/posterData.ts` | Adicionar `ainda` em cada tom de `TONES`; remover de `LABELS` |
-| `src/components/PosterPreview.tsx` | Usar `t.ainda[l]` no rodapé |
+### Arquivo alterado
+- `src/App.css` — linha 189: alterar `padding-bottom: 3px` para `padding-bottom: 8px`
 
