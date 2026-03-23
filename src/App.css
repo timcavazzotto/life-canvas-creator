@@ -184,7 +184,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .ph-title sup { font-size: 20px; color: var(--p-accent, #1a4a2e); vertical-align: super; }
 .ph-subtitle { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.16em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 9px; }
 .ph-right { text-align: right; max-width: 260px; }
-.ph-quote { font-style: italic; font-size: 10px; line-height: 1.75; color: var(--p-ink-mid, #4a3c28); }
+.ph-quote { font-size: 10px; line-height: 1.75; color: var(--p-ink-mid, #4a3c28); } line-height: 1.75; color: var(--p-ink-mid, #4a3c28); }
 .ph-attr { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 4px; }
 .pf-row { display: flex; gap: 18px; margin-bottom: 16px; }
 .pf { flex: 1; }
