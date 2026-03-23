@@ -19,33 +19,20 @@ const Index = () => {
   const posterRef = useRef<HTMLDivElement>(null);
   const paperRef = useRef<HTMLDivElement>(null);
 
-  const downloadPDF = useCallback(async () => {
-    if (!paperRef.current) return;
-    const { toast } = await import('sonner');
-    toast('Gerando PDF…');
-    const el = paperRef.current;
-    // Save and strip visual styles for capture
-    const origTransform = el.style.transform;
-    const origMargin = el.style.marginBottom;
-    const origShadow = el.style.boxShadow;
-    el.style.transform = 'none';
-    el.style.marginBottom = '0';
-    el.style.boxShadow = 'none';
-    await new Promise(r => setTimeout(r, 150));
-    const { default: html2canvas } = await import('html2canvas');
-    const { default: jsPDF } = await import('jspdf');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: st.paperSize });
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-    const canvas = await html2canvas(el, { scale: 6, useCORS: true });
-    // Restore visual styles
-    el.style.transform = origTransform;
-    el.style.marginBottom = origMargin;
-    el.style.boxShadow = origShadow;
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    pdf.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);
-    pdf.save('projeto80plus.pdf');
-    toast.success('PDF baixado!');
+  const downloadPDF = useCallback(() => {
+    const { toast } = require('sonner');
+    // Add print class for correct page size
+    const printClass = st.paperSize === 'a2' ? 'print-a2' : 'print-a3';
+    document.body.classList.add(printClass);
+
+    toast('Use "Salvar como PDF" no diálogo de impressão', { duration: 5000 });
+
+    // Small delay to let the class apply
+    setTimeout(() => {
+      window.print();
+      // Clean up after print dialog closes
+      document.body.classList.remove(printClass);
+    }, 100);
   }, [st.paperSize]);
   const [modalOpen, setModalOpen] = useState(false);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
