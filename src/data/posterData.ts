@@ -41,6 +41,7 @@ export const TONES: Record<string, {
     note: { pt: 'Marque as semanas com ≥ 150 min de atividade moderada ou ≥ 75 min de atividade vigorosa.\nReferência: OMS 2020.', en: 'Mark weeks with ≥ 150 min moderate or ≥ 75 min vigorous activity.\nReference: WHO 2020.', es: 'Marca semanas con ≥ 150 min moderado o ≥ 75 min vigoroso.\nReferencia: OMS 2020.' },
     tag: { pt: 'Evidência em cada semana', en: 'Evidence in every week', es: 'Evidencia en cada semana' },
     eyebrow: { pt: 'Registro científico de atividade física ao longo da vida', en: 'Scientific physical activity record across a lifetime', es: 'Registro científico de actividad física a lo largo de la vida' },
+    ainda: { pt: 'Por registrar', en: 'To record', es: 'Por registrar' },
   },
   espiritual: {
     label: 'Espiritual',
