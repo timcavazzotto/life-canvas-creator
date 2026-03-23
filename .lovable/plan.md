@@ -1,13 +1,34 @@
 
 
-## Plano: Aumentar espaço entre texto e linha inferior nos campos do poster
+## Plano: Seletor de formato de papel (A2/A3) para exportação PDF
 
 ### Problema
-No PDF, os campos Nome, Nascimento e Expectativa de vida têm o texto muito colado na linha inferior (`border-bottom`). Atualmente o `padding-bottom` é apenas `3px`.
+O PDF atual usa formato A3 fixo com margem de 10mm, deixando bordas externas largas. O poster não ocupa a folha inteira.
 
 ### Solução
-Aumentar o `padding-bottom` de `.pf-val` em `src/App.css` de `3px` para `8px`. Como o PDF é gerado via html2canvas (captura do HTML renderizado), essa mudança se aplica automaticamente ao PDF.
+Adicionar um select de formato de papel (A2 / A3) no configurador, e ajustar a exportação para:
+- Usar o formato selecionado
+- Reduzir a margem de 10mm para 5mm (ou 0 para sangria total)
+- O poster será escalado para preencher melhor a área útil da folha
 
-### Arquivo alterado
-- `src/App.css` — linha 189: alterar `padding-bottom: 3px` para `padding-bottom: 8px`
+### Alterações
+
+**1. `src/data/posterData.ts`**
+- Adicionar `paperSize: 'a2' | 'a3'` ao `PosterState` (default: `'a3'`)
+
+**2. `src/pages/Index.tsx`**
+- Adicionar estado `paperSize` no `PosterState` inicial
+- Adicionar select de formato (A2 / A3) na seção de configuração, próximo ao botão de download
+- Alterar `downloadPDF`: usar `st.paperSize` como formato do jsPDF, reduzir margem para 3mm
+
+### Detalhes técnicos
+- A2 = 420x594mm, A3 = 297x420mm (jsPDF aceita `'a2'` e `'a3'` diretamente)
+- Margem reduzida de 10mm para 3mm para melhor aproveitamento da folha
+- O `ratio` de escala já se ajusta automaticamente ao tamanho da página
+
+### Arquivos alterados
+| Arquivo | Ação |
+|---------|------|
+| `src/data/posterData.ts` | Adicionar `paperSize` ao `PosterState` |
+| `src/pages/Index.tsx` | Adicionar select de formato + usar no `downloadPDF` |
 
