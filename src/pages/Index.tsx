@@ -17,6 +17,7 @@ const Index = () => {
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt', paperSize: 'a3'
   });
   const posterRef = useRef<HTMLDivElement>(null);
+  const paperRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
     if (!posterRef.current) return;
