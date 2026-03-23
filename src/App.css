@@ -330,7 +330,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
   .config-body { flex-direction: column; }
   .cfg-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); overflow-y: visible; }
   .cfg-preview { width: 100%; overflow-x: hidden; padding: 16px 8px 32px; display: flex; flex-direction: column; align-items: center; }
-  .poster { width: 660px; transform: scale(0.52); transform-origin: top center; margin-bottom: -300px; padding: 38px 42px 32px; }
+  .poster { width: 780px; transform: scale(0.44); transform-origin: top center; margin-bottom: -380px; padding: 38px 42px 32px; }
 
   /* FOOTER */
   .site-footer { flex-direction: column; padding: 32px 20px; text-align: center; gap: 8px; }

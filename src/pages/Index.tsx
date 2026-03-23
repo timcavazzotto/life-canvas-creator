@@ -32,28 +32,7 @@ const Index = () => {
     const pageH = pdf.internal.pageSize.getHeight();
     const margin = 3;
 
-    // Calculate paper vs poster aspect ratio
-    const paperRatio = (pageW - margin * 2) / (pageH - margin * 2);
-    const currentRatio = el.offsetWidth / el.scrollHeight;
-
-    // Inject temporary style to flatten grid cells if poster is narrower than paper
-    const tempStyle = document.createElement('style');
-    if (currentRatio < paperRatio) {
-      const targetH = el.offsetWidth / paperRatio;
-      const gridEl = el.querySelector('.year-rows') as HTMLElement | null;
-      const nonGridH = el.scrollHeight - (gridEl?.scrollHeight || 0);
-      const targetGridH = targetH - nonGridH;
-      const currentGridH = gridEl?.scrollHeight || 1;
-      const cellRatio = currentGridH / targetGridH; // >1 = flatten
-      tempStyle.textContent = `.poster .wk { aspect-ratio: ${cellRatio.toFixed(3)} / 1 !important; }`;
-      document.head.appendChild(tempStyle);
-      await new Promise(r => setTimeout(r, 150));
-    }
-
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
-
-    // Cleanup
-    tempStyle.remove();
     el.style.boxShadow = origBoxShadow;
 
     const imgData = canvas.toDataURL('image/png');
