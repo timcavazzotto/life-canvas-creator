@@ -28,12 +28,6 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
     return labels;
   }, [st.expect]);
 
-  const monthLabels = useMemo(() => {
-    return Array.from({ length: WEEKS }, (_, w) => {
-      const mi = WEEK_POS.indexOf(w);
-      return mi >= 0 ? ms[mi] : '';
-    });
-  }, [ms]);
 
   const yearRows = useMemo(() => {
     const rows = [];
