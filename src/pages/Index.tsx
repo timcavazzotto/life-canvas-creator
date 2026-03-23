@@ -264,7 +264,7 @@ const Index = () => {
                         disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
-                        captionLayout="dropdown-buttons"
+                        defaultMonth={st.birth ? new Date(st.birth) : new Date(1985, 0)}
                         fromYear={1920}
                         toYear={new Date().getFullYear()}
                         locale={ptBR}
