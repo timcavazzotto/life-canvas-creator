@@ -24,15 +24,23 @@ const Index = () => {
     const { toast } = await import('sonner');
     toast('Gerando PDF…');
     const el = paperRef.current;
+    // Save and strip visual styles for capture
+    const origTransform = el.style.transform;
+    const origMargin = el.style.marginBottom;
     const origShadow = el.style.boxShadow;
+    el.style.transform = 'none';
+    el.style.marginBottom = '0';
     el.style.boxShadow = 'none';
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise(r => setTimeout(r, 150));
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: st.paperSize });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const canvas = await html2canvas(el, { scale: 4, useCORS: true });
+    const canvas = await html2canvas(el, { scale: 6, useCORS: true });
+    // Restore visual styles
+    el.style.transform = origTransform;
+    el.style.marginBottom = origMargin;
     el.style.boxShadow = origShadow;
     const imgData = canvas.toDataURL('image/jpeg', 0.95);
     pdf.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);
