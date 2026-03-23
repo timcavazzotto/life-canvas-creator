@@ -14,6 +14,7 @@ export const TONES: Record<string, {
   note: Record<string, string>;
   tag: Record<string, string>;
   eyebrow: Record<string, string>;
+  ainda: Record<string, string>;
 }> = {
   filosofico: {
     label: 'Filosófico',
@@ -22,6 +23,7 @@ export const TONES: Record<string, {
     note: { pt: 'Preencha com caneta as semanas em que você se moveu.\n≥ 150 min de atividade moderada = semana ativa (OMS).', en: 'Mark the weeks you moved.\n≥ 150 min of moderate activity = active week (WHO).', es: 'Marca las semanas que te moviste.\n≥ 150 min de actividad moderada = semana activa (OMS).' },
     tag: { pt: 'Mova-se enquanto há tempo', en: 'Move while there is time', es: 'Muévete mientras hay tiempo' },
     eyebrow: { pt: 'Painel da vida em movimento', en: 'Life in motion panel', es: 'Panel de vida en movimiento' },
+    ainda: { pt: 'Por conquistar', en: 'Yet to conquer', es: 'Por conquistar' },
   },
   otimista: {
     label: 'Otimista',
@@ -30,6 +32,7 @@ export const TONES: Record<string, {
     note: { pt: 'Preencha com cor cada semana em que você se moveu.\n≥ 150 min de atividade moderada = semana ativa (OMS).', en: 'Color each week you moved.\n≥ 150 min of moderate activity = active week (WHO).', es: 'Colorea cada semana que te moviste.\n≥ 150 min de actividad moderada = semana activa (OMS).' },
     tag: { pt: 'Cada semana é uma vitória', en: 'Every week is a victory', es: 'Cada semana es una victoria' },
     eyebrow: { pt: 'Painel da vida em movimento', en: 'Life in motion panel', es: 'Panel de vida en movimiento' },
+    ainda: { pt: 'Por celebrar', en: 'To celebrate', es: 'Por celebrar' },
   },
   cientifico: {
     label: 'Científico',
@@ -38,6 +41,7 @@ export const TONES: Record<string, {
     note: { pt: 'Marque as semanas com ≥ 150 min de atividade moderada ou ≥ 75 min de atividade vigorosa.\nReferência: OMS 2020.', en: 'Mark weeks with ≥ 150 min moderate or ≥ 75 min vigorous activity.\nReference: WHO 2020.', es: 'Marca semanas con ≥ 150 min moderado o ≥ 75 min vigoroso.\nReferencia: OMS 2020.' },
     tag: { pt: 'Evidência em cada semana', en: 'Evidence in every week', es: 'Evidencia en cada semana' },
     eyebrow: { pt: 'Registro científico de atividade física ao longo da vida', en: 'Scientific physical activity record across a lifetime', es: 'Registro científico de actividad física a lo largo de la vida' },
+    ainda: { pt: 'Por registrar', en: 'To record', es: 'Por registrar' },
   },
   espiritual: {
     label: 'Espiritual',
@@ -46,6 +50,7 @@ export const TONES: Record<string, {
     note: { pt: 'Preencha com gratidão cada semana de movimento.\nO corpo é templo — cuide-o semana a semana.', en: 'Fill with gratitude each week of movement.\nThe body is a temple — tend it week by week.', es: 'Llena con gratitud cada semana de movimiento.\nEl cuerpo es un templo — cuídalo semana a semana.' },
     tag: { pt: 'Presença em cada semana', en: 'Presence in every week', es: 'Presencia en cada semana' },
     eyebrow: { pt: 'Painel sagrado da vida em movimento', en: 'Sacred panel of life in motion', es: 'Panel sagrado de vida en movimiento' },
+    ainda: { pt: 'Por honrar', en: 'To honor', es: 'Por honrar' },
   },
 };
 
@@ -62,9 +67,9 @@ export const MONTHS: Record<string, string[]> = {
 };
 
 export const LABELS: Record<string, Record<string, string>> = {
-  pt: { nome: 'Nome', nasc: 'Nascimento', exp: 'Expectativa', dedic: 'Dedicatória', lvd: 'Semanas vividas', act: 'Para colorir', fut: 'Por viver', total: 'Semanas totais', jv: 'Já vividas', ainda: 'Ainda por viver' },
-  en: { nome: 'Name', nasc: 'Birth year', exp: 'Life expectancy', dedic: 'Dedication', lvd: 'Weeks lived', act: 'To color', fut: 'Yet to live', total: 'Total weeks', jv: 'Already lived', ainda: 'Still to live' },
-  es: { nome: 'Nombre', nasc: 'Nacimiento', exp: 'Expectativa', dedic: 'Dedicatoria', lvd: 'Semanas vividas', act: 'Para colorear', fut: 'Por vivir', total: 'Semanas totales', jv: 'Ya vividas', ainda: 'Aún por vivir' },
+  pt: { nome: 'Nome', nasc: 'Nascimento', exp: 'Expectativa', dedic: 'Dedicatória', lvd: 'Semanas vividas', act: 'Para colorir', fut: 'Por viver', total: 'Semanas totais', jv: 'Já vividas' },
+  en: { nome: 'Name', nasc: 'Birth date', exp: 'Life expectancy', dedic: 'Dedication', lvd: 'Weeks lived', act: 'To color', fut: 'Yet to live', total: 'Total weeks', jv: 'Already lived' },
+  es: { nome: 'Nombre', nasc: 'Nacimiento', exp: 'Expectativa', dedic: 'Dedicatoria', lvd: 'Semanas vividas', act: 'Para colorear', fut: 'Por vivir', total: 'Semanas totales', jv: 'Ya vividas' },
 };
 
 export const WEEK_POS = [0, 4, 9, 13, 17, 21, 26, 30, 34, 38, 43, 47];

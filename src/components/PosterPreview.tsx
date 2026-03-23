@@ -125,7 +125,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         <div><div className="pfs-val">{total.toLocaleString('pt-BR')}</div><div className="pfs-lbl">{lb.total}</div></div>
         <div><div className="pfs-val">{lived > 0 ? lived.toLocaleString('pt-BR') : '—'}</div><div className="pfs-lbl">{lb.jv}</div></div>
         <div className="text-center"><div className="pfb-name">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div><div className="pfb-tag">{t.tag[l]}</div></div>
-        <div><div className="pfs-val">{lived > 0 ? left.toLocaleString('pt-BR') : '—'}</div><div className="pfs-lbl">{lb.ainda}</div></div>
+        <div><div className="pfs-val">{lived > 0 ? left.toLocaleString('pt-BR') : '—'}</div><div className="pfs-lbl">{t.ainda[l]}</div></div>
         <div><div className="pfs-val">≥150</div><div className="pfs-lbl">Min/sem · OMS</div></div>
       </div>
     </div>);
