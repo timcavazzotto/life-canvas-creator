@@ -1,16 +1,15 @@
 
 
-## Plano: Adicionar seletor de ano/mês no date picker
+## Plano: Corrigir duplicação de data no calendário
 
 ### Problema
-O calendário atual só navega mês a mês com setas, tornando impraticável chegar a anos como 1940 ou 1976.
+Quando `captionLayout="dropdown-buttons"` está ativo, o `react-day-picker` renderiza **tanto** os dropdowns de mês/ano **quanto** o label de texto padrão do caption (ex: "March 2026" em inglês). Resultado: duas indicações de data, uma em inglês e uma em português.
 
 ### Solução
-Adicionar `captionLayout="dropdown-buttons"` de volta ao `<Calendar>`, mas desta vez **remover** o campo separado de ano que existia antes (que causava a duplicação). A prop `fromYear` e `toYear` já estão configuradas — o dropdown nativo do react-day-picker exibirá selects de mês e ano diretamente no header do calendário.
+Esconder o `caption_label` no componente `Calendar` quando dropdowns estão presentes, adicionando `hidden` à classe.
 
 ### Arquivo alterado
-- `src/pages/Index.tsx` — adicionar `captionLayout="dropdown-buttons"` no `<Calendar>` (linha ~260)
+- `src/components/ui/calendar.tsx` — alterar a classe `caption_label` de `"text-sm font-medium"` para `"text-sm font-medium hidden"`
 
-### Resultado
-Dropdowns de mês e ano integrados no header do calendário, sem campos duplicados.
+Isso remove o texto duplicado e mantém apenas os dropdowns localizados.
 
