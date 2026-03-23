@@ -16,6 +16,7 @@ const Index = () => {
   const [st, setSt] = useState<PosterState>({
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
+  const [paperSize, setPaperSize] = useState<'a2' | 'a3'>('a3');
   const posterRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
