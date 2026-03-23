@@ -381,6 +381,13 @@ const Index = () => {
             </div>
 
             <div className="cfg-cta">
+              <div className="cfg-field" style={{ marginBottom: 8 }}>
+                <label>Formato do papel</label>
+                <select value={st.paperSize} onChange={(e) => update({ paperSize: e.target.value as 'a2' | 'a3' })}>
+                  <option value="a3">A3 (297 × 420 mm)</option>
+                  <option value="a2">A2 (420 × 594 mm)</option>
+                </select>
+              </div>
               <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Quero meu painel</button>
               
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
