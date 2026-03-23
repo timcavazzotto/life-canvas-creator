@@ -38,12 +38,12 @@ const Index = () => {
       const baseW = el.offsetWidth;
       const baseH = el.offsetHeight;
 
-      // 3. Escala para 300 DPI
+      // 3. Escala para 300 DPI — calcula pela largura e mantém proporção
       // A3 portrait: 297 × 420 mm → 3508 × 4961 px a 300 DPI
       // A2 portrait: 420 × 594 mm → 4961 × 7016 px a 300 DPI
       const targetW = st.paperSize === 'a2' ? 4961 : 3508;
-      const targetH = st.paperSize === 'a2' ? 7016 : 4961;
       const scale = targetW / baseW;
+      const targetH = Math.round(baseH * scale);
 
       // 4. Snapshot em alta resolução direto do .poster
       const dataUrl = await (domToImage as any).toPng(el, {
@@ -51,13 +51,11 @@ const Index = () => {
         height: targetH,
         bgcolor: '#ffffff',
         style: {
-          // Aplica o scale dentro do snapshot — não herda o scale visual do paper-sheet
           transform: `scale(${scale})`,
           transformOrigin: 'top left',
           width: `${baseW}px`,
           height: `${baseH}px`,
           margin: '0',
-          padding: '0',
           boxShadow: 'none',
           borderRadius: '0',
         },
