@@ -23,44 +23,59 @@ const Index = () => {
     const { toast } = await import('sonner');
     const html2canvas = (await import('html2canvas')).default;
 
-    if (!posterRef.current) return;
+    if (!paperRef.current) return;
 
-    toast('Gerando imagem em alta resolução…', { duration: 3000 });
+    toast('Gerando PNG em alta resolução…', { duration: 2500 });
 
-    // A3 = 297×420mm, A2 = 420×594mm at 300 DPI
     const targetW = st.paperSize === 'a2' ? 4961 : 3508;
     const targetH = st.paperSize === 'a2' ? 7016 : 4961;
 
-    // Clone the poster into a hidden container at print resolution
+    const baseWidth = paperRef.current.offsetWidth;
+    const baseHeight = Math.round(baseWidth * (420 / 297));
+    const exportScale = targetW / baseWidth;
+
     const container = document.createElement('div');
-    container.style.cssText = `position:fixed;left:-99999px;top:0;width:${targetW}px;height:${targetH}px;overflow:hidden;background:white;z-index:-1;`;
+    container.style.cssText = `position:fixed;left:-99999px;top:0;width:${baseWidth}px;height:${baseHeight}px;overflow:hidden;background:transparent;pointer-events:none;z-index:-1;`;
     document.body.appendChild(container);
 
-    const clone = posterRef.current.cloneNode(true) as HTMLElement;
-    clone.style.cssText = `width:${targetW}px;height:${targetH}px;transform:none;margin:0;padding:40px 44px 32px;box-sizing:border-box;`;
+    const clone = paperRef.current.cloneNode(true) as HTMLDivElement;
+    clone.style.width = `${baseWidth}px`;
+    clone.style.height = `${baseHeight}px`;
+    clone.style.margin = '0';
+    clone.style.transformOrigin = 'top left';
+    clone.style.setProperty('transform', 'none', 'important');
+    clone.style.setProperty('box-shadow', 'none', 'important');
+    clone.style.setProperty('margin-bottom', '0', 'important');
     container.appendChild(clone);
 
-    // Wait for layout to settle
-    await new Promise(r => setTimeout(r, 500));
-
     try {
+      if ('fonts' in document) {
+        await (document as Document & { fonts: { ready: Promise<unknown> } }).fonts.ready;
+      }
+
       const canvas = await html2canvas(clone, {
-        scale: 1,
+        scale: exportScale,
         useCORS: true,
-        backgroundColor: null,
-        width: targetW,
-        height: targetH,
+        backgroundColor: '#ffffff',
+        width: baseWidth,
+        height: baseHeight,
+        windowWidth: baseWidth,
+        windowHeight: baseHeight,
         logging: false,
       });
 
       canvas.toBlob((blob) => {
-        if (!blob) return;
+        if (!blob) {
+          toast.error('Erro ao gerar imagem.');
+          return;
+        }
+
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `projeto80-${st.paperSize.toUpperCase()}-300dpi.png`;
         a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
         toast.success('PNG em alta resolução baixado!');
       }, 'image/png');
     } catch (err) {
