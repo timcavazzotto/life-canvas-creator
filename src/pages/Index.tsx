@@ -17,40 +17,25 @@ const Index = () => {
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt', paperSize: 'a3'
   });
   const posterRef = useRef<HTMLDivElement>(null);
+  const paperRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
-    if (!posterRef.current) return;
+    if (!paperRef.current) return;
     const { toast } = await import('sonner');
     toast('Gerando PDF…');
-    const el = posterRef.current;
-    const origBoxShadow = el.style.boxShadow;
-    const origTransform = el.style.transform;
-    const origMarginBottom = el.style.marginBottom;
+    const el = paperRef.current;
+    const origShadow = el.style.boxShadow;
     el.style.boxShadow = 'none';
-    el.style.transform = 'none';
-    el.style.marginBottom = '0';
     await new Promise(r => setTimeout(r, 100));
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: st.paperSize });
     const pageW = pdf.internal.pageSize.getWidth();
     const pageH = pdf.internal.pageSize.getHeight();
-    const margin = 3;
-
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
-    el.style.boxShadow = origBoxShadow;
-    el.style.transform = origTransform;
-    el.style.marginBottom = origMarginBottom;
-
-    const imgData = canvas.toDataURL('image/png');
-    const usableW = pageW - margin * 2;
-    const usableH = pageH - margin * 2;
-    const ratioW = usableW / canvas.width;
-    const ratioH = usableH / canvas.height;
-    const ratio = (canvas.height * ratioW <= usableH) ? ratioW : ratioH;
-    const w = canvas.width * ratio;
-    const h = canvas.height * ratio;
-    pdf.addImage(imgData, 'PNG', (pageW - w) / 2, margin, w, h);
+    el.style.boxShadow = origShadow;
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    pdf.addImage(imgData, 'JPEG', 0, 0, pageW, pageH);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
   }, [st.paperSize]);
@@ -407,7 +392,9 @@ const Index = () => {
 
           <div className="cfg-preview">
             <div className="cfg-preview-hint">Pré-visualização ao vivo</div>
-            <PosterPreview ref={posterRef} state={st} />
+            <div className="paper-sheet" ref={paperRef}>
+              <PosterPreview ref={posterRef} state={st} />
+            </div>
           </div>
         </div>
       </section>

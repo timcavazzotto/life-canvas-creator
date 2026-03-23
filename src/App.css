@@ -164,8 +164,11 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .cfg-preview { flex: 1; overflow-y: auto; background: #e8e5df; display: flex; flex-direction: column; align-items: center; padding: 24px 24px 40px; }
 .cfg-preview-hint { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.2em; color: #a09a90; text-transform: uppercase; margin-bottom: 16px; text-align: center; }
 
+/* PAPER SHEET — real A-series artboard */
+.paper-sheet { aspect-ratio: 1 / 1.4142; width: 100%; max-width: 560px; box-shadow: 0 4px 32px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06); }
+
 /* POSTER */
-.poster { width: 780px; background: #f8f4e8; padding: 38px 42px 32px; position: relative; box-shadow: 0 4px 32px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06); transition: background-color 0.4s; transform: scale(0.85); transform-origin: top center; margin-bottom: -140px; }
+.poster { width: 100%; height: 100%; background: #f8f4e8; padding: 28px 32px 22px; position: relative; transition: background-color 0.4s; display: flex; flex-direction: column; overflow: hidden; }
 .poster::before { content: ''; position: absolute; inset: 12px; border: 0.75px solid var(--p-rule, #1e1408); opacity: 0.14; pointer-events: none; z-index: 1; }
 .poster::after { content: ''; position: absolute; inset: 17px; border: 0.5px solid var(--p-rule, #1e1408); opacity: 0.06; pointer-events: none; z-index: 1; }
 .poster.theme-classico { --p-bg: #fafafa; --p-ink: #0e0e0e; --p-ink-mid: #3a3a3a; --p-ink-faint: #aaa; --p-border: #ccc; --p-accent: #0e0e0e; --p-lived: #d0d0d0; --p-lived-border: #aaa; --p-future: #ccc; --p-rule: #0e0e0e; background: var(--p-bg); }
@@ -188,17 +191,17 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pf-label { font-family: 'DM Mono', monospace; font-size: 6px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; display: block; margin-bottom: 4px; }
 .pf-val { font-size: 13px; color: var(--p-ink, #1e1408); border-bottom: 1px solid var(--p-rule, #1e1408); padding-bottom: 8px; min-height: 20px; opacity: 0.9; }
 .pf-val.italic { font-style: italic; font-size: 11.5px; color: var(--p-ink-mid, #4a3c28); }
-.pg { margin-bottom: 13px; }
-.grid-wrap { display: flex; }
+.pg { margin-bottom: 13px; flex: 1; display: flex; flex-direction: column; }
+.grid-wrap { display: flex; flex: 1; }
 .decade-col { width: 20px; flex-shrink: 0; margin-right: 6px; padding-top: 16px; display: flex; flex-direction: column; }
 .dec-lbl { font-family: 'DM Mono', monospace; font-size: 6px; color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1; }
-.grid-main { flex: 1; }
+.grid-main { flex: 1; display: flex; flex-direction: column; }
 .month-row { display: grid; grid-template-columns: repeat(52, 1fr); gap: 1px; margin-bottom: 4px; }
 .m-lbl { font-family: 'DM Mono', monospace; font-size: 5.5px; color: var(--p-ink-faint, #9a9488); text-align: center; text-transform: uppercase; }
-.year-rows { display: flex; flex-direction: column; gap: 1px; }
+.year-rows { display: flex; flex-direction: column; gap: 1px; flex: 1; }
 .yr { display: grid; grid-template-columns: repeat(52, 1fr); gap: 1px; }
 .yr.dec-sep { margin-top: 4px; }
-.wk { aspect-ratio: 1; border: 1px solid var(--p-border, #c8c4b8); background: transparent; border-radius: 0.5px; }
+.wk { border: 1px solid var(--p-border, #c8c4b8); background: transparent; border-radius: 0.5px; }
 .wk.lived { background: var(--p-lived, #b8d8c0); border-color: var(--p-lived-border, #8ab898); }
 .wk.future { border-color: var(--p-future, #c8c4b8); border-style: dashed; }
 .pl { display: flex; justify-content: space-between; align-items: center; padding-top: 11px; border-top: 0.75px solid var(--p-rule, #1e1408); margin-bottom: 12px; }
@@ -330,7 +333,8 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
   .config-body { flex-direction: column; }
   .cfg-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); overflow-y: visible; }
   .cfg-preview { width: 100%; overflow-x: hidden; padding: 16px 8px 32px; display: flex; flex-direction: column; align-items: center; }
-  .poster { width: 780px; transform: scale(0.42); transform-origin: top center; margin-bottom: -420px; padding: 38px 42px 32px; }
+  .paper-sheet { max-width: 100%; }
+  .poster { padding: 20px 22px 16px; }
 
   /* FOOTER */
   .site-footer { flex-direction: column; padding: 32px 20px; text-align: center; gap: 8px; }
