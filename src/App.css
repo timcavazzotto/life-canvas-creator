@@ -195,6 +195,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .grid-wrap { display: flex; }
 .decade-col { width: 20px; flex-shrink: 0; margin-right: 6px; padding-top: 16px; display: flex; flex-direction: column; }
 .dec-lbl { font-family: 'DM Mono', monospace; font-size: 6px; color: var(--p-ink-faint, #9a9488); text-align: right; line-height: 1; }
+.grid-wrap { flex: 1; }
 .grid-main { flex: 1; }
 .month-row { display: grid; grid-template-columns: repeat(52, 1fr); gap: 1px; margin-bottom: 4px; }
 .m-lbl { font-family: 'DM Mono', monospace; font-size: 5.5px; color: var(--p-ink-faint, #9a9488); text-align: center; text-transform: uppercase; }
