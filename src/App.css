@@ -178,7 +178,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .poster.theme-roxo { --p-bg: #f8f4fc; --p-ink: #18082a; --p-ink-mid: #3c1a5a; --p-ink-faint: #a888cc; --p-border: #c8a8e0; --p-accent: #5a1e88; --p-lived: #d8b8f0; --p-lived-border: #b890d8; --p-future: #c8a8e0; --p-rule: #18082a; background: var(--p-bg); }
 .poster.theme-azul { --p-bg: #f2f6fa; --p-ink: #081828; --p-ink-mid: #183050; --p-ink-faint: #7098b8; --p-border: #90b8d8; --p-accent: #104878; --p-lived: #a8c8e8; --p-lived-border: #80a8d0; --p-future: #90b8d8; --p-rule: #081828; background: var(--p-bg); }
 
-.ph { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 16px; border-bottom: 1.5px solid var(--p-rule, #1e1408); margin-bottom: 16px; overflow: hidden; }
+.ph { display: flex; justify-content: space-between; .ph { display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1.5px solid var(--p-rule, #1e1408); margin-bottom: 16px; overflow: hidden; } border-bottom: 1.5px solid var(--p-rule, #1e1408); margin-bottom: 16px; overflow: hidden; }
 .ph-eyebrow { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.2em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-bottom: 2px; }
 .ph-title { font-size: 42px; font-weight: 300; color: var(--p-ink, #1e1408); letter-spacing: 0.04em; line-height: 1; padding-bottom: 2px; }
 .ph-title sup { font-size: 20px; color: var(--p-accent, #1a4a2e); vertical-align: super; }
