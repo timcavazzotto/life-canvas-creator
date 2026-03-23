@@ -47,9 +47,15 @@ const Index = () => {
     const pageRatio = pageW / pageH;
     let imgW: number, imgH: number, imgX: number, imgY: number;
     if (canvasRatio > pageRatio) {
-      imgW = pageW; imgH = pageW / canvasRatio; imgX = 0; imgY = (pageH - imgH) / 2;
+      imgH = pageH;
+      imgW = pageH * canvasRatio;
+      imgX = (pageW - imgW) / 2;
+      imgY = 0;
     } else {
-      imgH = pageH; imgW = pageH * canvasRatio; imgX = (pageW - imgW) / 2; imgY = 0;
+      imgW = pageW;
+      imgH = pageW / canvasRatio;
+      imgX = 0;
+      imgY = (pageH - imgH) / 2;
     }
     pdf.addImage(imgData, 'JPEG', imgX, imgY, imgW, imgH);
     pdf.save('projeto80plus.pdf');
