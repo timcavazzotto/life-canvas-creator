@@ -1,55 +1,35 @@
 
 
-## Plano: Ajustar proporção do poster para preencher a folha no PDF
+## Plano: Ajustar proporção da prévia para combinar com o papel
 
 ### Problema raiz
-O grid tem 80 linhas de 52 células **quadradas** (`aspect-ratio: 1`). Isso trava a proporção do poster em ~0.57 (largura/altura), que é mais estreita que o papel A3 (~0.707) ou A2 (~0.707). Quando se alarga o poster temporariamente, as células quadradas ficam maiores em ambas as dimensões — a proporção não muda. Por isso as tentativas anteriores não funcionaram.
+O poster tem largura fixa de `660px`. Com o grid de 80×52 células quadradas, a proporção resultante é ~0.6 (largura/altura). O papel A2/A3 tem proporção ~0.707. Nenhum hack de exportação resolve isso — a prévia precisa **já ter** a proporção correta do papel.
 
 ### Solução
-Antes de capturar com `html2canvas`, injetar um `<style>` temporário que muda as células do grid de quadradas para retangulares (mais largas que altas), calculando a proporção exata para que o poster inteiro se encaixe na folha. Após a captura, remover o style.
+Fazer a largura do poster variar conforme o `paperSize` selecionado, de forma que a proporção natural do conteúdo se aproxime da folha. Como A2 e A3 têm a mesma proporção (1:√2), basta uma largura. Remover o hack de achatamento de células no `downloadPDF`.
 
-### Lógica de cálculo
-1. Medir a altura do poster atual e a altura do grid
-2. Calcular quanto o grid precisa "encolher" em altura para que o poster todo tenha a proporção do papel
-3. Definir `aspect-ratio` das células `.wk` como um valor > 1 (ex: ~1.4) para achatar o grid
-4. Após captura, restaurar tudo
+Cálculo: com padding lateral de 84px e coluna de décadas de 26px, cada célula ≈ `(W - 110) / 52`. A altura do grid ≈ `80 * cellSize + 107` (gaps + decade separators). Mais ~200px de header/footer. Para ratio 0.707: `W / (80 * (W-110)/52 + 307) = 0.707`. Resolvendo: **W ≈ 780px**.
 
-### Alterações em `src/pages/Index.tsx` (função `downloadPDF`)
+### Alterações
 
-Substituir o bloco de redimensionamento temporário por:
+**1. `src/App.css`**
+- Alterar `.poster` de `width: 660px` para `width: 780px`
+- Ajustar o `transform: scale()` na media query mobile para caber na tela (de 0.52 para ~0.44)
 
-```typescript
-// Calcular proporção ideal
-const paperRatio = (pageW - margin * 2) / (pageH - margin * 2);
-const currentRatio = el.offsetWidth / el.scrollHeight;
-
-// Injetar style temporário para achatar as células do grid
-const tempStyle = document.createElement('style');
-if (currentRatio < paperRatio) {
-  // Poster é mais estreito que o papel — achatar células
-  const targetH = el.offsetWidth / paperRatio;
-  const gridEl = el.querySelector('.year-rows');
-  const nonGridH = el.scrollHeight - (gridEl?.scrollHeight || 0);
-  const targetGridH = targetH - nonGridH;
-  const currentGridH = gridEl?.scrollHeight || 1;
-  const cellRatio = currentGridH / targetGridH; // >1 = achatar
-  tempStyle.textContent = `.poster .wk { aspect-ratio: ${cellRatio.toFixed(3)} / 1 !important; }`;
-  document.head.appendChild(tempStyle);
-  await new Promise(r => setTimeout(r, 150));
-}
-
-const canvas = await html2canvas(el, { scale: 4, useCORS: true });
-tempStyle.remove();
-```
+**2. `src/pages/Index.tsx`**
+- Remover o bloco de `tempStyle` que achata as células (linhas 35-51 e 56)
+- Manter a lógica simples de escala `Math.min(ratioW, ratioH)` — agora ambos ratios serão próximos
+- Remover restauração de `boxShadow` complexa, manter apenas `boxShadow: 'none'` temporário
 
 ### Resultado
-- As células do grid ficam ligeiramente retangulares (mais largas que altas) apenas no PDF
-- O poster preenche a folha inteira com margens mínimas (3mm)
-- A pré-visualização na tela não é afetada
-- Visualmente sutil — as células são tão pequenas que a diferença é imperceptível
+- Prévia na tela já terá proporção próxima à folha A2/A3
+- PDF preencherá a folha com margens mínimas sem hacks
+- Células permanecem quadradas
+- Visual mais largo e elegante
 
-### Arquivo alterado
+### Arquivos alterados
 | Arquivo | Ação |
 |---------|------|
-| `src/pages/Index.tsx` | Reescrever bloco de redimensionamento na função `downloadPDF` |
+| `src/App.css` | Largura do poster: 660px → 780px, ajustar scale mobile |
+| `src/pages/Index.tsx` | Remover hack de achatamento de células no downloadPDF |
 
