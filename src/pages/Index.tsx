@@ -24,7 +24,12 @@ const Index = () => {
     toast('Gerando PDF…');
     const el = posterRef.current;
     const origBoxShadow = el.style.boxShadow;
+    const origTransform = el.style.transform;
+    const origMarginBottom = el.style.marginBottom;
     el.style.boxShadow = 'none';
+    el.style.transform = 'none';
+    el.style.marginBottom = '0';
+    await new Promise(r => setTimeout(r, 100));
     const { default: html2canvas } = await import('html2canvas');
     const { default: jsPDF } = await import('jspdf');
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: st.paperSize });
@@ -34,6 +39,8 @@ const Index = () => {
 
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
     el.style.boxShadow = origBoxShadow;
+    el.style.transform = origTransform;
+    el.style.marginBottom = origMarginBottom;
 
     const imgData = canvas.toDataURL('image/png');
     const usableW = pageW - margin * 2;
