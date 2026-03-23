@@ -259,6 +259,7 @@ const Index = () => {
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
+                        captionLayout="dropdown-buttons"
                         selected={st.birth ? new Date(st.birth) : undefined}
                         onSelect={(date) => update({ birth: date ? format(date, 'yyyy-MM-dd') : null })}
                         disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
