@@ -1,73 +1,75 @@
 
 
-## Plano: Trocar a estratégia de exportação para `window.print()` com CSS `@media print`
+## Plano: Corrigir exportação PDF via `window.print()` e garantir resolução para impressão A2/A3
 
-### Por que trocar
+### Problema raiz identificado
+O CSS atual tem **sintaxe inválida** para as regras `@page`:
 
-O problema fundamental é que `html2canvas` rasteriza o DOM com diferenças sutis de renderização (fontes, espaçamento, grid) em relação ao que o navegador mostra. Nenhum ajuste de CSS resolve isso porque a ferramenta de captura é a fonte da divergência. Já tentamos múltiplas combinações de alinhamento e escala sem sucesso estável.
-
-### Nova estratégia
-
-Usar o motor de renderização do **próprio navegador** para gerar o PDF, via `window.print()`. O navegador renderiza a versão de impressão usando exatamente o mesmo engine que mostra o preview — eliminando 100% das diferenças de fidelidade.
-
-### O que implementar
-
-#### 1. Adicionar CSS `@media print` em `src/App.css`
-
-- Esconder tudo exceto o poster: nav, hero, how, testimonials, pricing, config sidebar, footer — tudo `display: none`
-- O `.paper-sheet` perde sombra, transform e margem — ocupa a página inteira
-- O `.poster` ocupa 100% da largura e altura da página
-- Definir `@page` com tamanho dinâmico (A3 por padrão, A2 via classe no body)
-- Zerar margens da página: `@page { margin: 0 }`
-
-Exemplo conceitual:
 ```css
-@media print {
-  body > *:not(.config-section) { display: none !important; }
-  .config-section { display: block !important; }
-  .cfg-sidebar, .cfg-preview-hint { display: none !important; }
-  .paper-sheet { 
-    transform: none !important; 
-    width: 100% !important; 
-    height: 100% !important;
-    box-shadow: none !important; 
-    margin: 0 !important; 
-  }
-  @page { size: A3 portrait; margin: 0; }
-}
+/* INVÁLIDO — browser ignora completamente */
+body.print-a3 @page { size: A3 portrait; }
 body.print-a2 @page { size: A2 portrait; }
 ```
 
-#### 2. Trocar o `downloadPDF` em `src/pages/Index.tsx`
+A spec CSS não permite `@page` aninhado dentro de um seletor. O resultado: o browser ignora o tamanho da página e usa o padrão (Letter/A4), causando corte, bordas e proporção errada.
 
-Substituir toda a lógica de `html2canvas` + `jsPDF` por:
-1. Adicionar classe `print-a2` ou `print-a3` no `<body>` conforme `st.paperSize`
-2. Chamar `window.print()`
-3. Remover a classe após impressão
+### Solução
 
-Isso elimina `html2canvas` e `jsPDF` da equação. O usuário usa o diálogo nativo "Salvar como PDF" do navegador.
+Usar **JavaScript para injetar dinamicamente** a regra `@page` correta antes de chamar `window.print()`, e removê-la depois.
 
-#### 3. Manter o header como está
+### Alterações
 
-O grid atual do header (3 linhas, 2 colunas) está estruturalmente correto. O problema de alinhamento era causado pelo `html2canvas`, não pelo CSS. Com `window.print()`, o que aparece no preview é exatamente o que sai no PDF.
+#### 1. `src/pages/Index.tsx` — injetar `@page` via JS
 
-### Limitação e mitigação
+Substituir o `downloadPDF` atual por:
+```typescript
+const downloadPDF = useCallback(() => {
+  import('sonner').then(({ toast }) => {
+    // Inject @page rule dynamically
+    const size = st.paperSize === 'a2' ? 'A2' : 'A3';
+    const style = document.createElement('style');
+    style.id = 'print-page-size';
+    style.textContent = `@page { size: ${size} portrait; margin: 0; }`;
+    document.head.appendChild(style);
+    
+    document.body.classList.add('printing');
+    
+    toast('Use "Salvar como PDF" no diálogo de impressão', { duration: 5000 });
+    
+    setTimeout(() => {
+      window.print();
+      document.body.classList.remove('printing');
+      style.remove();
+    }, 200);
+  });
+}, [st.paperSize]);
+```
 
-O usuário verá o diálogo de impressão do navegador em vez de um download automático. Para mitigar:
-- Mostrar um toast explicando: "Use 'Salvar como PDF' no diálogo de impressão"
-- Garantir que as configurações de `@page` já definem o tamanho correto
+#### 2. `src/App.css` — simplificar `@media print`
+
+- Remover as regras `@page` inválidas (linhas 354-396)
+- Manter apenas o bloco `@media print` com:
+  - `@page { margin: 0; }` como fallback
+  - Esconder tudo exceto o poster
+  - `.paper-sheet` e `.poster` preenchem 100% da página
+- Remover as regras `body.print-a3 @page` e `body.print-a2 @page` (inválidas)
+- Usar classe `.printing` em vez de `print-a2`/`print-a3`
+
+#### 3. Resolução para impressão de parede
+
+Com `window.print()`, a renderização usa a resolução nativa do browser (tipicamente 300 DPI para "Salvar como PDF"). Para A2 (420×594mm) a 300 DPI isso dá ~4960×7016 pixels — resolução adequada para impressão de parede.
+
+O poster já usa vetores (texto, bordas CSS) que escalam infinitamente. Apenas o grid de quadrados precisa renderizar bem, e com CSS puro isso é vetorial.
 
 ### Arquivos a alterar
-
 | Arquivo | Ação |
-|---|---|
-| `src/App.css` | Adicionar bloco `@media print` completo |
-| `src/pages/Index.tsx` | Substituir `downloadPDF` por `window.print()` |
+|---------|------|
+| `src/App.css` | Corrigir `@media print`, remover `@page` inválidos |
+| `src/pages/Index.tsx` | Injetar `@page` dinâmico via JS |
 
 ### Resultado esperado
-- O PDF é idêntico ao preview — mesma engine de renderização
-- Sem esticamento, sem bordas brancas, sem corte
-- Header perfeitamente alinhado
-- Tamanho A2 ou A3 conforme seleção
-- Código muito mais simples e sem dependências frágeis
+- PDF em A2 ou A3 conforme seleção real
+- Sem bordas brancas, sem esticamento, sem corte
+- Resolução vetorial adequada para impressão de parede
+- Header idêntico ao preview (mesmo engine de renderização)
 
