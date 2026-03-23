@@ -62,7 +62,7 @@ const Index = () => {
 
   // Stats
   const total = st.expect * WEEKS;
-  const lived = st.birth ? Math.min(Math.floor((Date.now() - new Date(st.birth, 0, 1).getTime()) / 6048e5), total) : 0;
+  const lived = st.birth ? Math.min(Math.floor((Date.now() - new Date(st.birth).getTime()) / 6048e5), total) : 0;
   const left = Math.max(0, total - lived);
   const pct = lived > 0 ? Math.round(lived / total * 100) : 0;
 
