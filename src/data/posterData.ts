@@ -50,6 +50,7 @@ export const TONES: Record<string, {
     note: { pt: 'Preencha com gratidão cada semana de movimento.\nO corpo é templo — cuide-o semana a semana.', en: 'Fill with gratitude each week of movement.\nThe body is a temple — tend it week by week.', es: 'Llena con gratitud cada semana de movimiento.\nEl cuerpo es un templo — cuídalo semana a semana.' },
     tag: { pt: 'Presença em cada semana', en: 'Presence in every week', es: 'Presencia en cada semana' },
     eyebrow: { pt: 'Painel sagrado da vida em movimento', en: 'Sacred panel of life in motion', es: 'Panel sagrado de vida en movimiento' },
+    ainda: { pt: 'Por honrar', en: 'To honor', es: 'Por honrar' },
   },
 };
 
