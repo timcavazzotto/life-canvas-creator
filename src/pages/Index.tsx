@@ -415,7 +415,7 @@ const Index = () => {
                   <option value="a2">A2 (420 × 594 mm)</option>
                 </select>
               </div>
-              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Quero meu painel</button>
+              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Baixar PNG alta resolução</button>
               
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
