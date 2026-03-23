@@ -1,4 +1,5 @@
 import { useMemo, forwardRef } from 'react';
+import { format } from 'date-fns';
 import { WEEKS, WEEK_POS, MONTHS, TONES, LABELS, type PosterState } from '@/data/posterData';
 
 interface PosterPreviewProps {
@@ -14,7 +15,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
   const al = l === 'pt' ? 'uma vida ativa' : l === 'es' ? 'una vida activa' : 'an active life';
 
   const total = st.expect * WEEKS;
-  const lived = st.birth ? Math.min(Math.floor((Date.now() - new Date(st.birth, 0, 1).getTime()) / 6048e5), total) : 0;
+  const lived = st.birth ? Math.min(Math.floor((Date.now() - new Date(st.birth).getTime()) / 6048e5), total) : 0;
   const left = Math.max(0, total - lived);
   const pct = lived > 0 ? Math.round(lived / total * 100) : 0;
   const ms = MONTHS[l];
@@ -71,7 +72,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         </div>
         <div className="pf">
           <span className="pf-label">{lb.nasc}</span>
-          <div className="pf-val">{st.birth || '\u00a0'}</div>
+          <div className="pf-val">{st.birth ? format(new Date(st.birth), 'dd/MM/yyyy') : '\u00a0'}</div>
         </div>
         <div className="pf">
           <span className="pf-label">{lb.exp}</span>

@@ -72,7 +72,7 @@ export const WEEKS = 52;
 
 export interface PosterState {
   name: string;
-  birth: number | null;
+  birth: string | null;
   expect: number;
   dedic: string;
   theme: string;
