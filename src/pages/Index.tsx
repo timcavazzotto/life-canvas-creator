@@ -1,9 +1,16 @@
 import { useState, useCallback, useRef } from 'react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { CalendarIcon } from 'lucide-react';
 import '../App.css';
 import DemoGrid from '@/components/DemoGrid';
 import PosterPreview from '@/components/PosterPreview';
 import OrderModal from '@/components/OrderModal';
 import { THEMES, TONES, LANGS, WEEKS, type PosterState } from '@/data/posterData';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
   const [st, setSt] = useState<PosterState>({
