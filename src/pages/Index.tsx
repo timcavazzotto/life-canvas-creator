@@ -21,33 +21,72 @@ const Index = () => {
 
   const downloadPDF = useCallback(async () => {
     const { toast } = await import('sonner');
-    const { toPng } = await import('html-to-image');
+    // html2canvas lê getComputedStyle() em vez de serializar SVG:
+    // - CSS variables (--p-bg, --p-ink…) são resolvidas pelo browser antes da captura
+    // - Fontes Google já carregadas (document.fonts.ready) são usadas diretamente
+    // - Sem fetch de fontes externas → sem CORS, sem falha de rede
+    const html2canvas = (await import('html2canvas')).default;
     const { jsPDF } = await import('jspdf');
 
-    const el = posterRef.current;
-    if (!el) return;
+    const posterEl = posterRef.current;
+    const paperEl = paperRef.current;
+    if (!posterEl || !paperEl) return;
 
-    toast('Gerando PDF…', { duration: 8000 });
+    toast('Gerando PDF…', { duration: 15000 });
+
+    // Overlay branco oculta o flash visual causado pela remoção temporária do transform
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:9998;pointer-events:none;';
+    document.body.appendChild(overlay);
+
+    // Salva estilos inline atuais (podem estar vazios — CSS class assume o controle)
+    const savedTransform = paperEl.style.transform;
+    const savedMarginBottom = paperEl.style.marginBottom;
 
     try {
+      // Aguarda DM Mono e Inter (Google Fonts) estarem prontas
       await document.fonts.ready;
 
-      // pixelRatio escala o elemento para 300 DPI sem conflito com canvasWidth/canvasHeight
-      // A3: 3508 px / 800 px base = 4.385 | A2: 4961 px / 800 px base = 6.201
+      // Dimensões base: .paper-sheet tem width:800px e aspect-ratio:297/420
+      // Height = 800 × 420/297 ≈ 1131 px
+      const BASE_W = 800;
       const targetW = st.paperSize === 'a2' ? 4961 : 3508;
-      const pixelRatio = targetW / el.offsetWidth;
-      const bgColor = window.getComputedStyle(el).backgroundColor || '#ffffff';
+      const scale = targetW / BASE_W; // A3: ~4.385 | A2: ~6.201
 
-      const opts = {
-        pixelRatio,
+      // Lê a cor de fundo ANTES de remover o transform (resolve var(--p-bg) via computed style)
+      const bgColor = window.getComputedStyle(posterEl).backgroundColor || '#ffffff';
+
+      console.log('[PDF Export]', {
+        paperSize: st.paperSize,
+        BASE_W,
+        posterOffsetW: posterEl.offsetWidth,
+        posterOffsetH: posterEl.offsetHeight,
+        targetW,
+        scale,
+        bgColor,
+      });
+
+      // Remove o transform do .paper-sheet para que o .poster renderize em tamanho real (1:1)
+      // Isso é necessário porque html2canvas captura o elemento em suas coordenadas de layout reais.
+      // Com scale(0.68) no pai, o .poster apareceria a 68% do tamanho → captura corrompida.
+      paperEl.style.transform = 'none';
+      paperEl.style.marginBottom = '0';
+
+      // Aguarda dois frames para o browser recalcular o layout após a mudança de transform
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+      const canvas = await html2canvas(posterEl, {
+        scale,
+        useCORS: true,      // Permite carregar recursos cross-origin se existirem
+        allowTaint: false,  // Não contamina o canvas com recursos sem CORS
         backgroundColor: bgColor,
-        style: { transform: 'none', boxShadow: 'none' },
-      };
+        logging: false,
+      });
 
-      // Primeira chamada preaquece o cache de recursos de fonte (pode falhar — ignorar)
-      await toPng(el, opts).catch(() => {});
-      // Segunda chamada captura com fontes já em cache
-      const dataUrl = await toPng(el, opts);
+      // Restaura o transform antes de qualquer throw
+      paperEl.style.transform = savedTransform;
+      paperEl.style.marginBottom = savedMarginBottom;
+      document.body.removeChild(overlay);
 
       const pageW_mm = st.paperSize === 'a2' ? 420 : 297;
       const pageH_mm = st.paperSize === 'a2' ? 594 : 420;
@@ -58,12 +97,16 @@ const Index = () => {
         format: [pageW_mm, pageH_mm],
       });
 
-      pdf.addImage(dataUrl, 'PNG', 0, 0, pageW_mm, pageH_mm);
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pageW_mm, pageH_mm);
       pdf.save(`projeto80plus-${st.paperSize.toUpperCase()}-300dpi.pdf`);
       toast.success('PDF gerado com sucesso!');
 
     } catch (err) {
-      console.error('Export error:', err);
+      // Garante restauração mesmo em caso de erro
+      paperEl.style.transform = savedTransform;
+      paperEl.style.marginBottom = savedMarginBottom;
+      if (overlay.parentNode) document.body.removeChild(overlay);
+      console.error('[PDF Export] Erro:', err);
       toast.error('Erro ao gerar PDF. Tente novamente.');
     }
   }, [st.paperSize]);
