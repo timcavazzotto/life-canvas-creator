@@ -99,11 +99,6 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
             )}
           </div>
           <div className="grid-main">
-            <div className="month-row">
-              {monthLabels.map((m, i) =>
-              <div key={i} className="m-lbl">{m}</div>
-              )}
-            </div>
             <div className="year-rows">
               {yearRows.map((row) =>
               <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
