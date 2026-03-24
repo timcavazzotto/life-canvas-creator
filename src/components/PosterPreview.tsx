@@ -7,7 +7,7 @@ interface PosterPreviewProps {
   posterHeight?: number;
 }
 
-const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: st }, ref) => {
+const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: st, posterHeight }, ref) => {
   const t = TONES[st.tone];
   const l = st.lang;
   const lb = LABELS[l];
