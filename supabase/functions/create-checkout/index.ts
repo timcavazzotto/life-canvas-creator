@@ -137,7 +137,8 @@ Deno.serve(async (req) => {
     const checkoutData = await checkoutRes.json();
     console.log("InfinitePay response:", JSON.stringify(checkoutData));
 
-    if (!checkoutRes.ok || !checkoutData.checkout_url) {
+    const paymentUrl = checkoutData.checkout_url || checkoutData.url;
+    if (!checkoutRes.ok || !paymentUrl) {
       console.error("InfinitePay error:", checkoutData);
       return new Response(
         JSON.stringify({ error: "Failed to create payment link", details: checkoutData }),
@@ -148,13 +149,13 @@ Deno.serve(async (req) => {
     // Save payment URL on order
     await supabase
       .from("orders")
-      .update({ payment_url: checkoutData.checkout_url })
+      .update({ payment_url: paymentUrl })
       .eq("id", order.id);
 
     return new Response(
       JSON.stringify({
         order_id: order.id,
-        payment_url: checkoutData.checkout_url,
+        payment_url: paymentUrl,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
