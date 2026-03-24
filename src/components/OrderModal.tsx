@@ -1,11 +1,14 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { PosterState } from '@/data/posterData';
+import { PAPER_FORMATS, type PaperSize } from '@/data/posterData';
 
 interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   posterState?: PosterState;
+  posterRef?: React.RefObject<HTMLDivElement>;
+  paperSize?: string;
 }
 
 const formatCPF = (value: string) => {
@@ -16,7 +19,7 @@ const formatCPF = (value: string) => {
   return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
 };
 
-const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
+const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x40' }: OrderModalProps) => {
   const [email, setEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [cpf, setCpf] = useState('');
@@ -67,6 +70,39 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
     setLoading(true);
 
     try {
+      // Capture the poster as PDF client-side before checkout
+      let pdfStoragePath: string | null = null;
+      if (posterRef?.current) {
+        const { toast } = await import('sonner');
+        toast('Preparando seu painel…');
+        const el = posterRef.current;
+        const origBoxShadow = el.style.boxShadow;
+        el.style.boxShadow = 'none';
+        const { default: html2canvas } = await import('html2canvas');
+        const { default: jsPDF } = await import('jspdf');
+        const canvas = await html2canvas(el, { scale: 4, useCORS: true });
+        el.style.boxShadow = origBoxShadow;
+        const imgData = canvas.toDataURL('image/png');
+        const fmt = PAPER_FORMATS[paperSize as PaperSize] || PAPER_FORMATS['30x40'];
+        const totalW = fmt.mmWidth + fmt.bleed * 2;
+        const totalH = fmt.mmHeight + fmt.bleed * 2;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [totalW, totalH] });
+        pdf.addImage(imgData, 'PNG', 0, 0, totalW, totalH);
+        
+        // Convert PDF to base64
+        const pdfBase64 = pdf.output('datauristring').split(',')[1];
+        
+        // Upload via edge function
+        const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-poster-pdf', {
+          body: { pdf_base64: pdfBase64 },
+        });
+        if (uploadError) {
+          console.error('PDF upload error:', uploadError);
+        } else {
+          pdfStoragePath = uploadData?.pdf_storage_path || null;
+        }
+      }
+
       const response = await supabase.functions.invoke('create-checkout', {
         body: {
           email,
@@ -80,6 +116,7 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
           observations: obs || null,
           poster_config: posterState || {},
           site_url: window.location.origin,
+          pdf_storage_path: pdfStoragePath,
         },
       });
 

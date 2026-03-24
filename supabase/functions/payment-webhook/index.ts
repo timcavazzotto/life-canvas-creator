@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
       // Trigger printer for 'impresso' orders
       const { data: order } = await supabase
         .from("orders")
-        .select("order_type")
+        .select("order_type, pdf_storage_path")
         .eq("id", orderId)
         .single();
 
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
         });
       }
 
-      if (order?.order_type === "digital") {
+      if (order?.order_type === "digital" && !order?.pdf_storage_path) {
         await fetch(`${baseUrl}/functions/v1/generate-pdf`, {
           method: "POST",
           headers: {

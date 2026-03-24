@@ -419,7 +419,7 @@ const Index = () => {
       </footer>
 
       {/* MODAL */}
-      <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} posterState={st} />
+      <OrderModal isOpen={modalOpen} onClose={() => setModalOpen(false)} posterState={st} posterRef={posterRef} paperSize={paperSize} />
     </>);
 
 };

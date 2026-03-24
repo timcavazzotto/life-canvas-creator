@@ -29,6 +29,7 @@ Deno.serve(async (req) => {
       poster_config,
       cpf,
       full_address,
+      pdf_storage_path,
     } = body;
 
     if (!email || !order_type || !amount_cents) {
@@ -73,6 +74,7 @@ Deno.serve(async (req) => {
         poster_config,
         cpf: cpf || null,
         full_address: full_address || null,
+        pdf_storage_path: pdf_storage_path || null,
         status: "pending",
       })
       .select("id")
