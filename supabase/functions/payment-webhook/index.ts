@@ -77,13 +77,26 @@ Deno.serve(async (req) => {
         .eq("id", orderId)
         .single();
 
+      const baseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
       if (order?.order_type === "impresso") {
-        const baseUrl = Deno.env.get("SUPABASE_URL")!;
         await fetch(`${baseUrl}/functions/v1/send-to-printer`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            Authorization: `Bearer ${serviceKey}`,
+          },
+          body: JSON.stringify({ order_id: orderId }),
+        });
+      }
+
+      if (order?.order_type === "digital") {
+        await fetch(`${baseUrl}/functions/v1/generate-pdf`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${serviceKey}`,
           },
           body: JSON.stringify({ order_id: orderId }),
         });
