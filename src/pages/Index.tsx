@@ -415,6 +415,7 @@ const Index = () => {
       <footer className="site-footer">
         <div className="footer-brand">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
         <div className="footer-text">Mova-se enquanto há tempo · © 2025</div>
+        <div className="text-xs opacity-60 mt-2">Uma marca Studio Mets</div>
       </footer>
 
       {/* MODAL */}
