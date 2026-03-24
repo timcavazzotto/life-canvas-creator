@@ -412,7 +412,7 @@ const Index = () => {
       </section>
 
       {/* FOOTER */}
-      <footer className="site-footer">
+      <footer className="site-footer" style={{ color: '#f5f3ef' }}>
         <div className="footer-brand">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
         <div className="footer-text">Mova-se enquanto há tempo · © 2025</div>
         <div className="footer-text" style={{ opacity: 0.6 }}>Uma marca Studio Mets</div>
