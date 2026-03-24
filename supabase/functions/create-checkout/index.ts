@@ -27,6 +27,8 @@ Deno.serve(async (req) => {
       address,
       observations,
       poster_config,
+      cpf,
+      full_address,
     } = body;
 
     if (!email || !order_type || !amount_cents) {
