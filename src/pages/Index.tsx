@@ -416,6 +416,18 @@ const Index = () => {
         <div className="footer-brand">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
         <div className="footer-text">Mova-se enquanto há tempo · © 2025</div>
         <div className="footer-text" style={{ opacity: 0.6 }}>Uma marca Studio Mets</div>
+        <a
+          href="https://linktr.ee/studio.mets"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 mt-2 text-sm opacity-60 hover:opacity-100 transition-opacity"
+          style={{ color: 'inherit', textDecoration: 'none' }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.953 15.066l-.038-4.28 4.817-.002.002-3.239H8.39L11.9 3.66l-2.69-.001L6.275 7.545l-2.996-3.886-2.69.001 3.558 3.884H.463v3.239h4.6L5.1 15.066zM12.047 15.066l.038-4.28-4.817-.002-.002-3.239h4.384L8.1 3.66l2.69-.001 2.935 3.886 2.996-3.886 2.69.001-3.558 3.884h3.684v3.239h-4.6l-.037 4.283zM8.874 18.465c0-.924.754-1.672 1.684-1.672.929 0 1.683.748 1.683 1.672a1.678 1.678 0 01-1.683 1.672c-.93 0-1.684-.748-1.684-1.672z"/>
+          </svg>
+          linktr.ee/studio.mets
+        </a>
       </footer>
 
       {/* MODAL */}
