@@ -1,25 +1,31 @@
 
 
-## Plano: Corrigir visibilidade de "Uma marca Studio Mets" no footer
+## Plano: Corrigir footer
 
 ### Problema
-O footer usa `display: flex; justify-content: space-between` em layout horizontal. O terceiro elemento fica posicionado ao lado dos outros dois, mas com `text-xs` e `opacity-60` pode estar invisível ou fora da área visível. Além disso, as classes Tailwind podem conflitar com o CSS customizado.
+O footer tem layout `flex` horizontal com `justify-content: space-between`, causando cada elemento em posição diferente. A fonte de "Uma marca Studio Mets" usa inline styles enquanto os outros usam classes CSS com fontes/tamanhos diferentes. Resultado: visual desorganizado.
 
 ### Solução
-Usar CSS inline em vez de classes Tailwind e ajustar o layout do footer para acomodar 3 linhas empilhadas com `flex-wrap: wrap`.
+Reorganizar o footer para layout vertical centralizado e consistente:
 
-### Mudanças
-
-**`src/pages/Index.tsx`** (linha 418):
-- Trocar classes Tailwind por estilo inline com cor e tamanho explícitos
-- Adicionar `width: 100%` e `text-align: center` para garantir que apareça como linha separada
-
+**`src/pages/Index.tsx`** (linhas 415-419):
 ```tsx
-<div style={{ width: '100%', textAlign: 'center', fontSize: '11px', color: 'rgba(240,236,224,0.4)', marginTop: '8px' }}>
-  Uma marca Studio Mets
-</div>
+<footer className="site-footer">
+  <div className="footer-brand">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
+  <div className="footer-text">Mova-se enquanto há tempo · © 2025</div>
+  <div className="footer-text" style={{ opacity: 0.6 }}>Uma marca Studio Mets</div>
+</footer>
 ```
 
 **`src/App.css`** (linha 222):
-- Adicionar `flex-wrap: wrap` ao `.site-footer` para permitir que o terceiro item quebre para nova linha
+Alterar `.site-footer` para sempre usar layout vertical centralizado:
+```css
+.site-footer { padding: 48px; background: #1a1815; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+```
+
+Remover `flex-direction: column` duplicado do media query mobile (linha 395) já que agora é padrão.
+
+### Arquivos
+- `src/pages/Index.tsx`
+- `src/App.css`
 
