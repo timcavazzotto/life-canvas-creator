@@ -6,6 +6,8 @@ interface OrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   posterState?: PosterState;
+  posterRef?: React.RefObject<HTMLDivElement>;
+  paperSize?: string;
 }
 
 const formatCPF = (value: string) => {
