@@ -1,26 +1,25 @@
 
 
-## Plano: Adicionar "Studio Mets" no footer
+## Plano: Corrigir visibilidade de "Uma marca Studio Mets" no footer
 
-Editar o footer em `src/pages/Index.tsx` (linhas 414-418) para incluir "Studio Mets" como empresa mãe, abaixo ou junto ao texto existente.
+### Problema
+O footer usa `display: flex; justify-content: space-between` em layout horizontal. O terceiro elemento fica posicionado ao lado dos outros dois, mas com `text-xs` e `opacity-60` pode estar invisível ou fora da área visível. Além disso, as classes Tailwind podem conflitar com o CSS customizado.
 
-### Mudança
+### Solução
+Usar CSS inline em vez de classes Tailwind e ajustar o layout do footer para acomodar 3 linhas empilhadas com `flex-wrap: wrap`.
 
-No footer atual:
+### Mudanças
+
+**`src/pages/Index.tsx`** (linha 418):
+- Trocar classes Tailwind por estilo inline com cor e tamanho explícitos
+- Adicionar `width: 100%` e `text-align: center` para garantir que apareça como linha separada
+
+```tsx
+<div style={{ width: '100%', textAlign: 'center', fontSize: '11px', color: 'rgba(240,236,224,0.4)', marginTop: '8px' }}>
+  Uma marca Studio Mets
+</div>
 ```
-PROJETO 80+
-Mova-se enquanto há tempo · © 2025
-```
 
-Ficará:
-```
-PROJETO 80+
-Mova-se enquanto há tempo · © 2025
-Uma marca Studio Mets
-```
-
-O texto "Studio Mets" será adicionado como uma terceira linha no footer, com fonte menor e opacidade reduzida para hierarquia visual.
-
-### Arquivo
-- `src/pages/Index.tsx` — adicionar `<div>` com "Uma marca Studio Mets" dentro do `<footer>`.
+**`src/App.css`** (linha 222):
+- Adicionar `flex-wrap: wrap` ao `.site-footer` para permitir que o terceiro item quebre para nova linha
 
