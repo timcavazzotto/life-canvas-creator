@@ -255,10 +255,10 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
   justify-content: center;
   min-height: 42px;
   border-radius: 2px;
-  border: 1px solid rgba(54,85,69,0.22);
-  background: var(--accent) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px rgba(54,85,69,0.18);
+  border: 1px solid rgba(26, 24, 21, 0.22);
+  background: #365545 !important;
+  color: #f5f3ef !important;
+  box-shadow: 0 8px 18px rgba(26,24,21,0.12);
   text-decoration: none;
   line-height: 1;
   font-family: 'DM Mono', monospace;
@@ -273,7 +273,6 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
   font-size: 9px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  opacity: 1 !important;
 }
 .m-coupon-btn {
   flex: 0 0 auto;
@@ -289,25 +288,25 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .m-coupon-btn:hover,
 .m-coupon-btn:focus,
 .m-coupon-btn:active {
-  background: var(--accent) !important;
-  color: #fff !important;
-  border-color: rgba(54,85,69,0.28);
-  box-shadow: 0 10px 22px rgba(54,85,69,0.22);
-  opacity: 1 !important;
+  background: #2f493c !important;
+  color: #f5f3ef !important;
+  border-color: rgba(26, 24, 21, 0.28);
+  box-shadow: 0 10px 22px rgba(26,24,21,0.16);
 }
 .m-submit:focus-visible,
 .m-coupon-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(54,85,69,0.16), 0 10px 22px rgba(54,85,69,0.22);
+  box-shadow: 0 0 0 3px rgba(54,85,69,0.16), 0 10px 22px rgba(26,24,21,0.16);
 }
 .m-submit:disabled,
 .m-coupon-btn:disabled {
-  background: var(--accent) !important;
-  color: #fff !important;
-  border-color: rgba(54,85,69,0.2);
+  background: #365545 !important;
+  color: #f5f3ef !important;
+  border-color: rgba(26, 24, 21, 0.2);
   box-shadow: none;
-  opacity: 0.72 !important;
+  opacity: 1 !important;
   cursor: not-allowed;
+  filter: saturate(0.8);
 }
 .m-success { text-align: center; padding: 12px 0; }
 .m-success-icon { font-size: 32px; color: var(--accent); margin-bottom: 14px; }
