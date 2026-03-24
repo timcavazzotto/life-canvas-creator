@@ -4,6 +4,7 @@ import { WEEKS, TONES, LABELS, type PosterState } from '@/data/posterData';
 
 interface PosterPreviewProps {
   state: PosterState;
+  posterHeight?: number;
 }
 
 const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: st }, ref) => {
