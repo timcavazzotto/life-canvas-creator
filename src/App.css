@@ -227,26 +227,26 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 /* MODAL */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(26,24,21,0.6); z-index: 300; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
 .overlay.open { display: flex; }
-.modal { background: #fff; border: 1px solid rgba(0,0,0,0.1); padding: 40px; max-width: 440px; width: 92%; border-radius: 3px; position: relative; }
+.modal { background: #fff; border: 1px solid rgba(0,0,0,0.1); padding: 28px; max-width: 440px; width: 92%; border-radius: 3px; position: relative; max-height: 90vh; overflow-y: auto; }
 .m-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); cursor: pointer; letter-spacing: 0.1em; }
 .m-close:hover { color: var(--ink); }
 .m-title { font-size: 24px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
-.m-sub { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 24px; }
-.m-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.m-opt { border: 1px solid rgba(0,0,0,0.1); border-radius: 2px; padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.16s; }
+.m-sub { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
+.m-opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.m-opt { border: 1px solid rgba(0,0,0,0.1); border-radius: 2px; padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.16s; }
 .m-opt:hover { border-color: rgba(0,0,0,0.2); background: rgba(0,0,0,0.02); }
 .m-opt.sel { border-color: var(--accent); background: rgba(74,107,90,0.05); }
 .m-opt-title { font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
 .m-opt-desc { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.1em; color: var(--muted); text-transform: uppercase; }
 .m-opt-price { font-size: 22px; font-weight: 500; color: var(--accent); text-align: right; line-height: 1; }
 .m-opt-price small { display: block; font-family: 'DM Mono', monospace; font-size: 6.5px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
-.mform { display: flex; flex-direction: column; gap: 11px; }
+.mform { display: flex; flex-direction: column; gap: 8px; }
 .mf label { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; display: block; margin-bottom: 4px; }
 .mf input, .mf textarea { width: 100%; background: #f9f8f6; border: 1px solid rgba(0,0,0,0.1); color: var(--ink); font-family: 'Inter', sans-serif; font-size: 14px; padding: 8px 11px; outline: none; border-radius: 2px; transition: border-color 0.16s; }
 .mf input:focus, .mf textarea:focus { border-color: var(--accent); }
 .mf textarea { height: 60px; resize: none; font-size: 12px; }
-.m-submit { margin-top: 6px; background: var(--accent); color: #fff; border: none; padding: 13px; width: 100%; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.16s; }
-.m-submit:hover { background: var(--accent-h); }
+.m-submit { margin-top: 6px; background: var(--accent); color: #fff; border: none; padding: 10px; width: 100%; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border-radius: 2px; }
+.m-submit:hover { background: var(--accent); }
 .m-success { text-align: center; padding: 12px 0; }
 .m-success-icon { font-size: 32px; color: var(--accent); margin-bottom: 14px; }
 .m-success h3 { font-size: 22px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
@@ -337,7 +337,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
   .site-footer { flex-direction: column; padding: 32px 20px; text-align: center; gap: 8px; }
 
   /* MODAL */
-  .modal { padding: 24px; width: 96%; }
+  .modal { padding: 18px; width: 96%; }
 }
 
 @media print {
