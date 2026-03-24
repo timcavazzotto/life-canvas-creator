@@ -1,31 +1,40 @@
 
 
-## Plano: Corrigir footer
+## Plano: Corrigir bug de data e download do PDF
 
-### Problema
-O footer tem layout `flex` horizontal com `justify-content: space-between`, causando cada elemento em posição diferente. A fonte de "Uma marca Studio Mets" usa inline styles enquanto os outros usam classes CSS com fontes/tamanhos diferentes. Resultado: visual desorganizado.
+### Problema 1: Data seleciona dia anterior
+`new Date("1985-06-15")` interpreta como meia-noite UTC → no Brasil (UTC-3) vira dia anterior. Ocorre em 6 locais nos arquivos `Index.tsx` e `PosterPreview.tsx`.
 
-### Solução
-Reorganizar o footer para layout vertical centralizado e consistente:
+**Solução**: Usar `parse` do `date-fns` para interpretar como data local.
 
-**`src/pages/Index.tsx`** (linhas 415-419):
-```tsx
-<footer className="site-footer">
-  <div className="footer-brand">PROJETO 80<span style={{ fontSize: '0.7em' }}>+</span></div>
-  <div className="footer-text">Mova-se enquanto há tempo · © 2025</div>
-  <div className="footer-text" style={{ opacity: 0.6 }}>Uma marca Studio Mets</div>
-</footer>
+### Problema 2: Botão de download não funciona
+O fluxo atual: webhook marca pedido como `paid` → dispara `generate-pdf` de forma assíncrona. Mas o polling na página ThankYou **para assim que detecta `status === 'paid'`** (linha 28). Nesse momento, o PDF ainda não foi gerado, então `pdf_storage_path` é `null`. A página mostra "O PDF está sendo gerado" mas nunca mais verifica.
+
+**Solução**: Continuar polling até que `pdf_storage_path` esteja preenchido (para pedidos digitais).
+
+---
+
+### Mudanças
+
+**`src/pages/Index.tsx`** — Importar `parse` do `date-fns` e substituir `new Date(st.birth)` por `parse(st.birth, 'yyyy-MM-dd', new Date())` nas linhas 61, 252, 259, 264.
+
+**`src/components/PosterPreview.tsx`** — Mesma substituição nas linhas 19 e 68.
+
+**`src/pages/ThankYou.tsx`** — Alterar condição de parar polling (linha 27-28):
+```typescript
+// Antes:
+if (data.status === 'paid') {
+  setPolling(false);
+}
+
+// Depois:
+if (data.status === 'paid' && (data.order_type !== 'digital' || data.pdf_storage_path)) {
+  setPolling(false);
+}
 ```
-
-**`src/App.css`** (linha 222):
-Alterar `.site-footer` para sempre usar layout vertical centralizado:
-```css
-.site-footer { padding: 48px; background: #1a1815; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-```
-
-Remover `flex-direction: column` duplicado do media query mobile (linha 395) já que agora é padrão.
 
 ### Arquivos
 - `src/pages/Index.tsx`
-- `src/App.css`
+- `src/components/PosterPreview.tsx`
+- `src/pages/ThankYou.tsx`
 
