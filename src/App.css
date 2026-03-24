@@ -219,7 +219,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .pfb-tag { font-family: 'DM Mono', monospace; font-size: 5.5px; letter-spacing: 0.18em; color: var(--p-ink-faint, #9a9488); text-transform: uppercase; margin-top: 2px; }
 
 /* FOOTER */
-.site-footer { padding: 48px; background: #1a1815; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.site-footer { padding: 48px; background: #1a1815; border-top: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .footer-brand { font-size: 18px; font-weight: 400; letter-spacing: 0.02em; color: rgba(240,236,224,0.5); }
 .footer-brand sup { font-size: 10px; color: var(--accent); opacity: 0.6; vertical-align: super; }
 .footer-text { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.18em; color: rgba(240,236,224,0.35); text-transform: uppercase; }
