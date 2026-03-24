@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { PosterState } from '@/data/posterData';
 import { PAPER_FORMATS, type PaperSize } from '@/data/posterData';
+import { Progress } from '@/components/ui/progress';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -11,12 +12,35 @@ interface OrderModalProps {
   paperSize?: string;
 }
 
+type LoadingStep = 'capturing' | 'uploading' | 'redirecting' | null;
+
+const STEP_CONFIG: Record<Exclude<LoadingStep, null>, { label: string; progress: number }> = {
+  capturing: { label: 'Gerando seu painel em alta resolução…', progress: 33 },
+  uploading: { label: 'Enviando arquivo…', progress: 66 },
+  redirecting: { label: 'Redirecionando ao pagamento…', progress: 90 },
+};
+
 const formatCPF = (value: string) => {
   const digits = value.replace(/\D/g, '').slice(0, 11);
   if (digits.length <= 3) return digits;
   if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
   if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
   return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+};
+
+const LoadingOverlay = ({ step }: { step: Exclude<LoadingStep, null> }) => {
+  const { label, progress } = STEP_CONFIG[step];
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-6 animate-fade-in">
+      <div
+        className="w-12 h-12 border-4 border-muted rounded-full animate-spin"
+        style={{ borderTopColor: 'hsl(var(--primary))' }}
+      />
+      <p className="text-base font-medium text-foreground text-center">{label}</p>
+      <Progress value={progress} className="w-full max-w-xs h-2" />
+      <p className="text-xs text-muted-foreground">Não feche esta janela</p>
+    </div>
+  );
 };
 
 const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x40' }: OrderModalProps) => {
@@ -30,11 +54,12 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
   const [couponData, setCouponData] = useState<{ id: string; name: string; commission_pct: number } | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<LoadingStep>(null);
   const [error, setError] = useState('');
 
   const handleOverlayClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) onClose();
-  }, [onClose]);
+    if (e.target === e.currentTarget && !loading) onClose();
+  }, [onClose, loading]);
 
   const validateCoupon = async () => {
     if (!coupon.trim()) {
@@ -70,11 +95,9 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
     setLoading(true);
 
     try {
-      // Capture the poster as PDF client-side before checkout
       let pdfStoragePath: string | null = null;
       if (posterRef?.current) {
-        const { toast } = await import('sonner');
-        toast('Preparando seu painel…');
+        setLoadingStep('capturing');
         const el = posterRef.current;
         const origBoxShadow = el.style.boxShadow;
         el.style.boxShadow = 'none';
@@ -88,11 +111,10 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
         const totalH = fmt.mmHeight + fmt.bleed * 2;
         const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [totalW, totalH] });
         pdf.addImage(imgData, 'PNG', 0, 0, totalW, totalH);
-        
-        // Convert PDF to base64
+
         const pdfBase64 = pdf.output('datauristring').split(',')[1];
-        
-        // Upload via edge function
+
+        setLoadingStep('uploading');
         const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-poster-pdf', {
           body: { pdf_base64: pdfBase64 },
         });
@@ -103,6 +125,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
         }
       }
 
+      setLoadingStep('redirecting');
       const response = await supabase.functions.invoke('create-checkout', {
         body: {
           email,
@@ -133,10 +156,12 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
       setError('Erro ao processar pedido. Tente novamente.');
     } finally {
       setLoading(false);
+      setLoadingStep(null);
     }
   };
 
   const handleClose = () => {
+    if (loading) return;
     setSuccess(false);
     setEmail('');
     setCustomerName('');
@@ -153,7 +178,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
   return (
     <div className={`overlay${isOpen ? ' open' : ''}`} onClick={handleOverlayClick}>
       <div className="modal">
-        <button className="m-close" onClick={handleClose}>✕ fechar</button>
+        <button className="m-close" onClick={handleClose} disabled={loading}>✕ fechar</button>
         {!success ? (
           <div>
             <div className="m-title">Seu painel</div>
@@ -194,86 +219,90 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
                 <div className="m-opt-price">R$ 89<small>+ frete · 7–10 dias</small></div>
               </div>
             </div>
-            <div className="mform">
-              <div className="mf">
-                <label>Nome completo *</label>
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Seu nome completo"
-                />
-              </div>
-              <div className="mf">
-                <label>E-mail *</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seu@email.com"
-                />
-              </div>
-              <div className="mf">
-                <label>CPF *</label>
-                <input
-                  type="text"
-                  value={cpf}
-                  onChange={(e) => setCpf(formatCPF(e.target.value))}
-                  placeholder="000.000.000-00"
-                  maxLength={14}
-                />
-              </div>
-              <div className="mf">
-                <label>Endereço completo *</label>
-                <textarea
-                  value={fullAddress}
-                  onChange={(e) => setFullAddress(e.target.value)}
-                  placeholder="Rua, número, bairro, cidade, estado, CEP"
-                />
-              </div>
-              <div className="mf">
-                <label>Observações (opcional)</label>
-                <input
-                  type="text"
-                  value={obs}
-                  onChange={(e) => setObs(e.target.value)}
-                  placeholder="Ex: presente, tamanho…"
-                />
-              </div>
-              <div className="mf">
-                <label>Código de indicação (opcional)</label>
-                <div style={{ display: 'flex', gap: 8 }}>
+            {loading && loadingStep ? (
+              <LoadingOverlay step={loadingStep} />
+            ) : (
+              <div className="mform">
+                <div className="mf">
+                  <label>Nome completo *</label>
                   <input
                     type="text"
-                    value={coupon}
-                    onChange={(e) => {
-                      setCoupon(e.target.value.toUpperCase());
-                      if (couponStatus !== 'idle') setCouponStatus('idle');
-                    }}
-                    placeholder="Ex: MARIA10"
-                    style={{ flex: 1 }}
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Seu nome completo"
                   />
-                  <button
-                    type="button"
-                    className="m-coupon-btn"
-                    onClick={validateCoupon}
-                    disabled={!coupon.trim() || couponStatus === 'checking'}
-                  >
-                    {couponStatus === 'checking' ? '...' : 'Aplicar'}
-                  </button>
                 </div>
-                {couponStatus === 'valid' && (
-                  <div className="m-coupon-msg valid">✓ Código de {couponData?.name} aplicado!</div>
-                )}
-                {couponStatus === 'invalid' && (
-                  <div className="m-coupon-msg invalid">Código inválido</div>
-                )}
+                <div className="mf">
+                  <label>E-mail *</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="seu@email.com"
+                  />
+                </div>
+                <div className="mf">
+                  <label>CPF *</label>
+                  <input
+                    type="text"
+                    value={cpf}
+                    onChange={(e) => setCpf(formatCPF(e.target.value))}
+                    placeholder="000.000.000-00"
+                    maxLength={14}
+                  />
+                </div>
+                <div className="mf">
+                  <label>Endereço completo *</label>
+                  <textarea
+                    value={fullAddress}
+                    onChange={(e) => setFullAddress(e.target.value)}
+                    placeholder="Rua, número, bairro, cidade, estado, CEP"
+                  />
+                </div>
+                <div className="mf">
+                  <label>Observações (opcional)</label>
+                  <input
+                    type="text"
+                    value={obs}
+                    onChange={(e) => setObs(e.target.value)}
+                    placeholder="Ex: presente, tamanho…"
+                  />
+                </div>
+                <div className="mf">
+                  <label>Código de indicação (opcional)</label>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input
+                      type="text"
+                      value={coupon}
+                      onChange={(e) => {
+                        setCoupon(e.target.value.toUpperCase());
+                        if (couponStatus !== 'idle') setCouponStatus('idle');
+                      }}
+                      placeholder="Ex: MARIA10"
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="button"
+                      className="m-coupon-btn"
+                      onClick={validateCoupon}
+                      disabled={!coupon.trim() || couponStatus === 'checking'}
+                    >
+                      {couponStatus === 'checking' ? '...' : 'Aplicar'}
+                    </button>
+                  </div>
+                  {couponStatus === 'valid' && (
+                    <div className="m-coupon-msg valid">✓ Código de {couponData?.name} aplicado!</div>
+                  )}
+                  {couponStatus === 'invalid' && (
+                    <div className="m-coupon-msg invalid">Código inválido</div>
+                  )}
+                </div>
+                {error && <div className="m-error">{error}</div>}
+                <button className="m-submit" onClick={handleSubmit} disabled={loading}>
+                  Finalizar pedido →
+                </button>
               </div>
-              {error && <div className="m-error">{error}</div>}
-              <button className="m-submit" onClick={handleSubmit} disabled={loading}>
-                {loading ? 'Processando...' : 'Finalizar pedido →'}
-              </button>
-            </div>
+            )}
           </div>
         ) : (
           <div className="m-success">
