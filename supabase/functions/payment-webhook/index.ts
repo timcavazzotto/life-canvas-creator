@@ -18,29 +18,49 @@ Deno.serve(async (req) => {
     );
 
     const body = await req.json();
+    console.log("Webhook received:", JSON.stringify(body));
 
-    // TODO: Validate InfinitePay webhook signature
-    // const signature = req.headers.get('x-infinitepay-signature');
-    // if (!validateSignature(signature, body)) { return 401 }
+    // InfinitePay webhook fields
+    const {
+      order_nsu,
+      transaction_nsu,
+      invoice_slug,
+      amount,
+      paid_amount,
+      capture_method,
+      status,
+      // Fallback for older format
+      order_id: legacyOrderId,
+      payment_id: legacyPaymentId,
+    } = body;
 
-    const { order_id, payment_id, status } = body;
+    const orderId = order_nsu || legacyOrderId;
+    const paymentId = transaction_nsu || legacyPaymentId;
+    const paymentStatus = status || (paid_amount ? "paid" : null);
 
-    if (!order_id || !status) {
+    if (!orderId) {
+      console.error("Missing order identifier in webhook");
       return new Response(
-        JSON.stringify({ error: "Missing order_id or status" }),
+        JSON.stringify({ error: "Missing order identifier" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    if (status === "approved" || status === "paid") {
+    // Consider payment successful if paid_amount exists or status indicates success
+    const isPaid =
+      paymentStatus === "approved" ||
+      paymentStatus === "paid" ||
+      (paid_amount && paid_amount > 0);
+
+    if (isPaid) {
       const { error } = await supabase
         .from("orders")
         .update({
           status: "paid",
-          payment_id: payment_id || null,
+          payment_id: paymentId || null,
           paid_at: new Date().toISOString(),
         })
-        .eq("id", order_id);
+        .eq("id", orderId);
 
       if (error) {
         console.error("Update order error:", error);
@@ -50,15 +70,14 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Trigger PDF generation / printer notification for 'impresso' orders
+      // Trigger printer for 'impresso' orders
       const { data: order } = await supabase
         .from("orders")
         .select("order_type")
-        .eq("id", order_id)
+        .eq("id", orderId)
         .single();
 
       if (order?.order_type === "impresso") {
-        // Call send-to-printer function
         const baseUrl = Deno.env.get("SUPABASE_URL")!;
         await fetch(`${baseUrl}/functions/v1/send-to-printer`, {
           method: "POST",
@@ -66,11 +85,13 @@ Deno.serve(async (req) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
           },
-          body: JSON.stringify({ order_id }),
+          body: JSON.stringify({ order_id: orderId }),
         });
       }
 
-      console.log(`Order ${order_id} marked as paid`);
+      console.log(`Order ${orderId} marked as paid`);
+    } else {
+      console.log(`Webhook for order ${orderId} with status: ${paymentStatus} - no action taken`);
     }
 
     return new Response(

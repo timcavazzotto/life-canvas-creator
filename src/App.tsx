@@ -13,6 +13,7 @@ import CampaignAnalytics from "./pages/admin/CampaignAnalytics";
 import OrderManager from "./pages/admin/OrderManager";
 import AffiliateLogin from "./pages/AffiliateLogin";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
+import ThankYou from "./pages/ThankYou";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           </Route>
           <Route path="/afiliado/login" element={<AffiliateLogin />} />
           <Route path="/afiliado" element={<AffiliateDashboard />} />
+          <Route path="/obrigado" element={<ThankYou />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

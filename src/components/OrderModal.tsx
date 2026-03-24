@@ -72,6 +72,7 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
           address: selOption === 'impresso' ? addr : null,
           observations: obs || null,
           poster_config: posterState || {},
+          site_url: window.location.origin,
         },
       });
 
@@ -80,14 +81,13 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
       const data = response.data;
       if (data?.payment_url) {
         window.location.href = data.payment_url;
-      } else {
-        // Fallback: show success for now (while InfinitePay key is not set)
-        setSuccess(true);
+        return;
       }
+      // Fallback if no payment URL (provider not configured)
+      setSuccess(true);
     } catch (err: any) {
       console.error('Checkout error:', err);
-      // Fallback: show success screen while payment isn't configured
-      setSuccess(true);
+      setError('Erro ao processar pedido. Tente novamente.');
     } finally {
       setLoading(false);
     }

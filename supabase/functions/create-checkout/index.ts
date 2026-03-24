@@ -29,7 +29,6 @@ Deno.serve(async (req) => {
       poster_config,
     } = body;
 
-    // Validate
     if (!email || !order_type || !amount_cents) {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
@@ -84,28 +83,74 @@ Deno.serve(async (req) => {
     }
 
     // InfinitePay checkout
-    const infinitePayKey = Deno.env.get("INFINITEPAY_API_KEY");
-    if (infinitePayKey) {
-      // TODO: Call InfinitePay API to create checkout
-      // const checkoutResponse = await fetch('https://api.infinitepay.io/v2/checkout', { ... });
-      // const checkoutData = await checkoutResponse.json();
-      // Update order with payment_url and payment_id
-      // return Response with payment_url for redirect
-
+    const infinitePayHandle = Deno.env.get("INFINITEPAY_HANDLE");
+    if (!infinitePayHandle) {
       return new Response(
         JSON.stringify({
           order_id: order.id,
-          message: "InfinitePay integration ready - configure API endpoint",
+          message: "Payment provider not configured yet.",
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // No payment key configured - return order info
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const siteUrl = body.site_url || "https://id-preview--89088344-711b-4e4e-95ac-0da1a6185711.lovable.app";
+
+    const description = order_type === "digital"
+      ? "Painel Projeto 80+ (PDF Digital)"
+      : "Painel Projeto 80+ (Quadro Impresso)";
+
+    const checkoutPayload = {
+      handle: infinitePayHandle,
+      items: [
+        {
+          quantity: 1,
+          price: amount_cents,
+          description,
+        },
+      ],
+      order_nsu: order.id,
+      redirect_url: `${siteUrl}/obrigado?order_id=${order.id}`,
+      webhook_url: `${supabaseUrl}/functions/v1/payment-webhook`,
+      customer: {
+        name: customer_name || "Cliente",
+        email,
+      },
+    };
+
+    console.log("Creating InfinitePay checkout:", JSON.stringify(checkoutPayload));
+
+    const checkoutRes = await fetch(
+      "https://api.infinitepay.io/invoices/public/checkout/links",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(checkoutPayload),
+      }
+    );
+
+    const checkoutData = await checkoutRes.json();
+    console.log("InfinitePay response:", JSON.stringify(checkoutData));
+
+    if (!checkoutRes.ok || !checkoutData.checkout_url) {
+      console.error("InfinitePay error:", checkoutData);
+      return new Response(
+        JSON.stringify({ error: "Failed to create payment link", details: checkoutData }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Save payment URL on order
+    await supabase
+      .from("orders")
+      .update({ payment_url: checkoutData.checkout_url })
+      .eq("id", order.id);
+
     return new Response(
       JSON.stringify({
         order_id: order.id,
-        message: "Order created. Payment provider not configured yet.",
+        payment_url: checkoutData.checkout_url,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
