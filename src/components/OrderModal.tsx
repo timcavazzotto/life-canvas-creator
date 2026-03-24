@@ -18,7 +18,7 @@ const formatCPF = (value: string) => {
   return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
 };
 
-const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
+const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x40' }: OrderModalProps) => {
   const [email, setEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
   const [cpf, setCpf] = useState('');
