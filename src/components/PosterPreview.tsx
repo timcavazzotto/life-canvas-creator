@@ -65,7 +65,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         </div>
         <div className="pf">
           <span className="pf-label">{lb.nasc}</span>
-          <div className="pf-val">{st.birth ? format(new Date(st.birth), 'dd/MM/yyyy') : '\u00a0'}</div>
+          <div className="pf-val">{st.birth ? format(parse(st.birth, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '\u00a0'}</div>
         </div>
         <div className="pf">
           <span className="pf-label">{lb.exp}</span>
