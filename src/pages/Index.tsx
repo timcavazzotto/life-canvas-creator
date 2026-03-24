@@ -406,7 +406,7 @@ const Index = () => {
 
           <div className="cfg-preview">
             <div className="cfg-preview-hint">Pré-visualização ao vivo</div>
-            <PosterPreview ref={posterRef} state={st} />
+            <PosterPreview ref={posterRef} state={st} posterHeight={PAPER_FORMATS[paperSize].previewHeight} />
           </div>
         </div>
       </section>
