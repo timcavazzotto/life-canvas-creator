@@ -253,8 +253,8 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .m-success h3 { font-size: 22px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
 .m-success p { font-size: 13px; color: var(--muted); line-height: 1.7; }
 .m-coupon-btn { background: var(--accent); color: #fff; border: none; padding: 8px 14px; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: background 0.16s; white-space: nowrap; }
-.m-coupon-btn:hover { background: var(--accent-h); }
-.m-coupon-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.m-coupon-btn:hover { background: var(--accent-h) !important; color: #fff !important; }
+.m-coupon-btn:disabled { opacity: 0.5 !important; cursor: not-allowed; background: var(--accent) !important; color: #fff !important; }
 .m-coupon-msg { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em; margin-top: 4px; }
 .m-coupon-msg.valid { color: var(--accent); }
 .m-coupon-msg.invalid { color: #c44; }
