@@ -34,6 +34,7 @@ const App = () => (
           </Route>
           <Route path="/afiliado/login" element={<AffiliateLogin />} />
           <Route path="/afiliado" element={<AffiliateDashboard />} />
+          <Route path="/obrigado" element={<ThankYou />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

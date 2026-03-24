@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.send-to-printer]
 verify_jwt = false
+
+[functions.check-order-status]
+verify_jwt = false
