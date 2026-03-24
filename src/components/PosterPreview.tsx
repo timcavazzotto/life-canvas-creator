@@ -1,5 +1,5 @@
 import { useMemo, forwardRef } from 'react';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { WEEKS, TONES, LABELS, type PosterState } from '@/data/posterData';
 
 interface PosterPreviewProps {
