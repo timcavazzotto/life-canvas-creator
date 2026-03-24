@@ -256,7 +256,7 @@ const Index = () => {
                       <Calendar
                         mode="single"
                         captionLayout="dropdown-buttons"
-                        selected={st.birth ? new Date(st.birth) : undefined}
+                        selected={st.birth ? parse(st.birth, 'yyyy-MM-dd', new Date()) : undefined}
                         onSelect={(date) => update({ birth: date ? format(date, 'yyyy-MM-dd') : null })}
                         disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
                         initialFocus
