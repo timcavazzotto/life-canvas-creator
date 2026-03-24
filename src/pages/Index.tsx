@@ -249,7 +249,7 @@ const Index = () => {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {st.birth ? format(new Date(st.birth), "dd/MM/yyyy") : <span>Selecione a data</span>}
+                        {st.birth ? format(parse(st.birth, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy") : <span>Selecione a data</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
