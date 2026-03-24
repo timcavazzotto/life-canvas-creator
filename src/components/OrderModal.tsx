@@ -8,10 +8,19 @@ interface OrderModalProps {
   posterState?: PosterState;
 }
 
+const formatCPF = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+};
+
 const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
-  const [selOption, setSelOption] = useState<'digital' | 'impresso'>('digital');
   const [email, setEmail] = useState('');
-  const [addr, setAddr] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [fullAddress, setFullAddress] = useState('');
   const [obs, setObs] = useState('');
   const [coupon, setCoupon] = useState('');
   const [couponStatus, setCouponStatus] = useState<'idle' | 'valid' | 'invalid' | 'checking'>('idle');
@@ -47,17 +56,13 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
     }
   };
 
-  const getPrice = () => selOption === 'digital' ? 2900 : 8900;
+  const cpfDigits = cpf.replace(/\D/g, '');
 
   const handleSubmit = async () => {
-    if (!email.includes('@')) {
-      setError('Informe um e-mail válido.');
-      return;
-    }
-    if (selOption === 'impresso' && !addr.trim()) {
-      setError('Informe o endereço para envio.');
-      return;
-    }
+    if (!customerName.trim()) { setError('Informe seu nome completo.'); return; }
+    if (!email.includes('@')) { setError('Informe um e-mail válido.'); return; }
+    if (cpfDigits.length !== 11) { setError('Informe um CPF válido (11 dígitos).'); return; }
+    if (!fullAddress.trim()) { setError('Informe seu endereço completo.'); return; }
     setError('');
     setLoading(true);
 
@@ -65,11 +70,13 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
       const response = await supabase.functions.invoke('create-checkout', {
         body: {
           email,
-          order_type: selOption,
-          amount_cents: getPrice(),
+          order_type: 'digital',
+          amount_cents: 2900,
           affiliate_code: couponStatus === 'valid' ? coupon.trim().toUpperCase() : null,
-          customer_name: posterState?.name || null,
-          address: selOption === 'impresso' ? addr : null,
+          customer_name: customerName.trim(),
+          cpf: cpfDigits,
+          full_address: fullAddress.trim(),
+          address: fullAddress.trim(),
           observations: obs || null,
           poster_config: posterState || {},
           site_url: window.location.origin,
@@ -77,13 +84,12 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
       });
 
       if (response.error) throw new Error(response.error.message);
-      
+
       const data = response.data;
       if (data?.payment_url) {
         window.location.href = data.payment_url;
         return;
       }
-      // Fallback if no payment URL (provider not configured)
       setSuccess(true);
     } catch (err: any) {
       console.error('Checkout error:', err);
@@ -96,13 +102,14 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
   const handleClose = () => {
     setSuccess(false);
     setEmail('');
-    setAddr('');
+    setCustomerName('');
+    setCpf('');
+    setFullAddress('');
     setObs('');
     setCoupon('');
     setCouponStatus('idle');
     setCouponData(null);
     setError('');
-    setSelOption('digital');
     onClose();
   };
 
@@ -115,10 +122,7 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
             <div className="m-title">Seu painel</div>
             <div className="m-sub">Escolha como quer receber</div>
             <div className="m-opts">
-              <div
-                className={`m-opt${selOption === 'digital' ? ' sel' : ''}`}
-                onClick={() => setSelOption('digital')}
-              >
+              <div className="m-opt sel">
                 <div>
                   <div className="m-opt-title">PDF Digital</div>
                   <div className="m-opt-desc">Alta resolução · Baixe e imprima</div>
@@ -126,9 +130,26 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
                 <div className="m-opt-price">R$ 29<small>entrega imediata</small></div>
               </div>
               <div
-                className={`m-opt${selOption === 'impresso' ? ' sel' : ''}`}
-                onClick={() => setSelOption('impresso')}
+                className="m-opt"
+                style={{ opacity: 0.5, cursor: 'default', position: 'relative', pointerEvents: 'none' }}
               >
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    background: 'hsl(var(--primary))',
+                    color: 'hsl(var(--primary-foreground))',
+                    fontSize: '0.65rem',
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: '9999px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  Em breve
+                </div>
                 <div>
                   <div className="m-opt-title">Quadro Impresso</div>
                   <div className="m-opt-desc">Papel premium A3 · Enviado à sua casa</div>
@@ -138,7 +159,16 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
             </div>
             <div className="mform">
               <div className="mf">
-                <label>E-mail</label>
+                <label>Nome completo *</label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Seu nome completo"
+                />
+              </div>
+              <div className="mf">
+                <label>E-mail *</label>
                 <input
                   type="email"
                   value={email}
@@ -146,16 +176,24 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
                   placeholder="seu@email.com"
                 />
               </div>
-              {selOption === 'impresso' && (
-                <div className="mf">
-                  <label>Endereço completo</label>
-                  <textarea
-                    value={addr}
-                    onChange={(e) => setAddr(e.target.value)}
-                    placeholder="Rua, número, bairro, cidade, CEP"
-                  />
-                </div>
-              )}
+              <div className="mf">
+                <label>CPF *</label>
+                <input
+                  type="text"
+                  value={cpf}
+                  onChange={(e) => setCpf(formatCPF(e.target.value))}
+                  placeholder="000.000.000-00"
+                  maxLength={14}
+                />
+              </div>
+              <div className="mf">
+                <label>Endereço completo *</label>
+                <textarea
+                  value={fullAddress}
+                  onChange={(e) => setFullAddress(e.target.value)}
+                  placeholder="Rua, número, bairro, cidade, estado, CEP"
+                />
+              </div>
               <div className="mf">
                 <label>Observações (opcional)</label>
                 <input

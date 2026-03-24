@@ -211,7 +211,8 @@ export default function OrderManager() {
               <div className="grid grid-cols-2 gap-3">
                 <Detail label="Cliente" value={selected.customer_name} />
                 <Detail label="Email" value={selected.email} />
-                <Detail label="Endereço" value={selected.address} />
+                <Detail label="CPF" value={(selected as any).cpf} />
+                <Detail label="Endereço completo" value={(selected as any).full_address || selected.address} />
                 <Detail label="Tipo" value={selected.order_type} />
                 <Detail label="Valor" value={formatCents(selected.amount_cents)} />
                 <Detail label="Status Pagamento" value={selected.status} />
