@@ -231,7 +231,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .m-close { position: absolute; top: 14px; right: 16px; background: none; border: none; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); cursor: pointer; letter-spacing: 0.1em; }
 .m-close:hover { color: var(--ink); }
 .m-title { font-size: 24px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
-.m-sub { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 24px; }
+.m-sub { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
 .m-opts { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
 .m-opt { border: 1px solid rgba(0,0,0,0.1); border-radius: 2px; padding: 14px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.16s; }
 .m-opt:hover { border-color: rgba(0,0,0,0.2); background: rgba(0,0,0,0.02); }
