@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { PosterState } from '@/data/posterData';
+import { PAPER_FORMATS, type PaperSize } from '@/data/posterData';
 
 interface OrderModalProps {
   isOpen: boolean;
