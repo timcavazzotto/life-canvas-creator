@@ -4,9 +4,10 @@ import { WEEKS, TONES, LABELS, type PosterState } from '@/data/posterData';
 
 interface PosterPreviewProps {
   state: PosterState;
+  posterHeight?: number;
 }
 
-const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: st }, ref) => {
+const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: st, posterHeight }, ref) => {
   const t = TONES[st.tone];
   const l = st.lang;
   const lb = LABELS[l];
@@ -44,7 +45,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
   const hasDedic = st.dedic.trim().length > 0;
 
   return (
-    <div ref={ref} className={`poster ${st.theme}`}>
+    <div ref={ref} className={`poster ${st.theme}`} style={posterHeight ? { height: posterHeight } : undefined}>
       <div className="ph">
         <div>
           <div className="ph-eyebrow">{t.eyebrow[l]}</div>

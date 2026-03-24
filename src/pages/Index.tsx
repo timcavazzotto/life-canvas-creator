@@ -6,7 +6,7 @@ import '../App.css';
 import DemoGrid from '@/components/DemoGrid';
 import PosterPreview from '@/components/PosterPreview';
 import OrderModal from '@/components/OrderModal';
-import { THEMES, TONES, LANGS, WEEKS, type PosterState } from '@/data/posterData';
+import { THEMES, TONES, LANGS, WEEKS, PAPER_FORMATS, type PosterState, type PaperSize } from '@/data/posterData';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -16,7 +16,7 @@ const Index = () => {
   const [st, setSt] = useState<PosterState>({
     name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
   });
-  const [paperSize, setPaperSize] = useState<'a2' | 'a3'>('a3');
+  const [paperSize, setPaperSize] = useState<PaperSize>('30x40');
   const posterRef = useRef<HTMLDivElement>(null);
 
   const downloadPDF = useCallback(async () => {
@@ -31,10 +31,11 @@ const Index = () => {
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
     el.style.boxShadow = origBoxShadow;
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: paperSize });
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH);
+    const fmt = PAPER_FORMATS[paperSize];
+    const totalW = fmt.mmWidth + fmt.bleed * 2;
+    const totalH = fmt.mmHeight + fmt.bleed * 2;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [totalW, totalH] });
+    pdf.addImage(imgData, 'PNG', 0, 0, totalW, totalH);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
   }, [paperSize]);
@@ -382,8 +383,16 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner" style={{ display: 'flex' }}>
                 <div className="cfg-pills">
-                  <button className={`cfg-pill${paperSize === 'a3' ? ' active' : ''}`} onClick={() => setPaperSize('a3')}>A3 (297×420mm)</button>
-                  <button className={`cfg-pill${paperSize === 'a2' ? ' active' : ''}`} onClick={() => setPaperSize('a2')}>A2 (420×594mm)</button>
+                  {(Object.entries(PAPER_FORMATS) as [PaperSize, typeof PAPER_FORMATS[PaperSize]][]).map(([key, fmt]) => (
+                    <button
+                      key={key}
+                      className={`cfg-pill${paperSize === key ? ' active' : ''}`}
+                      onClick={() => setPaperSize(key)}
+                      title={fmt.desc}
+                    >
+                      {fmt.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -397,7 +406,7 @@ const Index = () => {
 
           <div className="cfg-preview">
             <div className="cfg-preview-hint">Pré-visualização ao vivo</div>
-            <PosterPreview ref={posterRef} state={st} />
+            <PosterPreview ref={posterRef} state={st} posterHeight={PAPER_FORMATS[paperSize].previewHeight} />
           </div>
         </div>
       </section>

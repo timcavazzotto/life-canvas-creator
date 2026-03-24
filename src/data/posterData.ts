@@ -75,6 +75,22 @@ export const LABELS: Record<string, Record<string, string>> = {
 export const WEEK_POS = [0, 4, 9, 13, 17, 21, 26, 30, 34, 38, 43, 47];
 export const WEEKS = 52;
 
+export type PaperSize = '30x40' | '40x50' | 'a3' | 'a2';
+
+export const PAPER_FORMATS: Record<PaperSize, {
+  label: string;
+  desc: string;
+  mmWidth: number;
+  mmHeight: number;
+  bleed: number; // mm per side
+  previewHeight: number; // px (for 660px width)
+}> = {
+  '30x40': { label: '30×40 cm', desc: 'Moldura padrão', mmWidth: 300, mmHeight: 400, bleed: 5, previewHeight: 880 },
+  '40x50': { label: '40×50 cm', desc: 'Moldura grande', mmWidth: 400, mmHeight: 500, bleed: 5, previewHeight: 825 },
+  'a3':    { label: 'A3', desc: '297×420 mm', mmWidth: 297, mmHeight: 420, bleed: 0, previewHeight: 933 },
+  'a2':    { label: 'A2', desc: '420×594 mm', mmWidth: 420, mmHeight: 594, bleed: 0, previewHeight: 933 },
+};
+
 export interface PosterState {
   name: string;
   birth: string | null;
