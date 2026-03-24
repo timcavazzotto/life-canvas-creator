@@ -6,7 +6,7 @@ import '../App.css';
 import DemoGrid from '@/components/DemoGrid';
 import PosterPreview from '@/components/PosterPreview';
 import OrderModal from '@/components/OrderModal';
-import { THEMES, TONES, LANGS, WEEKS, type PosterState } from '@/data/posterData';
+import { THEMES, TONES, LANGS, WEEKS, PAPER_FORMATS, type PosterState, type PaperSize } from '@/data/posterData';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
