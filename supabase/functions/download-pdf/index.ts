@@ -1,0 +1,54 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const { order_id } = await req.json();
+    if (!order_id) {
+      return new Response(JSON.stringify({ error: "order_id is required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const { data: order, error } = await supabase
+      .from("orders")
+      .select("status, pdf_storage_path")
+      .eq("id", order_id)
+      .single();
+
+    if (error || !order) {
+      return new Response(JSON.stringify({ error: "Order not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (order.status !== "paid") {
+      return new Response(JSON.stringify({ error: "Order not paid" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    if (!order.pdf_storage_path) {
+      return new Response(JSON.stringify({ error: "PDF not ready yet" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const { data: signedUrlData, error: signError } = await supabase.storage
+      .from("order-pdfs")
+      .createSignedUrl(order.pdf_storage_path, 3600);
+
+    if (signError || !signedUrlData?.signedUrl) {
+      return new Response(JSON.stringify({ error: "Failed to generate download URL" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    return new Response(JSON.stringify({ url: signedUrlData.signedUrl }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+});
