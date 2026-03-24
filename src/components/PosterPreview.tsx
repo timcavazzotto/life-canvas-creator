@@ -45,7 +45,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
   const hasDedic = st.dedic.trim().length > 0;
 
   return (
-    <div ref={ref} className={`poster ${st.theme}`}>
+    <div ref={ref} className={`poster ${st.theme}`} style={posterHeight ? { height: posterHeight } : undefined}>
       <div className="ph">
         <div>
           <div className="ph-eyebrow">{t.eyebrow[l]}</div>
