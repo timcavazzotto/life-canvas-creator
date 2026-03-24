@@ -337,7 +337,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
   .site-footer { flex-direction: column; padding: 32px 20px; text-align: center; gap: 8px; }
 
   /* MODAL */
-  .modal { padding: 24px; width: 96%; }
+  .modal { padding: 18px; width: 96%; }
 }
 
 @media print {
