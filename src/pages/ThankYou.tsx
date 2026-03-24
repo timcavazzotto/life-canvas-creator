@@ -45,12 +45,14 @@ const ThankYou = () => {
   }, [orderId, polling, checkStatus]);
 
   const downloadPdf = async () => {
-    if (!orderStatus?.pdf_storage_path) return;
-    const { data } = await supabase.storage
-      .from('order-pdfs')
-      .createSignedUrl(orderStatus.pdf_storage_path, 3600);
-    if (data?.signedUrl) {
-      window.open(data.signedUrl, '_blank');
+    if (!orderId) return;
+    const { data, error } = await supabase.functions.invoke('download-pdf', {
+      body: { order_id: orderId },
+    });
+    if (data?.url) {
+      window.open(data.url, '_blank');
+    } else {
+      console.error('Erro ao gerar link de download', error);
     }
   };
 
