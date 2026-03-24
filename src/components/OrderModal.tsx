@@ -70,6 +70,39 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
     setLoading(true);
 
     try {
+      // Capture the poster as PDF client-side before checkout
+      let pdfStoragePath: string | null = null;
+      if (posterRef?.current) {
+        const { toast } = await import('sonner');
+        toast('Preparando seu painel…');
+        const el = posterRef.current;
+        const origBoxShadow = el.style.boxShadow;
+        el.style.boxShadow = 'none';
+        const { default: html2canvas } = await import('html2canvas');
+        const { default: jsPDF } = await import('jspdf');
+        const canvas = await html2canvas(el, { scale: 4, useCORS: true });
+        el.style.boxShadow = origBoxShadow;
+        const imgData = canvas.toDataURL('image/png');
+        const fmt = PAPER_FORMATS[paperSize as PaperSize] || PAPER_FORMATS['30x40'];
+        const totalW = fmt.mmWidth + fmt.bleed * 2;
+        const totalH = fmt.mmHeight + fmt.bleed * 2;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [totalW, totalH] });
+        pdf.addImage(imgData, 'PNG', 0, 0, totalW, totalH);
+        
+        // Convert PDF to base64
+        const pdfBase64 = pdf.output('datauristring').split(',')[1];
+        
+        // Upload via edge function
+        const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-poster-pdf', {
+          body: { pdf_base64: pdfBase64 },
+        });
+        if (uploadError) {
+          console.error('PDF upload error:', uploadError);
+        } else {
+          pdfStoragePath = uploadData?.pdf_storage_path || null;
+        }
+      }
+
       const response = await supabase.functions.invoke('create-checkout', {
         body: {
           email,
@@ -83,6 +116,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
           observations: obs || null,
           poster_config: posterState || {},
           site_url: window.location.origin,
+          pdf_storage_path: pdfStoragePath,
         },
       });
 

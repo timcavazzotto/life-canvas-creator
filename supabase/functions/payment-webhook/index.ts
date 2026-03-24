@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
         });
       }
 
-      if (order?.order_type === "digital") {
+      if (order?.order_type === "digital" && !order?.pdf_storage_path) {
         await fetch(`${baseUrl}/functions/v1/generate-pdf`, {
           method: "POST",
           headers: {

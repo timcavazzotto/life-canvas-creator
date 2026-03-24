@@ -74,6 +74,7 @@ Deno.serve(async (req) => {
         poster_config,
         cpf: cpf || null,
         full_address: full_address || null,
+        pdf_storage_path: pdf_storage_path || null,
         status: "pending",
       })
       .select("id")
