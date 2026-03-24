@@ -383,8 +383,16 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner" style={{ display: 'flex' }}>
                 <div className="cfg-pills">
-                  <button className={`cfg-pill${paperSize === 'a3' ? ' active' : ''}`} onClick={() => setPaperSize('a3')}>A3 (297×420mm)</button>
-                  <button className={`cfg-pill${paperSize === 'a2' ? ' active' : ''}`} onClick={() => setPaperSize('a2')}>A2 (420×594mm)</button>
+                  {(Object.entries(PAPER_FORMATS) as [PaperSize, typeof PAPER_FORMATS[PaperSize]][]).map(([key, fmt]) => (
+                    <button
+                      key={key}
+                      className={`cfg-pill${paperSize === key ? ' active' : ''}`}
+                      onClick={() => setPaperSize(key)}
+                      title={fmt.desc}
+                    >
+                      {fmt.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
