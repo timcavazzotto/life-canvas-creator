@@ -72,6 +72,7 @@ const OrderModal = ({ isOpen, onClose, posterState }: OrderModalProps) => {
           address: selOption === 'impresso' ? addr : null,
           observations: obs || null,
           poster_config: posterState || {},
+          site_url: window.location.origin,
         },
       });
 
