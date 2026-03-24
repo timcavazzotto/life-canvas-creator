@@ -31,10 +31,11 @@ const Index = () => {
     const canvas = await html2canvas(el, { scale: 4, useCORS: true });
     el.style.boxShadow = origBoxShadow;
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: paperSize });
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-    pdf.addImage(imgData, 'PNG', 0, 0, pageW, pageH);
+    const fmt = PAPER_FORMATS[paperSize];
+    const totalW = fmt.mmWidth + fmt.bleed * 2;
+    const totalH = fmt.mmHeight + fmt.bleed * 2;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [totalW, totalH] });
+    pdf.addImage(imgData, 'PNG', 0, 0, totalW, totalH);
     pdf.save('projeto80plus.pdf');
     toast.success('PDF baixado!');
   }, [paperSize]);
