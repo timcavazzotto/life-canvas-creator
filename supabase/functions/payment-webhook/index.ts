@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
       // Trigger printer for 'impresso' orders
       const { data: order } = await supabase
         .from("orders")
-        .select("order_type")
+        .select("order_type, pdf_storage_path")
         .eq("id", orderId)
         .single();
 
