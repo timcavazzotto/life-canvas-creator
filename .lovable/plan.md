@@ -1,40 +1,34 @@
 
 
-## Plano: Corrigir bug de data e download do PDF
+## Plano: Corrigir download do PDF
 
-### Problema 1: Data seleciona dia anterior
-`new Date("1985-06-15")` interpreta como meia-noite UTC → no Brasil (UTC-3) vira dia anterior. Ocorre em 6 locais nos arquivos `Index.tsx` e `PosterPreview.tsx`.
+### Problema
+O bucket `order-pdfs` é privado. O cliente tenta criar uma URL assinada usando a chave anon sem sessão autenticada → a operação é rejeitada pelo storage. O PDF existe, mas o botão não consegue gerar o link de download.
 
-**Solução**: Usar `parse` do `date-fns` para interpretar como data local.
-
-### Problema 2: Botão de download não funciona
-O fluxo atual: webhook marca pedido como `paid` → dispara `generate-pdf` de forma assíncrona. Mas o polling na página ThankYou **para assim que detecta `status === 'paid'`** (linha 28). Nesse momento, o PDF ainda não foi gerado, então `pdf_storage_path` é `null`. A página mostra "O PDF está sendo gerado" mas nunca mais verifica.
-
-**Solução**: Continuar polling até que `pdf_storage_path` esteja preenchido (para pedidos digitais).
-
----
+### Solução
+Criar uma edge function `download-pdf` que recebe o `order_id`, verifica que o pedido está pago, e retorna uma signed URL gerada com a service role key.
 
 ### Mudanças
 
-**`src/pages/Index.tsx`** — Importar `parse` do `date-fns` e substituir `new Date(st.birth)` por `parse(st.birth, 'yyyy-MM-dd', new Date())` nas linhas 61, 252, 259, 264.
+**Nova edge function `supabase/functions/download-pdf/index.ts`**:
+- Recebe `{ order_id }` via POST
+- Busca o pedido no banco e valida que `status === 'paid'` e `pdf_storage_path` existe
+- Gera signed URL com service role key (1h de validade)
+- Retorna `{ url }` ao cliente
 
-**`src/components/PosterPreview.tsx`** — Mesma substituição nas linhas 19 e 68.
-
-**`src/pages/ThankYou.tsx`** — Alterar condição de parar polling (linha 27-28):
+**`src/pages/ThankYou.tsx`** — Alterar `downloadPdf` para invocar a edge function em vez de chamar storage diretamente:
 ```typescript
-// Antes:
-if (data.status === 'paid') {
-  setPolling(false);
-}
-
-// Depois:
-if (data.status === 'paid' && (data.order_type !== 'digital' || data.pdf_storage_path)) {
-  setPolling(false);
-}
+const downloadPdf = async () => {
+  const { data } = await supabase.functions.invoke('download-pdf', {
+    body: { order_id: orderId },
+  });
+  if (data?.url) {
+    window.open(data.url, '_blank');
+  }
+};
 ```
 
 ### Arquivos
-- `src/pages/Index.tsx`
-- `src/components/PosterPreview.tsx`
+- `supabase/functions/download-pdf/index.ts` (novo)
 - `src/pages/ThankYou.tsx`
 
