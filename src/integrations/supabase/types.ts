@@ -96,9 +96,11 @@ export type Database = {
           amount_cents: number
           commission_cents: number | null
           commission_paid: boolean
+          cpf: string | null
           created_at: string
           customer_name: string | null
           email: string
+          full_address: string | null
           id: string
           observations: string | null
           order_type: string
@@ -120,9 +122,11 @@ export type Database = {
           amount_cents: number
           commission_cents?: number | null
           commission_paid?: boolean
+          cpf?: string | null
           created_at?: string
           customer_name?: string | null
           email: string
+          full_address?: string | null
           id?: string
           observations?: string | null
           order_type: string
@@ -144,9 +148,11 @@ export type Database = {
           amount_cents?: number
           commission_cents?: number | null
           commission_paid?: boolean
+          cpf?: string | null
           created_at?: string
           customer_name?: string | null
           email?: string
+          full_address?: string | null
           id?: string
           observations?: string | null
           order_type?: string
