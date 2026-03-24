@@ -137,7 +137,8 @@ Deno.serve(async (req) => {
     const checkoutData = await checkoutRes.json();
     console.log("InfinitePay response:", JSON.stringify(checkoutData));
 
-    if (!checkoutRes.ok || !checkoutData.checkout_url) {
+    const paymentUrl = checkoutData.checkout_url || checkoutData.url;
+    if (!checkoutRes.ok || !paymentUrl) {
       console.error("InfinitePay error:", checkoutData);
       return new Response(
         JSON.stringify({ error: "Failed to create payment link", details: checkoutData }),
