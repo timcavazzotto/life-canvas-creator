@@ -398,7 +398,7 @@ const Index = () => {
             </div>
 
             <div className="cfg-cta">
-              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={downloadPDF}>▶ Quero meu painel</button>
+              <button className="cfg-btn-gold bg-primary text-primary-foreground" onClick={() => setModalOpen(true)}>▶ Quero meu painel</button>
               
               <div className="cfg-note">Impressão premium a partir de R$ 89</div>
             </div>
