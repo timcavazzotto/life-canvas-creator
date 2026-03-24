@@ -1,27 +1,42 @@
 
 
-## Plano: Corrigir alinhamento das décadas com o grid
+## Plano: Adicionar formatos de moldura 30×40 e 40×50 mantendo A2/A3
 
-### Problema raiz
-A `decade-col` tem 8 itens flex (um por década) com `gap: 1px`, gerando 7 gaps de 1px (= 7px total). Enquanto isso, `year-rows` tem 80 itens flex com `gap: 1px`, gerando 79 gaps de 1px (= 79px total). Essa diferença de 72px no espaço consumido por gaps faz com que os labels de década fiquem progressivamente desalinhados das linhas do grid.
+### Resumo
+Expandir o seletor de formato para 4 opções: **30×40cm**, **40×50cm**, **A3**, **A2**. O preview HTML ajusta sua proporção conforme o formato selecionado. O PDF inclui 5mm de sangria (bleed) nos formatos de moldura.
 
-### Solução
-Trocar a abordagem: em vez de 8 itens flex na `decade-col`, renderizar **1 item por ano** (80 itens), com o mesmo `gap` e `flex` que as linhas do grid. Apenas os anos múltiplos de 10 mostram texto; os demais ficam vazios. Isso garante alinhamento pixel-perfect.
+### Proporções e alturas (largura fixa 660px)
+
+| Formato | Dimensão (mm) | Ratio (w/h) | Altura preview (px) |
+|---------|---------------|-------------|---------------------|
+| 30×40   | 300×400       | 0.75        | 880px               |
+| 40×50   | 400×500       | 0.80        | 825px               |
+| A3      | 297×420       | 0.707       | 933px               |
+| A2      | 420×594       | 0.707       | 933px               |
 
 ### Alterações
 
-**1. `src/components/PosterPreview.tsx`**
-- Substituir o `decadeLabels` por um array de 0..expect, onde cada item tem o label apenas se `year % 10 === 0`
-- Substituir o bloco JSX da `decade-col` para renderizar um `<div>` por ano (com classe `dec-lbl`), mostrando o número apenas nos múltiplos de 10
-- Manter `dec-sep` class nos anos onde `year > 0 && year % 10 === 0`
+**1. `src/pages/Index.tsx`**
+- Tipo de `paperSize`: `'30x40' | '40x50' | 'a3' | 'a2'`, default `'30x40'`
+- Mapa de configurações por formato:
+  - Dimensões PDF em mm (com bleed de 5mm para molduras, sem bleed para A)
+  - Altura do preview em px
+- Botões: `30×40 cm` · `40×50 cm` · `A3` · `A2`
+- `downloadPDF`: usar `format: [largura_mm, altura_mm]` do mapa
+- Passar altura do poster para `PosterPreview` via style ou prop
 
-**2. `src/App.css`**
-- `.decade-col`: manter `gap: 1px` (agora terá 79 gaps, igual ao year-rows)
-- `.dec-lbl`: manter `flex: 1` (cada label ocupa o mesmo espaço que um `.yr`)
-- `.dec-lbl.dec-sep`: manter `margin-top: 4px` (idêntico ao `.yr.dec-sep`)
+**2. `src/components/PosterPreview.tsx`**
+- Aceitar prop `posterHeight` (number) e aplicar como `style={{ height: posterHeight }}`
 
-### Resultado
-- Cada label de década ocupa exatamente a mesma altura que a linha do grid correspondente
-- Gaps idênticos entre decade-col e year-rows
-- Separações de década (`dec-sep`) perfeitamente sincronizadas
+**3. `src/App.css`**
+- `.poster`: trocar `height: 933px` por height via style inline (removido do CSS)
+- Mobile: ajustar `margin-bottom` negativo dinamicamente ou usar valor conservador
+
+**4. `src/data/posterData.ts`**
+- Adicionar constante `PAPER_FORMATS` com as 4 opções e suas dimensões
+
+### PDF com sangria (formatos de moldura)
+- 30×40: PDF gerado em 310×410mm (5mm bleed cada lado)
+- 40×50: PDF gerado em 410×510mm
+- A3/A2: PDF gerado nas dimensões padrão, sem bleed
 
