@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import '../App.css';
@@ -58,7 +58,7 @@ const Index = () => {
 
   // Stats
   const total = st.expect * WEEKS;
-  const lived = st.birth ? Math.min(Math.floor((Date.now() - new Date(st.birth).getTime()) / 6048e5), total) : 0;
+  const lived = st.birth ? Math.min(Math.floor((Date.now() - parse(st.birth, 'yyyy-MM-dd', new Date()).getTime()) / 6048e5), total) : 0;
   const left = Math.max(0, total - lived);
   const pct = lived > 0 ? Math.round(lived / total * 100) : 0;
 
@@ -249,19 +249,19 @@ const Index = () => {
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {st.birth ? format(new Date(st.birth), "dd/MM/yyyy") : <span>Selecione a data</span>}
+                        {st.birth ? format(parse(st.birth, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy") : <span>Selecione a data</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         captionLayout="dropdown-buttons"
-                        selected={st.birth ? new Date(st.birth) : undefined}
+                        selected={st.birth ? parse(st.birth, 'yyyy-MM-dd', new Date()) : undefined}
                         onSelect={(date) => update({ birth: date ? format(date, 'yyyy-MM-dd') : null })}
                         disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
                         initialFocus
                         className={cn("p-3 pointer-events-auto")}
-                        defaultMonth={st.birth ? new Date(st.birth) : new Date(1985, 0)}
+                        defaultMonth={st.birth ? parse(st.birth, 'yyyy-MM-dd', new Date()) : new Date(1985, 0)}
                         fromYear={1920}
                         toYear={new Date().getFullYear()}
                         locale={ptBR}

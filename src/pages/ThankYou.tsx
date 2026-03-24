@@ -24,7 +24,7 @@ const ThankYou = () => {
       });
       if (fnError) throw fnError;
       setOrderStatus(data);
-      if (data.status === 'paid') {
+      if (data.status === 'paid' && (data.order_type !== 'digital' || data.pdf_storage_path)) {
         setPolling(false);
       }
     } catch (err) {
