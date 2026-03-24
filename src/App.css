@@ -165,7 +165,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .cfg-preview-hint { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.2em; color: #a09a90; text-transform: uppercase; margin-bottom: 16px; text-align: center; }
 
 /* POSTER */
-.poster { width: 660px; height: 933px; background: #f8f4e8; padding: 38px 42px 32px; position: relative; box-shadow: 0 4px 32px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06); transition: background-color 0.4s; display: flex; flex-direction: column; overflow: hidden; }
+.poster { width: 660px; background: #f8f4e8; padding: 38px 42px 32px; position: relative; box-shadow: 0 4px 32px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06); transition: background-color 0.4s; display: flex; flex-direction: column; overflow: hidden; }
 .poster::before { content: ''; position: absolute; inset: 12px; border: 0.75px solid var(--p-rule, #1e1408); opacity: 0.14; pointer-events: none; z-index: 1; }
 .poster::after { content: ''; position: absolute; inset: 17px; border: 0.5px solid var(--p-rule, #1e1408); opacity: 0.06; pointer-events: none; z-index: 1; }
 .poster.theme-classico { --p-bg: #fafafa; --p-ink: #0e0e0e; --p-ink-mid: #3a3a3a; --p-ink-faint: #aaa; --p-border: #ccc; --p-accent: #0e0e0e; --p-lived: #d0d0d0; --p-lived-border: #aaa; --p-future: #ccc; --p-rule: #0e0e0e; background: var(--p-bg); }
