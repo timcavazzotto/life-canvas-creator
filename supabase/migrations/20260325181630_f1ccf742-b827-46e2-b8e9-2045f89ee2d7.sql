@@ -1,0 +1,1 @@
+ALTER TABLE public.affiliates ADD COLUMN discount_pct numeric NOT NULL DEFAULT 0;

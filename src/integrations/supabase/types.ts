@@ -20,6 +20,7 @@ export type Database = {
           code: string
           commission_pct: number
           created_at: string
+          discount_pct: number
           email: string
           id: string
           name: string
@@ -31,6 +32,7 @@ export type Database = {
           code: string
           commission_pct?: number
           created_at?: string
+          discount_pct?: number
           email: string
           id?: string
           name: string
@@ -42,6 +44,7 @@ export type Database = {
           code?: string
           commission_pct?: number
           created_at?: string
+          discount_pct?: number
           email?: string
           id?: string
           name?: string
