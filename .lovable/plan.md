@@ -1,30 +1,48 @@
 
 
-## Plano: Indicador de progresso no checkout
+## Plano: Ajustes no Admin (Afiliados + Pedidos)
 
-### Problema
-Ao clicar em "Finalizar pedido", o processo de captura do poster (html2canvas scale:4) + geração do PDF + upload leva vários segundos. O botão só mostra "Processando..." sem indicar o que está acontecendo, dando a impressão de travamento.
+### Resumo
 
-### Solução
-Adicionar um estado de progresso com etapas visíveis, substituindo o conteúdo do formulário por um overlay com mensagens de progresso e uma barra animada.
+Três mudanças:
+1. **Campo de desconto por afiliado** — cada afiliado pode ter um percentual de desconto no produto (ex: 10% OFF para quem usar o código)
+2. **Código 100% OFF** — permitir desconto de 100%, zerando o valor (para testes/presentes)
+3. **Tabela de pedidos** — remover coluna "Impressão", renomear/remover "Rastreio", adicionar coluna "Afiliado"
 
-### Mudanças em `src/components/OrderModal.tsx`
+---
 
-1. **Novo estado `loadingStep`** com valores: `'capturing'` | `'uploading'` | `'redirecting'` | `null`
+### Detalhes Técnicos
 
-2. **Atualizar `handleSubmit`** para setar o step em cada fase:
-   - `'capturing'` → antes do html2canvas
-   - `'uploading'` → antes do upload-poster-pdf  
-   - `'redirecting'` → antes do create-checkout
+#### 1. Nova coluna `discount_pct` na tabela `affiliates`
 
-3. **Overlay de progresso** quando `loading === true`: mostrar no lugar do formulário um bloco centralizado com:
-   - Spinner animado (CSS puro)
-   - Texto da etapa atual ("Gerando seu painel em alta resolução…", "Enviando arquivo…", "Redirecionando ao pagamento…")
-   - Barra de progresso animada (component Progress do shadcn) avançando por etapa (33% → 66% → 90%)
-   - Texto "Não feche esta janela" abaixo
+- Migration: `ALTER TABLE affiliates ADD COLUMN discount_pct numeric NOT NULL DEFAULT 0;`
+- Valor de 0 a 100. Um afiliado com `discount_pct = 100` funciona como código 100% OFF.
 
-4. **Remover o toast** de "Preparando seu painel…" (linha 77) — agora é redundante com o indicador visual.
+#### 2. Admin — Tela de Afiliados (`AffiliateManager.tsx`)
 
-### Arquivo
-- `src/components/OrderModal.tsx`
+- Adicionar campo editável "Desconto %" na tabela e no formulário de criação, similar ao campo de comissão já existente.
+- O admin poderá definir qualquer valor de 0 a 100.
+
+#### 3. Aplicar desconto no checkout
+
+- **`OrderModal.tsx`**: Ao validar o cupom, buscar também `discount_pct` do afiliado. Calcular o `amount_cents` final: `2900 * (1 - discount_pct/100)`. Mostrar o valor com desconto ao usuário.
+- **`create-checkout/index.ts`**: Ao encontrar o afiliado, buscar `discount_pct` e recalcular `amount_cents` no servidor (fonte de verdade). Se `amount_cents` resultar em 0, pular a criação do link de pagamento e marcar o pedido como `paid` diretamente.
+
+#### 4. Tabela de Pedidos (`OrderManager.tsx`)
+
+- Remover coluna "Impressão" (`print_status`)
+- Remover coluna "Rastreio" (`tracking_code`)
+- Adicionar coluna "Afiliado" mostrando `affiliate_code` (ou "—" se vazio)
+
+---
+
+### Arquivos modificados
+
+| Arquivo | Mudança |
+|---|---|
+| Migration SQL | Adicionar `discount_pct` na tabela `affiliates` |
+| `src/pages/admin/AffiliateManager.tsx` | Campo de desconto no form e na tabela |
+| `src/components/OrderModal.tsx` | Buscar `discount_pct`, calcular preço com desconto, exibir |
+| `supabase/functions/create-checkout/index.ts` | Validar desconto server-side, tratar pedido grátis |
+| `src/pages/admin/OrderManager.tsx` | Remover colunas Impressão/Rastreio, adicionar Afiliado |
 
