@@ -192,6 +192,7 @@ const AffiliateManager = () => {
                   <TableHead>Código</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Comissão %</TableHead>
+                  <TableHead>Desconto %</TableHead>
                   <TableHead>Saldo Pendente</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Ações</TableHead>

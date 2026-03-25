@@ -183,10 +183,7 @@ export default function OrderManager() {
                     <TableCell>
                       <Badge className={statusColors[o.status] || 'bg-muted'}>{o.status}</Badge>
                     </TableCell>
-                    <TableCell>
-                      <Badge className={printStatusColors[o.print_status || 'pending'] || 'bg-muted'}>{o.print_status || 'pending'}</Badge>
-                    </TableCell>
-                    <TableCell className="max-w-[120px] truncate">{o.tracking_code || '—'}</TableCell>
+                    <TableCell className="max-w-[120px] truncate">{o.affiliate_code || '—'}</TableCell>
                     <TableCell><Eye className="h-4 w-4 text-muted-foreground" /></TableCell>
                   </TableRow>
                 ))
