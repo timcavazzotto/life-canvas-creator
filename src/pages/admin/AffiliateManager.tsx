@@ -88,7 +88,7 @@ const AffiliateManager = () => {
       toast.error('Erro ao adicionar: ' + error.message);
     } else {
       toast.success('Afiliada adicionada!');
-      setForm({ name: '', code: '', email: '', commission_pct: '10' });
+      setForm({ name: '', code: '', email: '', commission_pct: '10', discount_pct: '0' });
       setShowForm(false);
       fetchAffiliates();
     }
