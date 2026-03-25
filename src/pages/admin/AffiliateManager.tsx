@@ -220,6 +220,19 @@ const AffiliateManager = () => {
                       />
                     </TableCell>
                     <TableCell>
+                      <Input
+                        type="number"
+                        defaultValue={(a as any).discount_pct ?? 0}
+                        min={0}
+                        max={100}
+                        className="w-20 h-8 text-sm"
+                        onBlur={e => {
+                          const v = parseFloat(e.target.value);
+                          if (!isNaN(v) && v !== (a as any).discount_pct) updateDiscount(a.id, v);
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
                       <div className="text-sm">
                         <span className={a.pending_balance > 0 ? 'text-green-600 font-medium' : 'text-muted-foreground'}>
                           {fmt(a.pending_balance)}

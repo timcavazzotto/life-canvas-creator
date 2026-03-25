@@ -301,7 +301,10 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
                     </button>
                   </div>
                   {couponStatus === 'valid' && (
-                    <div className="m-coupon-msg valid">✓ Código de {couponData?.name} aplicado!</div>
+                    <div className="m-coupon-msg valid">
+                      ✓ Código de {couponData?.name} aplicado!
+                      {couponData && couponData.discount_pct > 0 && ` (${couponData.discount_pct}% de desconto)`}
+                    </div>
                   )}
                   {couponStatus === 'invalid' && (
                     <div className="m-coupon-msg invalid">Código inválido</div>
