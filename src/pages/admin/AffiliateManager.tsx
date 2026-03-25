@@ -31,7 +31,7 @@ const AffiliateManager = () => {
   const [affiliates, setAffiliates] = useState<AffiliateWithBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', code: '', email: '', commission_pct: '10' });
+  const [form, setForm] = useState({ name: '', code: '', email: '', commission_pct: '10', discount_pct: '0' });
   const [paymentModal, setPaymentModal] = useState<{ open: boolean; affiliate: AffiliateWithBalance | null }>({ open: false, affiliate: null });
   const [paymentForm, setPaymentForm] = useState({ amount: '', notes: '' });
   const [paymentLoading, setPaymentLoading] = useState(false);
