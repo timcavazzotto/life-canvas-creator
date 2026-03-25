@@ -97,6 +97,18 @@ Deno.serve(async (req) => {
       );
     }
 
+    // If 100% discount, skip payment — order already marked as paid
+    if (final_amount_cents === 0) {
+      const siteUrl = body.site_url || "https://id-preview--89088344-711b-4e4e-95ac-0da1a6185711.lovable.app";
+      return new Response(
+        JSON.stringify({
+          order_id: order.id,
+          payment_url: `${siteUrl}/obrigado?order_id=${order.id}`,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // InfinitePay checkout
     const infinitePayHandle = Deno.env.get("INFINITEPAY_HANDLE");
     if (!infinitePayHandle) {
