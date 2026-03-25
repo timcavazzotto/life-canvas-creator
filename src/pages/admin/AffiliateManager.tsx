@@ -169,7 +169,8 @@ const AffiliateManager = () => {
               <Input placeholder="Código (ex: MARIA10)" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} required />
               <Input type="email" placeholder="Email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
               <div className="flex gap-2">
-                <Input type="number" placeholder="Comissão %" value={form.commission_pct} onChange={e => setForm(f => ({ ...f, commission_pct: e.target.value }))} min={0} max={100} className="w-24" />
+              <Input type="number" placeholder="Comissão %" value={form.commission_pct} onChange={e => setForm(f => ({ ...f, commission_pct: e.target.value }))} min={0} max={100} className="w-24" />
+                <Input type="number" placeholder="Desconto %" value={form.discount_pct} onChange={e => setForm(f => ({ ...f, discount_pct: e.target.value }))} min={0} max={100} className="w-24" />
                 <Button type="submit">Salvar</Button>
               </div>
             </form>
