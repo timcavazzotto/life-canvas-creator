@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
       items: [
         {
           quantity: 1,
-          price: amount_cents,
+          price: final_amount_cents,
           description,
         },
       ],
