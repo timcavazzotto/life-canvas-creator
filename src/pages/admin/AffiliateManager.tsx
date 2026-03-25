@@ -82,6 +82,7 @@ const AffiliateManager = () => {
       code: form.code.toUpperCase(),
       email: form.email,
       commission_pct: parseFloat(form.commission_pct) || 10,
+      discount_pct: parseFloat(form.discount_pct) || 0,
     });
     if (error) {
       toast.error('Erro ao adicionar: ' + error.message);
