@@ -189,7 +189,17 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
                   <div className="m-opt-title">PDF Digital</div>
                   <div className="m-opt-desc">Alta resolução · Baixe e imprima</div>
                 </div>
-                <div className="m-opt-price">R$ 29<small>entrega imediata</small></div>
+              <div className="m-opt-price">
+                {couponStatus === 'valid' && couponData && couponData.discount_pct > 0 ? (
+                  <>
+                    <span style={{ textDecoration: 'line-through', opacity: 0.5, fontSize: '0.85em', marginRight: 4 }}>R$ 29</span>
+                    R$ {((2900 * (1 - couponData.discount_pct / 100)) / 100).toFixed(0) === '0' ? 'Grátis' : `${((2900 * (1 - couponData.discount_pct / 100)) / 100).toFixed(0)}`}
+                    <small>{couponData.discount_pct}% OFF</small>
+                  </>
+                ) : (
+                  <>R$ 29<small>entrega imediata</small></>
+                )}
+              </div>
               </div>
               <div
                 className="m-opt"
