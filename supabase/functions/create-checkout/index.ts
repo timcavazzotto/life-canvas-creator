@@ -42,21 +42,29 @@ Deno.serve(async (req) => {
     // Check affiliate code
     let affiliate_id = null;
     let commission_cents = 0;
+    let discount_pct = 0;
     if (affiliate_code) {
       const { data: affiliate } = await supabase
         .from("affiliates")
-        .select("id, commission_pct")
+        .select("id, commission_pct, discount_pct")
         .eq("code", affiliate_code)
         .eq("active", true)
         .maybeSingle();
 
       if (affiliate) {
         affiliate_id = affiliate.id;
+        discount_pct = affiliate.discount_pct || 0;
+        const final_amount = Math.round(amount_cents * (1 - discount_pct / 100));
         commission_cents = Math.round(
-          (amount_cents * affiliate.commission_pct) / 100
+          (final_amount * affiliate.commission_pct) / 100
         );
       }
     }
+
+    // Apply discount server-side
+    const final_amount_cents = affiliate_id && discount_pct > 0
+      ? Math.max(0, Math.round(amount_cents * (1 - discount_pct / 100)))
+      : amount_cents;
 
     // Create order
     const { data: order, error: orderError } = await supabase
