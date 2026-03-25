@@ -104,6 +104,11 @@ const AffiliateManager = () => {
     toast.success('Comissão atualizada');
   };
 
+  const updateDiscount = async (id: string, pct: number) => {
+    await supabase.from('affiliates').update({ discount_pct: pct }).eq('id', id);
+    toast.success('Desconto atualizado');
+  };
+
   const deleteAffiliate = async (id: string) => {
     if (!confirm('Remover esta afiliada?')) return;
     await supabase.from('affiliates').delete().eq('id', id);
