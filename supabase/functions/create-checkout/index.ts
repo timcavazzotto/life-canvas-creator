@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
       .insert({
         email,
         order_type,
-        amount_cents,
+        amount_cents: final_amount_cents,
         affiliate_code: affiliate_code || null,
         affiliate_id,
         commission_cents,
@@ -83,7 +83,8 @@ Deno.serve(async (req) => {
         cpf: cpf || null,
         full_address: full_address || null,
         pdf_storage_path: pdf_storage_path || null,
-        status: "pending",
+        status: final_amount_cents === 0 ? "paid" : "pending",
+        paid_at: final_amount_cents === 0 ? new Date().toISOString() : null,
       })
       .select("id")
       .single();
