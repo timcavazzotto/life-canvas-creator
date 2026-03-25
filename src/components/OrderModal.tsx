@@ -51,7 +51,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
   const [obs, setObs] = useState('');
   const [coupon, setCoupon] = useState('');
   const [couponStatus, setCouponStatus] = useState<'idle' | 'valid' | 'invalid' | 'checking'>('idle');
-  const [couponData, setCouponData] = useState<{ id: string; name: string; commission_pct: number } | null>(null);
+  const [couponData, setCouponData] = useState<{ id: string; name: string; commission_pct: number; discount_pct: number } | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState<LoadingStep>(null);
