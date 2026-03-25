@@ -161,8 +161,7 @@ export default function OrderManager() {
                 <TableHead>Tipo</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Pagamento</TableHead>
-                <TableHead>Impressão</TableHead>
-                <TableHead>Rastreio</TableHead>
+                <TableHead>Afiliado</TableHead>
                 <TableHead className="w-10"></TableHead>
               </TableRow>
             </TableHeader>
