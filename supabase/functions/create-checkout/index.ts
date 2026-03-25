@@ -42,21 +42,29 @@ Deno.serve(async (req) => {
     // Check affiliate code
     let affiliate_id = null;
     let commission_cents = 0;
+    let discount_pct = 0;
     if (affiliate_code) {
       const { data: affiliate } = await supabase
         .from("affiliates")
-        .select("id, commission_pct")
+        .select("id, commission_pct, discount_pct")
         .eq("code", affiliate_code)
         .eq("active", true)
         .maybeSingle();
 
       if (affiliate) {
         affiliate_id = affiliate.id;
+        discount_pct = affiliate.discount_pct || 0;
+        const final_amount = Math.round(amount_cents * (1 - discount_pct / 100));
         commission_cents = Math.round(
-          (amount_cents * affiliate.commission_pct) / 100
+          (final_amount * affiliate.commission_pct) / 100
         );
       }
     }
+
+    // Apply discount server-side
+    const final_amount_cents = affiliate_id && discount_pct > 0
+      ? Math.max(0, Math.round(amount_cents * (1 - discount_pct / 100)))
+      : amount_cents;
 
     // Create order
     const { data: order, error: orderError } = await supabase
@@ -64,7 +72,7 @@ Deno.serve(async (req) => {
       .insert({
         email,
         order_type,
-        amount_cents,
+        amount_cents: final_amount_cents,
         affiliate_code: affiliate_code || null,
         affiliate_id,
         commission_cents,
@@ -75,7 +83,8 @@ Deno.serve(async (req) => {
         cpf: cpf || null,
         full_address: full_address || null,
         pdf_storage_path: pdf_storage_path || null,
-        status: "pending",
+        status: final_amount_cents === 0 ? "paid" : "pending",
+        paid_at: final_amount_cents === 0 ? new Date().toISOString() : null,
       })
       .select("id")
       .single();
@@ -85,6 +94,18 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Failed to create order" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // If 100% discount, skip payment — order already marked as paid
+    if (final_amount_cents === 0) {
+      const siteUrl = body.site_url || "https://id-preview--89088344-711b-4e4e-95ac-0da1a6185711.lovable.app";
+      return new Response(
+        JSON.stringify({
+          order_id: order.id,
+          payment_url: `${siteUrl}/obrigado?order_id=${order.id}`,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -112,7 +133,7 @@ Deno.serve(async (req) => {
       items: [
         {
           quantity: 1,
-          price: amount_cents,
+          price: final_amount_cents,
           description,
         },
       ],

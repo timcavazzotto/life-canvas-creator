@@ -161,15 +161,14 @@ export default function OrderManager() {
                 <TableHead>Tipo</TableHead>
                 <TableHead>Valor</TableHead>
                 <TableHead>Pagamento</TableHead>
-                <TableHead>Impressão</TableHead>
-                <TableHead>Rastreio</TableHead>
+                <TableHead>Afiliado</TableHead>
                 <TableHead className="w-10"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                     Nenhum pedido encontrado.
                   </TableCell>
                 </TableRow>
@@ -184,10 +183,7 @@ export default function OrderManager() {
                     <TableCell>
                       <Badge className={statusColors[o.status] || 'bg-muted'}>{o.status}</Badge>
                     </TableCell>
-                    <TableCell>
-                      <Badge className={printStatusColors[o.print_status || 'pending'] || 'bg-muted'}>{o.print_status || 'pending'}</Badge>
-                    </TableCell>
-                    <TableCell className="max-w-[120px] truncate">{o.tracking_code || '—'}</TableCell>
+                    <TableCell className="max-w-[120px] truncate">{o.affiliate_code || '—'}</TableCell>
                     <TableCell><Eye className="h-4 w-4 text-muted-foreground" /></TableCell>
                   </TableRow>
                 ))

@@ -31,7 +31,7 @@ const AffiliateManager = () => {
   const [affiliates, setAffiliates] = useState<AffiliateWithBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ name: '', code: '', email: '', commission_pct: '10' });
+  const [form, setForm] = useState({ name: '', code: '', email: '', commission_pct: '10', discount_pct: '0' });
   const [paymentModal, setPaymentModal] = useState<{ open: boolean; affiliate: AffiliateWithBalance | null }>({ open: false, affiliate: null });
   const [paymentForm, setPaymentForm] = useState({ amount: '', notes: '' });
   const [paymentLoading, setPaymentLoading] = useState(false);
@@ -82,12 +82,13 @@ const AffiliateManager = () => {
       code: form.code.toUpperCase(),
       email: form.email,
       commission_pct: parseFloat(form.commission_pct) || 10,
+      discount_pct: parseFloat(form.discount_pct) || 0,
     });
     if (error) {
       toast.error('Erro ao adicionar: ' + error.message);
     } else {
       toast.success('Afiliada adicionada!');
-      setForm({ name: '', code: '', email: '', commission_pct: '10' });
+      setForm({ name: '', code: '', email: '', commission_pct: '10', discount_pct: '0' });
       setShowForm(false);
       fetchAffiliates();
     }
@@ -101,6 +102,11 @@ const AffiliateManager = () => {
   const updateCommission = async (id: string, pct: number) => {
     await supabase.from('affiliates').update({ commission_pct: pct }).eq('id', id);
     toast.success('Comissão atualizada');
+  };
+
+  const updateDiscount = async (id: string, pct: number) => {
+    await supabase.from('affiliates').update({ discount_pct: pct }).eq('id', id);
+    toast.success('Desconto atualizado');
   };
 
   const deleteAffiliate = async (id: string) => {
@@ -163,7 +169,8 @@ const AffiliateManager = () => {
               <Input placeholder="Código (ex: MARIA10)" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} required />
               <Input type="email" placeholder="Email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} required />
               <div className="flex gap-2">
-                <Input type="number" placeholder="Comissão %" value={form.commission_pct} onChange={e => setForm(f => ({ ...f, commission_pct: e.target.value }))} min={0} max={100} className="w-24" />
+              <Input type="number" placeholder="Comissão %" value={form.commission_pct} onChange={e => setForm(f => ({ ...f, commission_pct: e.target.value }))} min={0} max={100} className="w-24" />
+                <Input type="number" placeholder="Desconto %" value={form.discount_pct} onChange={e => setForm(f => ({ ...f, discount_pct: e.target.value }))} min={0} max={100} className="w-24" />
                 <Button type="submit">Salvar</Button>
               </div>
             </form>
@@ -185,6 +192,7 @@ const AffiliateManager = () => {
                   <TableHead>Código</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Comissão %</TableHead>
+                  <TableHead>Desconto %</TableHead>
                   <TableHead>Saldo Pendente</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Ações</TableHead>
@@ -209,6 +217,19 @@ const AffiliateManager = () => {
                         onBlur={e => {
                           const v = parseFloat(e.target.value);
                           if (!isNaN(v) && v !== a.commission_pct) updateCommission(a.id, v);
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        defaultValue={(a as any).discount_pct ?? 0}
+                        min={0}
+                        max={100}
+                        className="w-20 h-8 text-sm"
+                        onBlur={e => {
+                          const v = parseFloat(e.target.value);
+                          if (!isNaN(v) && v !== (a as any).discount_pct) updateDiscount(a.id, v);
                         }}
                       />
                     </TableCell>

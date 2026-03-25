@@ -51,7 +51,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
   const [obs, setObs] = useState('');
   const [coupon, setCoupon] = useState('');
   const [couponStatus, setCouponStatus] = useState<'idle' | 'valid' | 'invalid' | 'checking'>('idle');
-  const [couponData, setCouponData] = useState<{ id: string; name: string; commission_pct: number } | null>(null);
+  const [couponData, setCouponData] = useState<{ id: string; name: string; commission_pct: number; discount_pct: number } | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState<LoadingStep>(null);
@@ -70,7 +70,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
     setCouponStatus('checking');
     const { data, error } = await supabase
       .from('affiliates')
-      .select('id, name, commission_pct')
+      .select('id, name, commission_pct, discount_pct')
       .eq('code', coupon.trim().toUpperCase())
       .eq('active', true)
       .maybeSingle();
@@ -189,7 +189,17 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
                   <div className="m-opt-title">PDF Digital</div>
                   <div className="m-opt-desc">Alta resolução · Baixe e imprima</div>
                 </div>
-                <div className="m-opt-price">R$ 29<small>entrega imediata</small></div>
+              <div className="m-opt-price">
+                {couponStatus === 'valid' && couponData && couponData.discount_pct > 0 ? (
+                  <>
+                    <span style={{ textDecoration: 'line-through', opacity: 0.5, fontSize: '0.85em', marginRight: 4 }}>R$ 29</span>
+                    R$ {((2900 * (1 - couponData.discount_pct / 100)) / 100).toFixed(0) === '0' ? 'Grátis' : `${((2900 * (1 - couponData.discount_pct / 100)) / 100).toFixed(0)}`}
+                    <small>{couponData.discount_pct}% OFF</small>
+                  </>
+                ) : (
+                  <>R$ 29<small>entrega imediata</small></>
+                )}
+              </div>
               </div>
               <div
                 className="m-opt"
@@ -291,7 +301,10 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
                     </button>
                   </div>
                   {couponStatus === 'valid' && (
-                    <div className="m-coupon-msg valid">✓ Código de {couponData?.name} aplicado!</div>
+                    <div className="m-coupon-msg valid">
+                      ✓ Código de {couponData?.name} aplicado!
+                      {couponData && couponData.discount_pct > 0 && ` (${couponData.discount_pct}% de desconto)`}
+                    </div>
                   )}
                   {couponStatus === 'invalid' && (
                     <div className="m-coupon-msg invalid">Código inválido</div>
