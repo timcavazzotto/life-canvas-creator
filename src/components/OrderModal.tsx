@@ -70,7 +70,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
     setCouponStatus('checking');
     const { data, error } = await supabase
       .from('affiliates')
-      .select('id, name, commission_pct')
+      .select('id, name, commission_pct, discount_pct')
       .eq('code', coupon.trim().toUpperCase())
       .eq('active', true)
       .maybeSingle();
