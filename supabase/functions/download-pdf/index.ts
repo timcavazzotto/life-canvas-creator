@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
 
     const { data: signedUrlData, error: signError } = await supabase.storage
       .from("order-pdfs")
-      .createSignedUrl(order.pdf_storage_path, 3600);
+      .createSignedUrl(order.pdf_storage_path, 3600, { download: 'poster.pdf' });
 
     if (signError || !signedUrlData?.signedUrl) {
       return new Response(JSON.stringify({ error: "Failed to generate download URL" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
