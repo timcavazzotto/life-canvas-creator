@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 
 const Index = () => {
   const [st, setSt] = useState<PosterState>({
-    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
+    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt', panelType: 'movimento'
   });
   const [paperSize, setPaperSize] = useState<PaperSize>('30x40');
   const posterRef = useRef<HTMLDivElement>(null);
