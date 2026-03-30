@@ -154,7 +154,7 @@ const Index = () => {
           <div className="step">
             <div className="step-num"><span>3</span></div>
             <div className="step-title">Colora e viva</div>
-            <div className="step-desc">Preencha com caneta cada semana em que você se moveu. Veja o painel ganhar cor ao longo dos anos — e deixe-o ser seu lembrete diário.</div>
+            <div className="step-desc">Preencha cada semana vivida e veja seu painel ganhar cor ao longo dos anos — um lembrete visual da sua jornada.</div>
           </div>
         </div>
       </section>
