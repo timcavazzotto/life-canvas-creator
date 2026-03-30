@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Activity, Sparkles, Heart, TrendingUp, Palette, BookOpen, Users } from 'lucide-react';
 import '../App.css';
 import DemoGrid from '@/components/DemoGrid';
 import PosterPreview from '@/components/PosterPreview';
