@@ -175,9 +175,9 @@ const Index = () => {
             <div className="testi-role">Curitiba · 34 anos</div>
           </div>
           <div className="testi-card">
-            <div className="testi-text">"Como médica, uso com pacientes sedentários. Mostrar visualmente quantas semanas já passaram e quantas restam transforma a conversa."</div>
-            <div className="testi-author">Dra. Ana L.</div>
-            <div className="testi-role">Cardiologista · Porto Alegre</div>
+            <div className="testi-text">"Coloquei na parede do meu escritório. Cada semana vivida me lembra de agradecer e cada semana futura me lembra de viver com propósito. É uma oração visual."</div>
+            <div className="testi-author">Pe. Marcos R.</div>
+            <div className="testi-role">Pároco · Belo Horizonte</div>
           </div>
         </div>
       </section>
