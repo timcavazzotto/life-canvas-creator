@@ -185,7 +185,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'lazer',
     label: 'Lazer',
-    icon: '🎨',
+    icon: 'palette',
     description: 'Hobbies, descanso e diversão',
     gridMode: 'standard',
     tones: {
