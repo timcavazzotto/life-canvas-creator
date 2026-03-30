@@ -6,7 +6,8 @@ import '../App.css';
 import DemoGrid from '@/components/DemoGrid';
 import PosterPreview from '@/components/PosterPreview';
 import OrderModal from '@/components/OrderModal';
-import { THEMES, TONES, LANGS, WEEKS, PAPER_FORMATS, type PosterState, type PaperSize } from '@/data/posterData';
+import { THEMES, LANGS, WEEKS, PAPER_FORMATS, type PosterState, type PaperSize } from '@/data/posterData';
+import { PANEL_TYPES, getPanelType } from '@/data/panelTypes';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,7 +15,7 @@ import { cn } from '@/lib/utils';
 
 const Index = () => {
   const [st, setSt] = useState<PosterState>({
-    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt'
+    name: '', birth: null, expect: 80, dedic: '', theme: 'theme-verde', tone: 'filosofico', lang: 'pt', panelType: 'movimento'
   });
   const [paperSize, setPaperSize] = useState<PaperSize>('30x40');
   const posterRef = useRef<HTMLDivElement>(null);
@@ -227,6 +228,36 @@ const Index = () => {
 
         <div className="config-body">
           <div className="cfg-sidebar">
+            {/* Panel Type Selector */}
+            <div className={`cfg-section open`}>
+              <div className="cfg-section-head">
+                <span className="cfg-lbl">Tipo de painel</span>
+              </div>
+              <div className="cfg-body-inner">
+                <div className="cfg-swatches" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))' }}>
+                  {PANEL_TYPES.map((p) => (
+                    <div
+                      key={p.id}
+                      className={`cfg-swatch${st.panelType === p.id ? ' active' : ''}`}
+                      onClick={() => {
+                        const firstTone = Object.keys(p.tones)[0];
+                        update({ panelType: p.id, tone: firstTone });
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="cfg-swatch-preview" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                        {p.icon}
+                      </div>
+                      <div className="cfg-swatch-lbl" style={{ fontSize: '0.65rem', lineHeight: 1.2, textAlign: 'center' }}>{p.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: 6 }}>
+                  {getPanelType(st.panelType).description}
+                </div>
+              </div>
+            </div>
+
             {/* Identity */}
             <div className={`cfg-section${openSections.identity ? ' open' : ''}`}>
               <div className="cfg-section-head" onClick={() => toggleSection('identity')}>
@@ -283,6 +314,45 @@ const Index = () => {
                   <label>Dedicatória (opcional)</label>
                   <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={(e) => update({ dedic: e.target.value })} />
                 </div>
+
+                {/* Couple-specific fields */}
+                {st.panelType === 'casal' && (
+                  <>
+                    <div className="cfg-field">
+                      <label>Nome do cônjuge</label>
+                      <input type="text" placeholder="Ex: João Silva" maxLength={30} value={st.partnerName || ''} onChange={(e) => update({ partnerName: e.target.value })} />
+                    </div>
+                    <div className="cfg-field">
+                      <label>Nascimento do cônjuge</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !st.partnerBirth && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {st.partnerBirth ? format(parse(st.partnerBirth, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy") : <span>Selecione a data</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar mode="single" captionLayout="dropdown-buttons" selected={st.partnerBirth ? parse(st.partnerBirth, 'yyyy-MM-dd', new Date()) : undefined} onSelect={(date) => update({ partnerBirth: date ? format(date, 'yyyy-MM-dd') : null })} disabled={(date) => date > new Date() || date < new Date("1920-01-01")} initialFocus className={cn("p-3 pointer-events-auto")} defaultMonth={st.partnerBirth ? parse(st.partnerBirth, 'yyyy-MM-dd', new Date()) : new Date(1985, 0)} fromYear={1920} toYear={new Date().getFullYear()} locale={ptBR} />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="cfg-field">
+                      <label>Data do casamento</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !st.marriageDate && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {st.marriageDate ? format(parse(st.marriageDate, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy") : <span>Selecione a data</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar mode="single" captionLayout="dropdown-buttons" selected={st.marriageDate ? parse(st.marriageDate, 'yyyy-MM-dd', new Date()) : undefined} onSelect={(date) => update({ marriageDate: date ? format(date, 'yyyy-MM-dd') : null })} disabled={(date) => date > new Date() || date < new Date("1920-01-01")} initialFocus className={cn("p-3 pointer-events-auto")} defaultMonth={st.marriageDate ? parse(st.marriageDate, 'yyyy-MM-dd', new Date()) : new Date(2010, 0)} fromYear={1950} toYear={new Date().getFullYear()} locale={ptBR} />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </>
+                )}
+
               </div>
             </div>
 
@@ -343,7 +413,7 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-pills">
-                  {Object.entries(TONES).map(([key, val]) =>
+                  {Object.entries(getPanelType(st.panelType).tones).map(([key, val]) =>
                   <button
                     key={key}
                     className={`cfg-pill${st.tone === key ? ' active' : ''}`}

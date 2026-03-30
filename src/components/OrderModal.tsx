@@ -138,6 +138,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
           address: fullAddress.trim(),
           observations: obs || null,
           poster_config: posterState || {},
+          panel_type: posterState?.panelType || 'movimento',
           site_url: window.location.origin,
           pdf_storage_path: pdfStoragePath,
         },

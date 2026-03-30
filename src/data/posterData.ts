@@ -99,4 +99,8 @@ export interface PosterState {
   theme: string;
   tone: string;
   lang: string;
+  panelType: string;
+  partnerName?: string;
+  partnerBirth?: string | null;
+  marriageDate?: string | null;
 }

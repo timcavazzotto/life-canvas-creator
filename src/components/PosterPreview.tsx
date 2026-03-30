@@ -1,6 +1,8 @@
 import { useMemo, forwardRef } from 'react';
 import { format, parse } from 'date-fns';
-import { WEEKS, TONES, LABELS, type PosterState } from '@/data/posterData';
+import { WEEKS, type PosterState } from '@/data/posterData';
+import { getPanelType } from '@/data/panelTypes';
+import CoupleGrid from '@/components/CoupleGrid';
 
 interface PosterPreviewProps {
   state: PosterState;
@@ -8,17 +10,29 @@ interface PosterPreviewProps {
 }
 
 const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: st, posterHeight }, ref) => {
-  const t = TONES[st.tone];
+  const panel = getPanelType(st.panelType);
+  const t = panel.tones[st.tone] || Object.values(panel.tones)[0];
   const l = st.lang;
-  const lb = LABELS[l];
+  const lb = panel.labels[l] || panel.labels['pt'];
   const yr = l === 'pt' ? 'anos' : l === 'es' ? 'años' : 'years';
   const wkLabel = l === 'pt' ? 'semanas' : 'weeks';
-  const al = l === 'pt' ? 'uma vida ativa' : l === 'es' ? 'una vida activa' : 'an active life';
+
+  const alMap: Record<string, Record<string, string>> = {
+    movimento: { pt: 'uma vida ativa', en: 'an active life', es: 'una vida activa' },
+    espiritual: { pt: 'uma vida espiritual', en: 'a spiritual life', es: 'una vida espiritual' },
+    casal: { pt: 'uma vida a dois', en: 'a life together', es: 'una vida en pareja' },
+    prosperidade: { pt: 'uma vida próspera', en: 'a prosperous life', es: 'una vida próspera' },
+    lazer: { pt: 'uma vida com lazer', en: 'a life with leisure', es: 'una vida con ocio' },
+    leitura: { pt: 'uma vida de leitura', en: 'a life of reading', es: 'una vida de lectura' },
+    social: { pt: 'uma vida conectada', en: 'a connected life', es: 'una vida conectada' },
+  };
+  const al = alMap[st.panelType]?.[l] || alMap['movimento'][l];
 
   const total = st.expect * WEEKS;
   const lived = st.birth ? Math.min(Math.floor((Date.now() - parse(st.birth, 'yyyy-MM-dd', new Date()).getTime()) / 6048e5), total) : 0;
   const left = Math.max(0, total - lived);
-  const pct = lived > 0 ? Math.round(lived / total * 100) : 0;
+
+  const isCouple = panel.gridMode === 'couple';
 
   const decadeItems = useMemo(() => {
     const items = [];
@@ -27,7 +41,6 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
     }
     return items;
   }, [st.expect]);
-
 
   const yearRows = useMemo(() => {
     const rows = [];
@@ -73,6 +86,23 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         </div>
       </div>
 
+      {isCouple && st.partnerName && (
+        <div className="pf-row" style={{ marginTop: -10, marginBottom: 4 }}>
+          <div className="pf" style={{ flex: 2 }}>
+            <span className="pf-label">{lb.partner || 'Cônjuge'}</span>
+            <div className="pf-val">{st.partnerName}</div>
+          </div>
+          <div className="pf">
+            <span className="pf-label">{lb.partnerBirth || 'Nasc. cônjuge'}</span>
+            <div className="pf-val">{st.partnerBirth ? format(parse(st.partnerBirth, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '\u00a0'}</div>
+          </div>
+          <div className="pf">
+            <span className="pf-label">{lb.marriage || 'Casamento'}</span>
+            <div className="pf-val">{st.marriageDate ? format(parse(st.marriageDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '\u00a0'}</div>
+          </div>
+        </div>
+      )}
+
       {hasDedic &&
       <div className="pf-row" style={{ marginTop: -10, marginBottom: 14 }}>
           <div className="pf">
@@ -82,31 +112,40 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         </div>
       }
 
-      <div className="pg">
-        <div className="grid-wrap">
-          <div className="decade-col">
-            {decadeItems.map((d) =>
-            <div
-              key={d.year}
-              className={`dec-lbl${d.decSep ? ' dec-sep' : ''}`}
-              style={{ flex: 1 }}>
-                {d.label !== null ? d.label : ''}
-              </div>
-            )}
-          </div>
-          <div className="grid-main">
-            <div className="year-rows">
-              {yearRows.map((row) =>
-              <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
-                  {row.cells.map((cls, w) =>
-                <div key={w} className={`wk ${cls}`} />
-                )}
+      {isCouple ? (
+        <CoupleGrid
+          birth1={st.birth}
+          birth2={st.partnerBirth || null}
+          marriageDate={st.marriageDate || null}
+          expect={st.expect}
+        />
+      ) : (
+        <div className="pg">
+          <div className="grid-wrap">
+            <div className="decade-col">
+              {decadeItems.map((d) =>
+              <div
+                key={d.year}
+                className={`dec-lbl${d.decSep ? ' dec-sep' : ''}`}
+                style={{ flex: 1 }}>
+                  {d.label !== null ? d.label : ''}
                 </div>
               )}
             </div>
+            <div className="grid-main">
+              <div className="year-rows">
+                {yearRows.map((row) =>
+                <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
+                    {row.cells.map((cls, w) =>
+                  <div key={w} className={`wk ${cls}`} />
+                  )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="pl">
         <div className="pl-items">

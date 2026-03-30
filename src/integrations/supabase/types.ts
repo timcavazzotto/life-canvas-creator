@@ -108,6 +108,7 @@ export type Database = {
           observations: string | null
           order_type: string
           paid_at: string | null
+          panel_type: string | null
           payment_id: string | null
           payment_provider: string | null
           payment_url: string | null
@@ -134,6 +135,7 @@ export type Database = {
           observations?: string | null
           order_type: string
           paid_at?: string | null
+          panel_type?: string | null
           payment_id?: string | null
           payment_provider?: string | null
           payment_url?: string | null
@@ -160,6 +162,7 @@ export type Database = {
           observations?: string | null
           order_type?: string
           paid_at?: string | null
+          panel_type?: string | null
           payment_id?: string | null
           payment_provider?: string | null
           payment_url?: string | null
