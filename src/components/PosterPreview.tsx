@@ -55,7 +55,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       const cells = [];
       for (let w = 0; w < WEEKS; w++) {
         const idx = y * WEEKS + w;
-        if (isCouple && marriageWeekIdx !== null && idx === marriageWeekIdx) {
+        if (isCouple && marriageWeekIdx !== null && idx >= marriageWeekIdx && idx < lived) {
           cells.push('marriage');
         } else {
           cells.push(idx < lived ? 'lived' : 'future');
