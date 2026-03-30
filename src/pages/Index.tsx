@@ -167,7 +167,7 @@ const Index = () => {
           <div className="testi-card">
             <div className="testi-text">"Coloquei na parede do escritório. Toda vez que não quero me exercitar, olho para aquelas semanas vazias e mudo de ideia."</div>
             <div className="testi-author">Mariana C.</div>
-            <div className="testi-role">São Paulo · 38 anos</div>
+            <div className="testi-role">Petrolina · 38 anos</div>
           </div>
           <div className="testi-card">
             <div className="testi-text">"Dei de presente para meu pai nos 60 anos dele. Ele me ligou emocionado. Disse que nunca tinha pensado na vida assim — em semanas."</div>
