@@ -1,38 +1,30 @@
 
 
-## Plano: Ajustar seletor de painéis e grid do casal
+## Plano: Trocar emojis por ícones Lucide discretos
 
-### 1. Seletor de painéis — design discreto
+### Problema
+Os ícones dos painéis usam emojis coloridos (🏃🙏💍🎓🎨📚👥) que destoam do design editorial monocromático do site.
 
-**Problema**: Os cards com emojis grandes e grid de swatches estão fora do padrão visual do site.
+### Solução
+Substituir os emojis por ícones Lucide React em tamanho pequeno (14-16px), monocromáticos, que herdam a cor do texto.
 
-**Solução**: Trocar por uma lista de botões compactos (estilo pill/tag), com o emoji pequeno ao lado do texto. Layout horizontal com wrap, similar aos seletores de tom/tema já existentes.
+### Mudanças
 
-**Arquivo**: `src/pages/Index.tsx` (linhas ~236-258)
-- Substituir o grid de `cfg-swatches` por botões inline tipo `<button>` com classe simples
-- Emoji em tamanho pequeno (0.85rem) ao lado do label
-- Botão ativo recebe borda/destaque sutil
-- Remover a descrição embaixo (ou mostrar só ao hover/seleção)
+**`src/data/panelTypes.ts`**
+- Mudar o tipo de `icon: string` (emoji) para `icon: string` (nome do ícone Lucide)
+- Mapping:
+  - `movimento` → `"activity"` (Activity)
+  - `espiritual` → `"sparkles"` (Sparkles)
+  - `casal` → `"heart"` (Heart)
+  - `prosperidade` → `"trending-up"` (TrendingUp)
+  - `lazer` → `"palette"` (Palette)
+  - `leitura` → `"book-open"` (BookOpen)
+  - `social` → `"users"` (Users)
 
-### 2. Grid do casal — separação vertical (formato Y)
+**`src/pages/Index.tsx`**
+- Importar os ícones Lucide necessários
+- No seletor de painéis, trocar o `<span>` do emoji por o componente Lucide correspondente com `size={14}` e cor herdada do texto
 
-**Problema**: Atualmente os dois grids estão empilhados horizontalmente (um em cima do outro por ano). O visual correto é lado a lado verticalmente antes do casamento, fundindo num grid único depois.
-
-**Solução**: Reescrever `CoupleGrid.tsx` com layout em Y:
-- **Antes do casamento**: Dois grids lado a lado (coluna esquerda = Pessoa 1, coluna direita = Pessoa 2), cada um com ~26 colunas de semanas
-- **Marcador de casamento**: Linha horizontal com 💍
-- **Após o casamento**: Um grid único centralizado com 52 colunas (formato normal)
-- Isso cria visualmente a forma de um Y — dois caminhos que convergem
-
-**Arquivo**: `src/components/CoupleGrid.tsx`
-- Pré-casamento: `display: flex` com dois blocos de `.year-rows` lado a lado, cada bloco com 26 colunas (metade das semanas)
-- Pós-casamento: bloco único com 52 colunas, largura total
-- Ajustar CSS para que a transição visual entre as duas seções seja suave
-
-### Arquivos modificados
-
-| Arquivo | Mudança |
-|---|---|
-| `src/pages/Index.tsx` | Seletor de painéis compacto com botões pill |
-| `src/components/CoupleGrid.tsx` | Layout vertical em Y (lado a lado → fusão) |
+### Resultado
+Ícones minimalistas, monocromáticos, alinhados com a identidade editorial do site.
 
