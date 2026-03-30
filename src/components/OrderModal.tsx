@@ -53,6 +53,7 @@ const LoadingOverlay = ({ step }: { step: Exclude<LoadingStep, null> }) => {
 const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x40' }: OrderModalProps) => {
   const [email, setEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
+  const [phone, setPhone] = useState('');
   const [cpf, setCpf] = useState('');
   const [fullAddress, setFullAddress] = useState('');
   const [obs, setObs] = useState('');
