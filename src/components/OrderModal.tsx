@@ -28,6 +28,13 @@ const formatCPF = (value: string) => {
   return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
 };
 
+const formatPhone = (value: string) => {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+};
+
 const LoadingOverlay = ({ step }: { step: Exclude<LoadingStep, null> }) => {
   const { label, progress } = STEP_CONFIG[step];
   return (
@@ -46,6 +53,7 @@ const LoadingOverlay = ({ step }: { step: Exclude<LoadingStep, null> }) => {
 const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x40' }: OrderModalProps) => {
   const [email, setEmail] = useState('');
   const [customerName, setCustomerName] = useState('');
+  const [phone, setPhone] = useState('');
   const [cpf, setCpf] = useState('');
   const [fullAddress, setFullAddress] = useState('');
   const [obs, setObs] = useState('');
@@ -131,6 +139,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
           customer_name: customerName.trim(),
           cpf: cpfDigits,
           full_address: fullAddress.trim(),
+          phone: phone.replace(/\D/g, '') || null,
           address: fullAddress.trim(),
           observations: obs || null,
           poster_config: posterState || {},
@@ -162,6 +171,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
     setSuccess(false);
     setEmail('');
     setCustomerName('');
+    setPhone('');
     setCpf('');
     setFullAddress('');
     setObs('');
@@ -246,6 +256,16 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seu@email.com"
+                  />
+                </div>
+                <div className="mf">
+                  <label>Telefone / WhatsApp (opcional)</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(formatPhone(e.target.value))}
+                    placeholder="(11) 99999-9999"
+                    maxLength={15}
                   />
                 </div>
                 <div className="mf">

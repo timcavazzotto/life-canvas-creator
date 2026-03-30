@@ -113,6 +113,7 @@ export type Database = {
           payment_provider: string | null
           payment_url: string | null
           pdf_storage_path: string | null
+          phone: string | null
           poster_config: Json
           print_status: string | null
           status: string
@@ -140,6 +141,7 @@ export type Database = {
           payment_provider?: string | null
           payment_url?: string | null
           pdf_storage_path?: string | null
+          phone?: string | null
           poster_config?: Json
           print_status?: string | null
           status?: string
@@ -167,6 +169,7 @@ export type Database = {
           payment_provider?: string | null
           payment_url?: string | null
           pdf_storage_path?: string | null
+          phone?: string | null
           poster_config?: Json
           print_status?: string | null
           status?: string

@@ -157,6 +157,7 @@ export default function OrderManager() {
               <TableRow>
                 <TableHead>Data</TableHead>
                 <TableHead>Cliente</TableHead>
+                <TableHead>Telefone</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Valor</TableHead>
@@ -168,7 +169,7 @@ export default function OrderManager() {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
                     Nenhum pedido encontrado.
                   </TableCell>
                 </TableRow>
@@ -177,6 +178,7 @@ export default function OrderManager() {
                   <TableRow key={o.id} className="cursor-pointer" onClick={() => openDetail(o)}>
                     <TableCell className="whitespace-nowrap">{format(new Date(o.created_at), 'dd/MM/yy HH:mm')}</TableCell>
                     <TableCell>{o.customer_name || '—'}</TableCell>
+                    <TableCell>{(o as any).phone || '—'}</TableCell>
                     <TableCell className="max-w-[180px] truncate">{o.email}</TableCell>
                     <TableCell><Badge variant="outline">{o.order_type}</Badge></TableCell>
                     <TableCell className="whitespace-nowrap">{formatCents(o.amount_cents)}</TableCell>
@@ -208,6 +210,7 @@ export default function OrderManager() {
                 <Detail label="Cliente" value={selected.customer_name} />
                 <Detail label="Email" value={selected.email} />
                 <Detail label="CPF" value={(selected as any).cpf} />
+                <Detail label="Telefone" value={(selected as any).phone} />
                 <Detail label="Endereço completo" value={(selected as any).full_address || selected.address} />
                 <Detail label="Tipo" value={selected.order_type} />
                 <Detail label="Valor" value={formatCents(selected.amount_cents)} />

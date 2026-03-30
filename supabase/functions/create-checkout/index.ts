@@ -28,6 +28,7 @@ Deno.serve(async (req) => {
       observations,
       poster_config,
       cpf,
+      phone,
       full_address,
       pdf_storage_path,
     } = body;
@@ -81,6 +82,7 @@ Deno.serve(async (req) => {
         observations,
         poster_config,
         cpf: cpf || null,
+        phone: phone || null,
         full_address: full_address || null,
         pdf_storage_path: pdf_storage_path || null,
         status: final_amount_cents === 0 ? "paid" : "pending",
