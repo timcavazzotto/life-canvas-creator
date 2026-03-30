@@ -28,6 +28,7 @@ Deno.serve(async (req) => {
       observations,
       poster_config,
       cpf,
+      phone,
       full_address,
       pdf_storage_path,
     } = body;
