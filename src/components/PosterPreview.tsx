@@ -24,6 +24,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
     lazer: { pt: 'uma vida com lazer', en: 'a life with leisure', es: 'una vida con ocio' },
     leitura: { pt: 'uma vida de leitura', en: 'a life of reading', es: 'una vida de lectura' },
     social: { pt: 'uma vida conectada', en: 'a connected life', es: 'una vida conectada' },
+    corrida: { pt: 'uma vida de corrida', en: 'a life on the run', es: 'una vida en carrera' },
   };
   const al = alMap[st.panelType]?.[l] || alMap['movimento'][l];
 
@@ -55,7 +56,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       const cells = [];
       for (let w = 0; w < WEEKS; w++) {
         const idx = y * WEEKS + w;
-        if (isCouple && marriageWeekIdx !== null && idx === marriageWeekIdx) {
+        if (isCouple && marriageWeekIdx !== null && idx >= marriageWeekIdx && idx < lived) {
           cells.push('marriage');
         } else {
           cells.push(idx < lived ? 'lived' : 'future');
@@ -154,7 +155,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
           <div className="pl-item"><div className="pl-cell c-future" /><span className="pl-text">{lb.fut}</span></div>
 
           {isCouple && (
-            <div className="pl-item"><div className="pl-cell c-marriage" /><span className="pl-text">{marriageLabelMap[l] || 'Casamento'}</span></div>
+            <div className="pl-item"><div className="pl-cell c-marriage" /><span className="pl-text">{lb.together || 'Vida a dois'}</span></div>
           )}
         </div>
         <div className="pl-note" dangerouslySetInnerHTML={{ __html: t.note[l].replace(/\n/g, '<br>') }} />
