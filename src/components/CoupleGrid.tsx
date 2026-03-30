@@ -9,6 +9,8 @@ interface CoupleGridProps {
   expect: number;
 }
 
+const HALF = Math.floor(WEEKS / 2); // 26 weeks per side
+
 const CoupleGrid = ({ birth1, birth2, marriageDate, expect }: CoupleGridProps) => {
   const now = Date.now();
 
@@ -27,90 +29,111 @@ const CoupleGrid = ({ birth1, birth2, marriageDate, expect }: CoupleGridProps) =
 
   const marriageYear = marriageWeek1 !== null ? Math.floor(marriageWeek1 / WEEKS) : null;
 
-  const { preRows, postRows, decadeItems } = useMemo(() => {
+  const { preRows, postRows } = useMemo(() => {
     const pre: Array<{
       year: number;
       decSep: boolean;
-      cells1: string[];
-      cells2: string[];
+      left: string[];   // person 1 — 26 cols
+      right: string[];  // person 2 — 26 cols
     }> = [];
     const post: Array<{
       year: number;
       decSep: boolean;
-      cells: string[];
+      cells: string[];  // merged — 52 cols
     }> = [];
-    const decades: Array<{ year: number; label: number | null; decSep: boolean }> = [];
 
     const splitYear = marriageYear ?? expect;
 
     for (let y = 0; y < expect; y++) {
-      decades.push({ year: y, label: y % 10 === 0 ? y : null, decSep: y > 0 && y % 10 === 0 });
+      const decSep = y > 0 && y % 10 === 0;
 
       if (y < splitYear) {
-        const cells1 = [];
-        const cells2 = [];
-        for (let w = 0; w < WEEKS; w++) {
+        // Pre-marriage: split weeks into two halves side by side
+        const left: string[] = [];
+        const right: string[] = [];
+        for (let w = 0; w < HALF; w++) {
           const idx = y * WEEKS + w;
-          cells1.push(idx < lived1 ? 'lived' : 'future');
-          cells2.push(idx < lived2 ? 'lived' : 'future');
+          left.push(idx < lived1 ? 'lived' : 'future');
         }
-        pre.push({ year: y, decSep: y > 0 && y % 10 === 0, cells1, cells2 });
+        for (let w = 0; w < HALF; w++) {
+          const idx = y * WEEKS + w;
+          right.push(idx < lived2 ? 'lived' : 'future');
+        }
+        pre.push({ year: y, decSep, left, right });
       } else {
-        const cells = [];
+        // Post-marriage: single merged row, 52 cols
+        const cells: string[] = [];
         for (let w = 0; w < WEEKS; w++) {
           const idx = y * WEEKS + w;
-          // After marriage: both must have lived this week
           const l1 = idx < lived1;
           const l2 = idx < lived2;
           cells.push(l1 && l2 ? 'lived' : 'future');
         }
-        post.push({ year: y, decSep: y > 0 && y % 10 === 0, cells });
+        post.push({ year: y, decSep, cells });
       }
     }
 
-    return { preRows: pre, postRows: post, decadeItems: decades };
+    return { preRows: pre, postRows: post };
   }, [expect, lived1, lived2, marriageYear]);
 
   return (
     <div className="pg">
       <div className="grid-wrap">
+        {/* Decade labels */}
         <div className="decade-col">
-          {decadeItems.map((d) => (
+          {Array.from({ length: expect }, (_, y) => (
             <div
-              key={d.year}
-              className={`dec-lbl${d.decSep ? ' dec-sep' : ''}`}
+              key={y}
+              className={`dec-lbl${y > 0 && y % 10 === 0 ? ' dec-sep' : ''}`}
               style={{ flex: 1 }}
             >
-              {d.label !== null ? d.label : ''}
+              {y % 10 === 0 ? y : ''}
             </div>
           ))}
         </div>
+
         <div className="grid-main">
           <div className="year-rows">
-            {/* Pre-marriage: two rows per year */}
+            {/* Pre-marriage: Y shape — two columns side by side */}
             {preRows.map((row) => (
-              <div key={`pre-${row.year}`}>
-                <div className={`yr${row.decSep ? ' dec-sep' : ''}`}>
-                  {row.cells1.map((cls, w) => (
+              <div
+                key={`pre-${row.year}`}
+                className={row.decSep ? 'dec-sep' : ''}
+                style={{ display: 'flex', gap: '2px' }}
+              >
+                {/* Person 1 — left half */}
+                <div className="yr" style={{ flex: 1 }}>
+                  {row.left.map((cls, w) => (
                     <div key={w} className={`wk ${cls}`} />
                   ))}
                 </div>
-                <div className="yr" style={{ opacity: 0.6 }}>
-                  {row.cells2.map((cls, w) => (
+                {/* Person 2 — right half */}
+                <div className="yr" style={{ flex: 1, opacity: 0.6 }}>
+                  {row.right.map((cls, w) => (
                     <div key={w} className={`wk ${cls}`} />
                   ))}
                 </div>
               </div>
             ))}
 
-            {/* Marriage marker */}
+            {/* Marriage marker — convergence point */}
             {marriageYear !== null && (
-              <div className="flex items-center justify-center py-0.5" style={{ fontSize: '0.5rem', letterSpacing: '0.1em', opacity: 0.7 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '1px 0',
+                  fontSize: '0.45rem',
+                  letterSpacing: '0.1em',
+                  opacity: 0.7,
+                }}
+              >
                 💍
               </div>
             )}
 
-            {/* Post-marriage: single merged row */}
+            {/* Post-marriage: single full-width merged row */}
             {postRows.map((row) => (
               <div key={`post-${row.year}`} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
                 {row.cells.map((cls, w) => (
