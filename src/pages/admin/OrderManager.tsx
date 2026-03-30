@@ -178,6 +178,7 @@ export default function OrderManager() {
                   <TableRow key={o.id} className="cursor-pointer" onClick={() => openDetail(o)}>
                     <TableCell className="whitespace-nowrap">{format(new Date(o.created_at), 'dd/MM/yy HH:mm')}</TableCell>
                     <TableCell>{o.customer_name || '—'}</TableCell>
+                    <TableCell>{(o as any).phone || '—'}</TableCell>
                     <TableCell className="max-w-[180px] truncate">{o.email}</TableCell>
                     <TableCell><Badge variant="outline">{o.order_type}</Badge></TableCell>
                     <TableCell className="whitespace-nowrap">{formatCents(o.amount_cents)}</TableCell>
