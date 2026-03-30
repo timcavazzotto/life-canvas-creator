@@ -202,6 +202,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .wk { border: 1px solid var(--p-border, #c8c4b8); background: transparent; border-radius: 0.5px; }
 .wk.lived { background: var(--p-lived, #b8d8c0); border-color: var(--p-lived-border, #8ab898); }
 .wk.future { border-color: var(--p-future, #c8c4b8); border-style: dashed; }
+.wk.marriage { background: var(--p-marriage, #e8a87c); border-color: var(--p-marriage-border, #c47a50); border-style: solid; }
 .pl { display: flex; justify-content: space-between; align-items: center; padding-top: 11px; border-top: 0.75px solid var(--p-rule, #1e1408); margin-bottom: 12px; }
 .pl-items { display: flex; gap: 13px; }
 .pl-item { display: flex; align-items: center; gap: 4px; }
