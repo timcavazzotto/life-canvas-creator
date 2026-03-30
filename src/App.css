@@ -161,7 +161,7 @@ nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 48px;
 .cfg-btn-ghost { background: transparent; color: var(--ink); border: 1px solid rgba(0,0,0,0.2); padding: 10px; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: all 0.18s; width: 100%; }
 .cfg-btn-ghost:hover { border-color: rgba(0,0,0,0.35); color: var(--ink); }
 .cfg-note { font-family: 'DM Mono', monospace; font-size: 6.5px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; text-align: center; }
-.cfg-preview { flex: 1; overflow-y: auto; background: #e8e5df; display: flex; flex-direction: column; align-items: center; padding: 24px 24px 40px; }
+.cfg-preview { flex: 1; overflow-y: auto; overflow-x: hidden; background: #e8e5df; display: flex; flex-direction: column; align-items: center; padding: 24px 24px 40px; max-width: 100%; }
 .cfg-preview-hint { font-family: 'DM Mono', monospace; font-size: 7px; letter-spacing: 0.2em; color: #a09a90; text-transform: uppercase; margin-bottom: 16px; text-align: center; }
 
 /* POSTER */
