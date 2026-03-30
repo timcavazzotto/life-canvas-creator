@@ -157,6 +157,7 @@ export default function OrderManager() {
               <TableRow>
                 <TableHead>Data</TableHead>
                 <TableHead>Cliente</TableHead>
+                <TableHead>Telefone</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Valor</TableHead>
