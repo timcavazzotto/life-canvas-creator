@@ -234,26 +234,33 @@ const Index = () => {
                 <span className="cfg-lbl">Tipo de painel</span>
               </div>
               <div className="cfg-body-inner">
-                <div className="cfg-swatches" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                   {PANEL_TYPES.map((p) => (
-                    <div
+                    <button
                       key={p.id}
-                      className={`cfg-swatch${st.panelType === p.id ? ' active' : ''}`}
                       onClick={() => {
                         const firstTone = Object.keys(p.tones)[0];
                         update({ panelType: p.id, tone: firstTone });
                       }}
-                      style={{ cursor: 'pointer' }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '4px 10px',
+                        fontSize: '0.75rem',
+                        borderRadius: '999px',
+                        border: st.panelType === p.id ? '1.5px solid var(--fg)' : '1px solid var(--border-soft, rgba(0,0,0,0.12))',
+                        background: st.panelType === p.id ? 'var(--fg)' : 'transparent',
+                        color: st.panelType === p.id ? 'var(--bg, #fff)' : 'inherit',
+                        cursor: 'pointer',
+                        fontWeight: st.panelType === p.id ? 600 : 400,
+                        transition: 'all 0.15s ease',
+                      }}
                     >
-                      <div className="cfg-swatch-preview" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
-                        {p.icon}
-                      </div>
-                      <div className="cfg-swatch-lbl" style={{ fontSize: '0.65rem', lineHeight: 1.2, textAlign: 'center' }}>{p.label}</div>
-                    </div>
+                      <span style={{ fontSize: '0.85rem', lineHeight: 1 }}>{p.icon}</span>
+                      {p.label}
+                    </button>
                   ))}
-                </div>
-                <div style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: 6 }}>
-                  {getPanelType(st.panelType).description}
                 </div>
               </div>
             </div>
