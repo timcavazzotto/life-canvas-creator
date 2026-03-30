@@ -314,6 +314,45 @@ const Index = () => {
                   <label>Dedicatória (opcional)</label>
                   <textarea placeholder="Para alguém especial…" value={st.dedic} onChange={(e) => update({ dedic: e.target.value })} />
                 </div>
+
+                {/* Couple-specific fields */}
+                {st.panelType === 'casal' && (
+                  <>
+                    <div className="cfg-field">
+                      <label>Nome do cônjuge</label>
+                      <input type="text" placeholder="Ex: João Silva" maxLength={30} value={st.partnerName || ''} onChange={(e) => update({ partnerName: e.target.value })} />
+                    </div>
+                    <div className="cfg-field">
+                      <label>Nascimento do cônjuge</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !st.partnerBirth && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {st.partnerBirth ? format(parse(st.partnerBirth, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy") : <span>Selecione a data</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar mode="single" captionLayout="dropdown-buttons" selected={st.partnerBirth ? parse(st.partnerBirth, 'yyyy-MM-dd', new Date()) : undefined} onSelect={(date) => update({ partnerBirth: date ? format(date, 'yyyy-MM-dd') : null })} disabled={(date) => date > new Date() || date < new Date("1920-01-01")} initialFocus className={cn("p-3 pointer-events-auto")} defaultMonth={st.partnerBirth ? parse(st.partnerBirth, 'yyyy-MM-dd', new Date()) : new Date(1985, 0)} fromYear={1920} toYear={new Date().getFullYear()} locale={ptBR} />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <div className="cfg-field">
+                      <label>Data do casamento</label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !st.marriageDate && "text-muted-foreground")}>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {st.marriageDate ? format(parse(st.marriageDate, 'yyyy-MM-dd', new Date()), "dd/MM/yyyy") : <span>Selecione a data</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar mode="single" captionLayout="dropdown-buttons" selected={st.marriageDate ? parse(st.marriageDate, 'yyyy-MM-dd', new Date()) : undefined} onSelect={(date) => update({ marriageDate: date ? format(date, 'yyyy-MM-dd') : null })} disabled={(date) => date > new Date() || date < new Date("1920-01-01")} initialFocus className={cn("p-3 pointer-events-auto")} defaultMonth={st.marriageDate ? parse(st.marriageDate, 'yyyy-MM-dd', new Date()) : new Date(2010, 0)} fromYear={1950} toYear={new Date().getFullYear()} locale={ptBR} />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </>
+                )}
+
               </div>
             </div>
 
