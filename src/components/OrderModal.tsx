@@ -171,6 +171,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
     setSuccess(false);
     setEmail('');
     setCustomerName('');
+    setPhone('');
     setCpf('');
     setFullAddress('');
     setObs('');
