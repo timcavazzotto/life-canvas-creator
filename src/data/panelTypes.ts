@@ -135,7 +135,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'prosperidade',
     label: 'Prosperidade',
-    icon: '🎓',
+    icon: 'trending-up',
     description: 'Carreira, estudo e crescimento',
     gridMode: 'standard',
     tones: {
