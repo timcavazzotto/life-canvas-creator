@@ -203,7 +203,7 @@ const Index = () => {
           <div className="price-card">
             <div className="price-tag">✦ Mais popular</div>
             <div className="price-name">Quadro Impresso</div>
-            <div className="price-val"><small>R$</small> 89</div>
+            <div className="price-val"><small>R$</small> 149</div>
             <div className="price-note">+ frete · entrega em 7–10 dias úteis</div>
             <ul className="price-features">
               <li>Papel premium 250g/m²</li>
