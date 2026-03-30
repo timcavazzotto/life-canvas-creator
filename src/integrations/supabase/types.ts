@@ -219,6 +219,7 @@ export type Database = {
           commission_pct: number
           discount_pct: number
           id: string
+          name: string
         }[]
       }
     }
