@@ -1,30 +1,18 @@
 
 
-## Plano: Trocar emojis por ícones Lucide discretos
+## Plano: Destaque verde no painel selecionado
 
 ### Problema
-Os ícones dos painéis usam emojis coloridos (🏃🙏💍🎓🎨📚👥) que destoam do design editorial monocromático do site.
+O botão do painel selecionado usa `var(--fg)` como fundo (cor escura genérica), ficando sem destaque visual claro. Deve usar o verde musgo (`#365545`) — mesma cor do botão "Quero meu painel".
 
-### Solução
-Substituir os emojis por ícones Lucide React em tamanho pequeno (14-16px), monocromáticos, que herdam a cor do texto.
+### Mudança
 
-### Mudanças
+**`src/pages/Index.tsx`** (linhas 252-256)
 
-**`src/data/panelTypes.ts`**
-- Mudar o tipo de `icon: string` (emoji) para `icon: string` (nome do ícone Lucide)
-- Mapping:
-  - `movimento` → `"activity"` (Activity)
-  - `espiritual` → `"sparkles"` (Sparkles)
-  - `casal` → `"heart"` (Heart)
-  - `prosperidade` → `"trending-up"` (TrendingUp)
-  - `lazer` → `"palette"` (Palette)
-  - `leitura` → `"book-open"` (BookOpen)
-  - `social` → `"users"` (Users)
+Trocar os estilos do botão ativo:
+- `background`: de `var(--fg)` para `#365545` (verde musgo, mesma cor do CTA primário)
+- `color`: manter `#fff` (branco)
+- `border`: de `1.5px solid var(--fg)` para `1.5px solid #365545`
 
-**`src/pages/Index.tsx`**
-- Importar os ícones Lucide necessários
-- No seletor de painéis, trocar o `<span>` do emoji por o componente Lucide correspondente com `size={14}` e cor herdada do texto
-
-### Resultado
-Ícones minimalistas, monocromáticos, alinhados com a identidade editorial do site.
+Resultado: o painel selecionado fica com fundo verde e texto branco, com destaque claro e consistente com o design system.
 
