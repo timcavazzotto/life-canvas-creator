@@ -200,7 +200,8 @@ const Index = () => {
             </ul>
             <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e baixar</button>
           </div>
-          <div className="price-card">
+          <div className="price-card" style={{ opacity: 0.6, pointerEvents: 'none', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: 12, right: 12, background: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))', padding: '4px 14px', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', zIndex: 2 }}>Em Breve</div>
             <div className="price-tag">✦ Mais popular</div>
             <div className="price-name">Quadro Impresso</div>
             <div className="price-val"><small>R$</small> 149</div>
@@ -211,7 +212,7 @@ const Index = () => {
               <li>Personalizado com seus dados</li>
               <li>Pronto para imprimir</li>
             </ul>
-            <button className="price-btn outline" onClick={() => scrollTo('config')}>Criar e encomendar</button>
+            <button className="price-btn outline">Criar e encomendar</button>
           </div>
         </div>
       </section>
