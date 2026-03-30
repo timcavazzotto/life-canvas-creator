@@ -413,7 +413,7 @@ const Index = () => {
               </div>
               <div className="cfg-body-inner">
                 <div className="cfg-pills">
-                  {Object.entries(TONES).map(([key, val]) =>
+                  {Object.entries(getPanelType(st.panelType).tones).map(([key, val]) =>
                   <button
                     key={key}
                     className={`cfg-pill${st.tone === key ? ' active' : ''}`}
