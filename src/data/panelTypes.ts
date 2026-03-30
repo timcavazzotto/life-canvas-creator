@@ -235,7 +235,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'leitura',
     label: 'Leitura',
-    icon: '📚',
+    icon: 'book-open',
     description: 'Livros, conhecimento e imaginação',
     gridMode: 'standard',
     tones: {
