@@ -24,6 +24,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
     lazer: { pt: 'uma vida com lazer', en: 'a life with leisure', es: 'una vida con ocio' },
     leitura: { pt: 'uma vida de leitura', en: 'a life of reading', es: 'una vida de lectura' },
     social: { pt: 'uma vida conectada', en: 'a connected life', es: 'una vida conectada' },
+    corrida: { pt: 'uma vida de corrida', en: 'a life on the run', es: 'una vida en carrera' },
   };
   const al = alMap[st.panelType]?.[l] || alMap['movimento'][l];
 
