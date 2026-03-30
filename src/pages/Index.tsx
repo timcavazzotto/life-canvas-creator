@@ -176,7 +176,7 @@ const Index = () => {
           </div>
           <div className="testi-card">
             <div className="testi-text">"Cada semana vivida me lembra de ser grato, e cada semana por viver reforça o meu propósito. É uma oração visual."</div>
-            <div className="testi-author">Pe. Marcos R.</div>
+            <div className="testi-author">Marcos R.</div>
             <div className="testi-role">Chapecó - 46 anos</div>
           </div>
         </div>
