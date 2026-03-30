@@ -25,7 +25,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'movimento',
     label: 'Vida em Movimento',
-    icon: '🏃',
+    icon: 'activity',
     description: 'Atividade física semanal',
     gridMode: 'standard',
     tones: TONES,
