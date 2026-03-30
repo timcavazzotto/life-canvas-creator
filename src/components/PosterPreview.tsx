@@ -2,7 +2,6 @@ import { useMemo, forwardRef } from 'react';
 import { format, parse } from 'date-fns';
 import { WEEKS, type PosterState } from '@/data/posterData';
 import { getPanelType } from '@/data/panelTypes';
-import CoupleGrid from '@/components/CoupleGrid';
 
 interface PosterPreviewProps {
   state: PosterState;
@@ -32,7 +31,15 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
   const lived = st.birth ? Math.min(Math.floor((Date.now() - parse(st.birth, 'yyyy-MM-dd', new Date()).getTime()) / 6048e5), total) : 0;
   const left = Math.max(0, total - lived);
 
-  const isCouple = panel.gridMode === 'couple';
+  const isCouple = st.panelType === 'casal';
+
+  const marriageWeekIdx = useMemo(() => {
+    if (!st.birth || !st.marriageDate) return null;
+    const birthTime = parse(st.birth, 'yyyy-MM-dd', new Date()).getTime();
+    const marriageTime = parse(st.marriageDate, 'yyyy-MM-dd', new Date()).getTime();
+    if (marriageTime <= birthTime) return null;
+    return Math.floor((marriageTime - birthTime) / 6048e5);
+  }, [st.birth, st.marriageDate]);
 
   const decadeItems = useMemo(() => {
     const items = [];
@@ -48,14 +55,20 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
       const cells = [];
       for (let w = 0; w < WEEKS; w++) {
         const idx = y * WEEKS + w;
-        cells.push(idx < lived ? 'lived' : 'future');
+        if (isCouple && marriageWeekIdx !== null && idx === marriageWeekIdx) {
+          cells.push('marriage');
+        } else {
+          cells.push(idx < lived ? 'lived' : 'future');
+        }
       }
       rows.push({ year: y, decSep: y > 0 && y % 10 === 0, cells });
     }
     return rows;
-  }, [st.expect, lived]);
+  }, [st.expect, lived, isCouple, marriageWeekIdx]);
 
   const hasDedic = st.dedic.trim().length > 0;
+
+  const marriageLabelMap: Record<string, string> = { pt: 'Casamento', en: 'Wedding', es: 'Boda' };
 
   return (
     <div ref={ref} className={`poster ${st.theme}`} style={posterHeight ? { height: posterHeight } : undefined}>
@@ -93,10 +106,6 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
             <div className="pf-val">{st.partnerName}</div>
           </div>
           <div className="pf">
-            <span className="pf-label">{lb.partnerBirth || 'Nasc. cônjuge'}</span>
-            <div className="pf-val">{st.partnerBirth ? format(parse(st.partnerBirth, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '\u00a0'}</div>
-          </div>
-          <div className="pf">
             <span className="pf-label">{lb.marriage || 'Casamento'}</span>
             <div className="pf-val">{st.marriageDate ? format(parse(st.marriageDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy') : '\u00a0'}</div>
           </div>
@@ -112,46 +121,41 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
         </div>
       }
 
-      {isCouple ? (
-        <CoupleGrid
-          birth1={st.birth}
-          birth2={st.partnerBirth || null}
-          marriageDate={st.marriageDate || null}
-          expect={st.expect}
-        />
-      ) : (
-        <div className="pg">
-          <div className="grid-wrap">
-            <div className="decade-col">
-              {decadeItems.map((d) =>
-              <div
-                key={d.year}
-                className={`dec-lbl${d.decSep ? ' dec-sep' : ''}`}
-                style={{ flex: 1 }}>
-                  {d.label !== null ? d.label : ''}
+      <div className="pg">
+        <div className="grid-wrap">
+          <div className="decade-col">
+            {decadeItems.map((d) =>
+            <div
+              key={d.year}
+              className={`dec-lbl${d.decSep ? ' dec-sep' : ''}`}
+              style={{ flex: 1 }}>
+                {d.label !== null ? d.label : ''}
+              </div>
+            )}
+          </div>
+          <div className="grid-main">
+            <div className="year-rows">
+              {yearRows.map((row) =>
+              <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
+                  {row.cells.map((cls, w) =>
+                <div key={w} className={`wk ${cls}`} />
+                )}
                 </div>
               )}
             </div>
-            <div className="grid-main">
-              <div className="year-rows">
-                {yearRows.map((row) =>
-                <div key={row.year} className={`yr${row.decSep ? ' dec-sep' : ''}`}>
-                    {row.cells.map((cls, w) =>
-                  <div key={w} className={`wk ${cls}`} />
-                  )}
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
         </div>
-      )}
+      </div>
 
       <div className="pl">
         <div className="pl-items">
           <div className="pl-item"><div className="pl-cell c-lived" /><span className="pl-text">{lb.lvd}</span></div>
           
           <div className="pl-item"><div className="pl-cell c-future" /><span className="pl-text">{lb.fut}</span></div>
+
+          {isCouple && (
+            <div className="pl-item"><div className="pl-cell c-marriage" /><span className="pl-text">{marriageLabelMap[l] || 'Casamento'}</span></div>
+          )}
         </div>
         <div className="pl-note" dangerouslySetInnerHTML={{ __html: t.note[l].replace(/\n/g, '<br>') }} />
       </div>

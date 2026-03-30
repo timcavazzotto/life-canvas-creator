@@ -101,6 +101,5 @@ export interface PosterState {
   lang: string;
   panelType: string;
   partnerName?: string;
-  partnerBirth?: string | null;
   marriageDate?: string | null;
 }
