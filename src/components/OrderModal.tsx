@@ -139,6 +139,7 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
           customer_name: customerName.trim(),
           cpf: cpfDigits,
           full_address: fullAddress.trim(),
+          phone: phone.replace(/\D/g, '') || null,
           address: fullAddress.trim(),
           observations: obs || null,
           poster_config: posterState || {},
