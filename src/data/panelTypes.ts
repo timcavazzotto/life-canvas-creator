@@ -34,7 +34,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'espiritual',
     label: 'Vida Espiritual',
-    icon: '🙏',
+    icon: 'sparkles',
     description: 'Práticas espirituais e meditação',
     gridMode: 'standard',
     tones: {
