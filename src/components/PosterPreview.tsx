@@ -154,7 +154,7 @@ const PosterPreview = forwardRef<HTMLDivElement, PosterPreviewProps>(({ state: s
           <div className="pl-item"><div className="pl-cell c-future" /><span className="pl-text">{lb.fut}</span></div>
 
           {isCouple && (
-            <div className="pl-item"><div className="pl-cell c-marriage" /><span className="pl-text">{marriageLabelMap[l] || 'Casamento'}</span></div>
+            <div className="pl-item"><div className="pl-cell c-marriage" /><span className="pl-text">{lb.together || 'Vida a dois'}</span></div>
           )}
         </div>
         <div className="pl-note" dangerouslySetInnerHTML={{ __html: t.note[l].replace(/\n/g, '<br>') }} />

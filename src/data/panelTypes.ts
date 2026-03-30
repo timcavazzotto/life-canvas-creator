@@ -332,6 +332,56 @@ export const PANEL_TYPES: PanelType[] = [
       es: { nome: 'Nombre', nasc: 'Nacimiento', exp: 'Expectativa', dedic: 'Dedicatoria', lvd: 'Semanas de conexión', act: 'Para colorear', fut: 'Por conectar', total: 'Semanas totales', jv: 'Ya vividas' },
     },
   },
+  {
+    id: 'corrida',
+    label: 'Corrida de Rua',
+    icon: 'timer',
+    description: 'Treinos, provas e superação',
+    gridMode: 'standard',
+    tones: {
+      competidor: {
+        label: 'Competidor',
+        quote: { pt: '"O recorde pessoal é a única marca que importa. Supere-se."', en: '"Your personal record is the only mark that matters. Outdo yourself."', es: '"El récord personal es la única marca que importa. Supérate."' },
+        attr: { pt: '— cada prova é uma vitória contra o ontem', en: '— every race is a victory over yesterday', es: '— cada carrera es una victoria contra el ayer' },
+        note: { pt: 'Preencha as semanas em que treinou ou competiu.\n5K, 10K, meia maratona, maratona — cada km conta.', en: 'Mark weeks you trained or raced.\n5K, 10K, half marathon, marathon — every km counts.', es: 'Marca las semanas que entrenaste o competiste.\n5K, 10K, media maratón, maratón — cada km cuenta.' },
+        tag: { pt: 'Supere-se a cada semana', en: 'Outdo yourself every week', es: 'Supérate cada semana' },
+        eyebrow: { pt: 'Painel da corrida de rua', en: 'Street running panel', es: 'Panel de carrera de calle' },
+        ainda: { pt: 'Por correr', en: 'To run', es: 'Por correr' },
+      },
+      consistente: {
+        label: 'Consistente',
+        quote: { pt: '"Não é sobre velocidade. É sobre não parar."', en: '"It\'s not about speed. It\'s about not stopping."', es: '"No se trata de velocidad. Se trata de no parar."' },
+        attr: { pt: '— disciplina vence talento', en: '— discipline beats talent', es: '— la disciplina vence al talento' },
+        note: { pt: 'Marque as semanas em que calçou o tênis e saiu para correr.\nRegularidade é o segredo — mesmo 3 km valem.', en: 'Mark weeks you laced up and went running.\nConsistency is the secret — even 3 km counts.', es: 'Marca las semanas que te pusiste las zapatillas y saliste a correr.\nLa regularidad es el secreto — incluso 3 km valen.' },
+        tag: { pt: 'Consistência é o caminho', en: 'Consistency is the way', es: 'La constancia es el camino' },
+        eyebrow: { pt: 'Painel da corrida de rua', en: 'Street running panel', es: 'Panel de carrera de calle' },
+        ainda: { pt: 'Por treinar', en: 'To train', es: 'Por entrenar' },
+      },
+      comunidade: {
+        label: 'Comunidade',
+        quote: { pt: '"Correr sozinho vai rápido. Correr em grupo vai longe."', en: '"Run alone and go fast. Run together and go far."', es: '"Correr solo va rápido. Correr en grupo va lejos."' },
+        attr: { pt: '— o pelotão é a família que escolhemos', en: '— the crew is the family we choose', es: '— el pelotón es la familia que elegimos' },
+        note: { pt: 'Preencha as semanas em que correu com seu grupo.\nAssessoria, pelotão, parkrun, treinos coletivos.', en: 'Mark weeks you ran with your crew.\nRunning clubs, crews, parkrun, group workouts.', es: 'Marca las semanas que corriste con tu grupo.\nClub, pelotón, parkrun, entrenamientos colectivos.' },
+        tag: { pt: 'Juntos, mais longe', en: 'Together, farther', es: 'Juntos, más lejos' },
+        eyebrow: { pt: 'Painel da corrida de rua', en: 'Street running panel', es: 'Panel de carrera de calle' },
+        ainda: { pt: 'Por compartilhar', en: 'To share', es: 'Por compartir' },
+      },
+      transformacao: {
+        label: 'Transformação',
+        quote: { pt: '"A corrida não mudou só meu corpo. Mudou quem eu sou."', en: '"Running didn\'t just change my body. It changed who I am."', es: '"Correr no solo cambió mi cuerpo. Cambió quién soy."' },
+        attr: { pt: '— cada passo é um passo para dentro', en: '— every step is a step inward', es: '— cada paso es un paso hacia adentro' },
+        note: { pt: 'Colora as semanas de transformação pela corrida.\nSaúde, autoestima, superação, liberdade — a corrida transforma.', en: 'Color the weeks of transformation through running.\nHealth, self-esteem, overcoming, freedom — running transforms.', es: 'Colorea las semanas de transformación por la carrera.\nSalud, autoestima, superación, libertad — correr transforma.' },
+        tag: { pt: 'Corra para se encontrar', en: 'Run to find yourself', es: 'Corre para encontrarte' },
+        eyebrow: { pt: 'Painel da corrida de rua', en: 'Street running panel', es: 'Panel de carrera de calle' },
+        ainda: { pt: 'Por transformar', en: 'To transform', es: 'Por transformar' },
+      },
+    },
+    labels: {
+      pt: { nome: 'Nome', nasc: 'Nascimento', exp: 'Expectativa', dedic: 'Dedicatória', lvd: 'Semanas de treino', act: 'Para colorir', fut: 'Por correr', total: 'Semanas totais', jv: 'Já vividas' },
+      en: { nome: 'Name', nasc: 'Birth date', exp: 'Life expectancy', dedic: 'Dedication', lvd: 'Weeks of training', act: 'To color', fut: 'Yet to run', total: 'Total weeks', jv: 'Already lived' },
+      es: { nome: 'Nombre', nasc: 'Nacimiento', exp: 'Expectativa', dedic: 'Dedicatoria', lvd: 'Semanas de entrenamiento', act: 'Para colorear', fut: 'Por correr', total: 'Semanas totales', jv: 'Ya vividas' },
+    },
+  },
 ];
 
 export function getPanelType(id: string): PanelType {
