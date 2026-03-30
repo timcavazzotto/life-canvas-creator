@@ -213,6 +213,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_affiliate_code: {
+        Args: { _code: string }
+        Returns: {
+          commission_pct: number
+          discount_pct: number
+          id: string
+          name: string
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
