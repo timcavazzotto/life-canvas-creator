@@ -84,7 +84,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'casal',
     label: 'Vida em Casal',
-    icon: '💍',
+    icon: 'heart',
     description: 'Duas vidas que se tornam uma',
     gridMode: 'couple',
     extraFields: ['partnerName', 'partnerBirth', 'marriageDate'],
