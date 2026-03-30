@@ -69,18 +69,14 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
     }
     setCouponStatus('checking');
     const { data, error } = await supabase
-      .from('affiliates')
-      .select('id, name, commission_pct, discount_pct')
-      .eq('code', coupon.trim().toUpperCase())
-      .eq('active', true)
-      .maybeSingle();
+      .rpc('validate_affiliate_code', { _code: coupon.trim() });
 
-    if (error || !data) {
+    if (error || !data || data.length === 0) {
       setCouponStatus('invalid');
       setCouponData(null);
     } else {
       setCouponStatus('valid');
-      setCouponData(data);
+      setCouponData(data[0]);
     }
   };
 
