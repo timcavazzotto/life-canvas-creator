@@ -228,6 +228,36 @@ const Index = () => {
 
         <div className="config-body">
           <div className="cfg-sidebar">
+            {/* Panel Type Selector */}
+            <div className={`cfg-section open`}>
+              <div className="cfg-section-head">
+                <span className="cfg-lbl">Tipo de painel</span>
+              </div>
+              <div className="cfg-body-inner">
+                <div className="cfg-swatches" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))' }}>
+                  {PANEL_TYPES.map((p) => (
+                    <div
+                      key={p.id}
+                      className={`cfg-swatch${st.panelType === p.id ? ' active' : ''}`}
+                      onClick={() => {
+                        const firstTone = Object.keys(p.tones)[0];
+                        update({ panelType: p.id, tone: firstTone });
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <div className="cfg-swatch-preview" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem' }}>
+                        {p.icon}
+                      </div>
+                      <div className="cfg-swatch-lbl" style={{ fontSize: '0.65rem', lineHeight: 1.2, textAlign: 'center' }}>{p.label}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ fontSize: '0.75rem', opacity: 0.6, marginTop: 6 }}>
+                  {getPanelType(st.panelType).description}
+                </div>
+              </div>
+            </div>
+
             {/* Identity */}
             <div className={`cfg-section${openSections.identity ? ' open' : ''}`}>
               <div className="cfg-section-head" onClick={() => toggleSection('identity')}>
