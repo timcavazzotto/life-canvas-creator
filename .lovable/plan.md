@@ -1,37 +1,21 @@
 
 
-## Plano: Semanas pós-casamento com cor + Novo painel "Corrida"
+## Plan: Add phone field to checkout
 
-### 1. Semanas após casamento com cor diferente
+### What changes
 
-**Problema atual**: Apenas a semana exata do casamento recebe a classe `marriage`. O usuário quer que todas as semanas após o casamento (que já foram vividas) tenham essa cor, representando "vida a dois".
+1. **Database migration** — Add a `phone` column (`text`, nullable) to the `orders` table.
 
-**Mudança em `src/components/PosterPreview.tsx`** (yearRows, ~linha 56-63):
-- Lógica atual: `idx === marriageWeekIdx` → `'marriage'`
-- Nova lógica: `idx >= marriageWeekIdx && idx < lived` → `'marriage'` (semanas vividas após casamento ganham cor de casamento)
-- Semanas antes do casamento e já vividas continuam como `'lived'`
-- Semanas futuras (após today) continuam como `'future'`
+2. **OrderModal.tsx** — Add a phone input field (with mask `(XX) XXXXX-XXXX`) between Email and CPF fields. Add `phone` state, a `formatPhone` helper, and pass `phone` in the `create-checkout` body.
 
-**Legenda** (~linha 140): trocar texto "Casamento" por "Vida a dois" / "Life together" / "Vida en pareja" (usar `lb.together` que já existe nos labels do painel casal).
+3. **create-checkout edge function** — Accept `phone` from the request body and save it to the new `phone` column on order insert.
 
-### 2. Novo painel "Corrida"
+4. **Admin OrderManager** — Display the phone column in the orders table so admins can see it.
 
-**`src/data/panelTypes.ts`** — adicionar novo painel ao array `PANEL_TYPES`:
-- `id: 'corrida'`, `label: 'Corrida de Rua'`, `icon: 'timer'` (ícone de cronômetro)
-- `gridMode: 'standard'`
-- 4 tons temáticos:
-  - **Competidor**: foco em provas, superação, recordes pessoais
-  - **Consistente**: foco em km semanais, disciplina, rotina
-  - **Comunidade**: foco em grupos de corrida, amizades, pelotão
-  - **Transformação**: foco na mudança de vida, saúde, autoestima (especialmente relevante para o público feminino crescente)
-- Labels específicos: "Semanas de treino", "Por correr", etc.
+### Technical details
 
-**`src/components/PosterPreview.tsx`** — adicionar entrada no `alMap`:
-- `corrida: { pt: 'uma vida em movimento', en: 'a life on the run', es: 'una vida en carrera' }`
-
-### Arquivos modificados
-| Arquivo | Mudança |
-|---|---|
-| `src/components/PosterPreview.tsx` | Semanas pós-casamento com classe `marriage` + entrada `corrida` no alMap |
-| `src/data/panelTypes.ts` | Novo painel "corrida" com 4 tons e labels em 3 idiomas |
+- **Migration SQL**: `ALTER TABLE public.orders ADD COLUMN phone text;`
+- **Phone format helper**: strips non-digits, limits to 11, formats as `(XX) XXXXX-XXXX`
+- **No validation required** (optional field), but will format for consistency
+- Field label: `Telefone / WhatsApp (opcional)`
 
