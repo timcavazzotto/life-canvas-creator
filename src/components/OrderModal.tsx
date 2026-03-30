@@ -259,6 +259,16 @@ const OrderModal = ({ isOpen, onClose, posterState, posterRef, paperSize = '30x4
                   />
                 </div>
                 <div className="mf">
+                  <label>Telefone / WhatsApp (opcional)</label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(formatPhone(e.target.value))}
+                    placeholder="(11) 99999-9999"
+                    maxLength={15}
+                  />
+                </div>
+                <div className="mf">
                   <label>CPF *</label>
                   <input
                     type="text"

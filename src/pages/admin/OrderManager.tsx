@@ -210,6 +210,7 @@ export default function OrderManager() {
                 <Detail label="Cliente" value={selected.customer_name} />
                 <Detail label="Email" value={selected.email} />
                 <Detail label="CPF" value={(selected as any).cpf} />
+                <Detail label="Telefone" value={(selected as any).phone} />
                 <Detail label="Endereço completo" value={(selected as any).full_address || selected.address} />
                 <Detail label="Tipo" value={selected.order_type} />
                 <Detail label="Valor" value={formatCents(selected.amount_cents)} />
