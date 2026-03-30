@@ -25,7 +25,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'movimento',
     label: 'Vida em Movimento',
-    icon: '🏃',
+    icon: 'activity',
     description: 'Atividade física semanal',
     gridMode: 'standard',
     tones: TONES,
@@ -34,7 +34,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'espiritual',
     label: 'Vida Espiritual',
-    icon: '🙏',
+    icon: 'sparkles',
     description: 'Práticas espirituais e meditação',
     gridMode: 'standard',
     tones: {
@@ -84,7 +84,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'casal',
     label: 'Vida em Casal',
-    icon: '💍',
+    icon: 'heart',
     description: 'Duas vidas que se tornam uma',
     gridMode: 'couple',
     extraFields: ['partnerName', 'partnerBirth', 'marriageDate'],
@@ -135,7 +135,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'prosperidade',
     label: 'Prosperidade',
-    icon: '🎓',
+    icon: 'trending-up',
     description: 'Carreira, estudo e crescimento',
     gridMode: 'standard',
     tones: {
@@ -185,7 +185,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'lazer',
     label: 'Lazer',
-    icon: '🎨',
+    icon: 'palette',
     description: 'Hobbies, descanso e diversão',
     gridMode: 'standard',
     tones: {
@@ -235,7 +235,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'leitura',
     label: 'Leitura',
-    icon: '📚',
+    icon: 'book-open',
     description: 'Livros, conhecimento e imaginação',
     gridMode: 'standard',
     tones: {
@@ -285,7 +285,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'social',
     label: 'Vida Social',
-    icon: '👥',
+    icon: 'users',
     description: 'Amigos, família e conexões',
     gridMode: 'standard',
     tones: {

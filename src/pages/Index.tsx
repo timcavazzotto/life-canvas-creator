@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { format, parse } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Activity, Sparkles, Heart, TrendingUp, Palette, BookOpen, Users } from 'lucide-react';
 import '../App.css';
 import DemoGrid from '@/components/DemoGrid';
 import PosterPreview from '@/components/PosterPreview';
@@ -257,7 +257,18 @@ const Index = () => {
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <span style={{ fontSize: '0.85rem', lineHeight: 1 }}>{p.icon}</span>
+                      {(() => {
+                        const iconMap: Record<string, React.ReactNode> = {
+                          'activity': <Activity size={14} />,
+                          'sparkles': <Sparkles size={14} />,
+                          'heart': <Heart size={14} />,
+                          'trending-up': <TrendingUp size={14} />,
+                          'palette': <Palette size={14} />,
+                          'book-open': <BookOpen size={14} />,
+                          'users': <Users size={14} />,
+                        };
+                        return iconMap[p.icon] || null;
+                      })()}
                       {p.label}
                     </button>
                   ))}
