@@ -1,44 +1,43 @@
 
 
-## Plano: Poster responsivo no mobile sem scroll horizontal
+## Plano: Simplificar painel Casal — grid padrão com marcador de casamento
 
-### Problema
-No mobile, o poster mantém `width: 660px` com `transform: scale(0.52)` e `margin-bottom: -400px`. Isso causa scroll horizontal porque o elemento ainda ocupa 660px de layout antes do scale. O `overflow-x: hidden` no `.cfg-preview` nem sempre impede o scroll no body.
+### Resumo
+Eliminar o `CoupleGrid` (grid em Y) e usar o grid padrão para o painel "casal". A diferença será apenas um marcador visual na semana do casamento (cor diferente). Remover campo de nascimento do cônjuge, manter nome do cônjuge e data de casamento.
 
-### Solução
-Usar uma abordagem de container com `overflow: hidden` e escala dinâmica baseada na largura da viewport, sem alterar as dimensões internas do poster (preservando a exportação PDF).
+### Mudanças
 
-### Mudança
+**`src/data/panelTypes.ts`**
+- Mudar `gridMode` de `'couple'` para `'standard'`
+- Remover `'partnerBirth'` do `extraFields` → ficando `['partnerName', 'marriageDate']`
 
-**`src/App.css`** (media query mobile, linhas 391-392)
+**`src/data/posterData.ts`**
+- Remover `partnerBirth` do `PosterState` interface
 
-1. Envolver a lógica de escala do poster: manter `width: 660px` no `.poster` (necessário para PDF), mas garantir que `.cfg-preview` tenha `overflow: hidden` e `max-width: 100vw`
-2. Ajustar o scale e margin-bottom dinamicamente — usar `scale(0.48)` com `margin-bottom` proporcional para telas menores
-3. Adicionar ao `.cfg-preview` no mobile: `max-width: 100vw; overflow: hidden;` para cortar qualquer overflow
+**`src/pages/Index.tsx`**
+- Remover o bloco do campo "Nascimento do cônjuge" (linhas 343-356)
+- Manter campos "Nome do cônjuge" e "Data do casamento"
 
-**Mudança concreta na media query `@media (max-width: 767px)`:**
-```css
-.cfg-preview { 
-  width: 100%; 
-  overflow: hidden;  /* já tem overflow-x: hidden, mudar para overflow: hidden */
-  padding: 16px 0 32px;  /* reduzir padding lateral para 0 */
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-  max-width: 100vw;
-}
-.poster { 
-  width: 660px; 
-  transform: scale(0.48); 
-  transform-origin: top center; 
-  margin-bottom: -420px; 
-}
+**`src/components/PosterPreview.tsx`**
+- Remover import e uso do `CoupleGrid`
+- Remover a segunda `pf-row` com dados do cônjuge (nascimento cônjuge) — simplificar para mostrar apenas nome do cônjuge e data do casamento na ficha
+- No grid padrão (`yearRows`), calcular a semana do casamento relativa ao nascimento e marcar essa célula com classe `marriage` em vez de `lived`/`future`
+- Adicionar item na legenda para o marcador de casamento (ex: quadrado com cor de destaque + "Casamento")
+
+**`src/App.css`**
+- Adicionar estilo `.wk.marriage` com cor de destaque (ex: um tom rosado/dourado que contraste com lived e future)
+
+**`src/components/CoupleGrid.tsx`**
+- Pode ser deletado (não será mais usado)
+
+### Detalhes técnicos
+
+Cálculo do marcador de casamento no grid:
+```typescript
+const marriageWeekIdx = (st.birth && st.marriageDate) 
+  ? Math.floor((parse(marriageDate) - parse(birth)) / 6048e5)
+  : null;
+
+// No yearRows, se idx === marriageWeekIdx → classe 'marriage'
 ```
-
-Isso mantém o poster em 660px para exportação PDF mas visualmente o escala para caber na tela mobile sem scroll horizontal.
-
-### Arquivo modificado
-| Arquivo | Mudança |
-|---|---|
-| `src/App.css` | Ajustar overflow e scale do poster no mobile |
 
