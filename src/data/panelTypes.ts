@@ -285,7 +285,7 @@ export const PANEL_TYPES: PanelType[] = [
   {
     id: 'social',
     label: 'Vida Social',
-    icon: '👥',
+    icon: 'users',
     description: 'Amigos, família e conexões',
     gridMode: 'standard',
     tones: {
