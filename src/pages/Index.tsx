@@ -144,7 +144,7 @@ const Index = () => {
           <div className="step">
             <div className="step-num"><span>1</span></div>
             <div className="step-title">Personalize</div>
-            <div className="step-desc">Informe seu nome, ano de nascimento e expectativa de vida. Escolha a paleta, o tom das frases e o idioma. O painel se monta em tempo real.</div>
+            <div className="step-desc">Escolha o tipo de painel, informe seus dados e personalize com paleta de cores, tom das frases e idioma. Tudo se monta em tempo real.</div>
           </div>
           <div className="step">
             <div className="step-num"><span>2</span></div>
