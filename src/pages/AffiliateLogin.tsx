@@ -14,6 +14,22 @@ const AffiliateLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [forgotPassword, setForgotPassword] = useState(false);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) { toast.error('Informe seu email'); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/afiliado/redefinir-senha`,
+    });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Link de recuperação enviado! Verifique seu email.');
+    }
+    setLoading(false);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +90,33 @@ const AffiliateLogin = () => {
     setLoading(false);
   };
 
+  if (forgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Recuperar Senha</CardTitle>
+            <CardDescription>Informe seu email para receber o link de redefinição</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="forgot-email">Email</Label>
+                <Input id="forgot-email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Enviando…' : 'Enviar link de recuperação'}
+              </Button>
+              <button type="button" onClick={() => setForgotPassword(false)} className="w-full text-sm text-muted-foreground hover:text-primary underline mt-2">
+                Voltar ao login
+              </button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
@@ -100,6 +143,9 @@ const AffiliateLogin = () => {
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Entrando…' : 'Entrar'}
                 </Button>
+                <button type="button" onClick={() => setForgotPassword(true)} className="w-full text-sm text-muted-foreground hover:text-primary underline mt-2">
+                  Esqueceu sua senha?
+                </button>
               </form>
             </TabsContent>
             <TabsContent value="signup">
