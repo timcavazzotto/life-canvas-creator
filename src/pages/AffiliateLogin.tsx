@@ -116,6 +116,9 @@ const AffiliateLogin = () => {
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? 'Entrando…' : 'Entrar'}
                 </Button>
+                <button type="button" onClick={() => setForgotPassword(true)} className="w-full text-sm text-muted-foreground hover:text-primary underline mt-2">
+                  Esqueceu sua senha?
+                </button>
               </form>
             </TabsContent>
             <TabsContent value="signup">

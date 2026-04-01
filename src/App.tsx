@@ -13,6 +13,7 @@ import CampaignAnalytics from "./pages/admin/CampaignAnalytics";
 import OrderManager from "./pages/admin/OrderManager";
 import AffiliateLogin from "./pages/AffiliateLogin";
 import AffiliateDashboard from "./pages/AffiliateDashboard";
+import AffiliateResetPassword from "./pages/AffiliateResetPassword";
 import ThankYou from "./pages/ThankYou";
 
 const queryClient = new QueryClient();
