@@ -1,30 +1,31 @@
 
 
-## Plano: Recuperação de senha para afiliados
+## Plano: Corrigir exclusão de afiliado
 
-### O que será feito
+### Problema
+A função `deleteAffiliate` não verifica o resultado da operação. Se o delete falhar (ex: registros relacionados em `commission_payments` ou `orders`), o erro é ignorado e o toast de sucesso é exibido mesmo assim.
 
-1. **Link "Esqueci minha senha"** na aba de login do `AffiliateLogin.tsx` — ao clicar, mostra um formulário pedindo o email e envia o link de redefinição via `supabase.auth.resetPasswordForEmail()`.
+### Correção
 
-2. **Página `/afiliado/redefinir-senha`** — nova rota onde o afiliado cai ao clicar no link do email. Essa página lê o token de recuperação da URL, exibe um formulário para digitar a nova senha e chama `supabase.auth.updateUser({ password })`.
+**Arquivo: `src/pages/admin/AffiliateManager.tsx`**
 
-3. **Rota no App.tsx** — adicionar `<Route path="/afiliado/redefinir-senha" element={<AffiliateResetPassword />} />`.
+Atualizar a função `deleteAffiliate` para:
+1. Capturar o `error` retornado pelo Supabase
+2. Se houver erro, exibir `toast.error` com a mensagem
+3. Só exibir `toast.success` e recarregar a lista se der certo
 
-### Detalhes técnicos
+```typescript
+const deleteAffiliate = async (id: string) => {
+  if (!confirm('Remover esta afiliada?')) return;
+  const { error } = await supabase.from('affiliates').delete().eq('id', id);
+  if (error) {
+    toast.error('Erro ao remover afiliada: ' + error.message);
+    return;
+  }
+  fetchAffiliates();
+  toast.success('Afiliada removida');
+};
+```
 
-- **AffiliateLogin.tsx**: Adicionar estado `forgotPassword` (boolean). Quando ativo, renderizar formulário com campo de email e botão "Enviar link". Chamar `resetPasswordForEmail(email, { redirectTo: origin + '/afiliado/redefinir-senha' })`. Link de texto "Esqueceu sua senha?" abaixo do botão de login.
-
-- **AffiliateResetPassword.tsx** (novo arquivo):
-  - No `useEffect`, verificar `onAuthStateChange` para evento `PASSWORD_RECOVERY`
-  - Formulário com campo "Nova senha" e "Confirmar senha"
-  - Ao submeter, chamar `supabase.auth.updateUser({ password })`
-  - Após sucesso, redirecionar para `/afiliado/login`
-  - Layout visual consistente com o card de login existente
-
-- **App.tsx**: Nova rota pública `/afiliado/redefinir-senha`
-
-### Arquivos alterados
-- `src/pages/AffiliateLogin.tsx` — adicionar link e formulário de "esqueci senha"
-- `src/pages/AffiliateResetPassword.tsx` — nova página de redefinição
-- `src/App.tsx` — nova rota
+Isso vai permitir que o admin veja o motivo real da falha (ex: violação de integridade referencial) em vez de um falso sucesso.
 
