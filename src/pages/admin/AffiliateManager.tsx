@@ -111,7 +111,11 @@ const AffiliateManager = () => {
 
   const deleteAffiliate = async (id: string) => {
     if (!confirm('Remover esta afiliada?')) return;
-    await supabase.from('affiliates').delete().eq('id', id);
+    const { error } = await supabase.from('affiliates').delete().eq('id', id);
+    if (error) {
+      toast.error('Erro ao remover afiliada: ' + error.message);
+      return;
+    }
     fetchAffiliates();
     toast.success('Afiliada removida');
   };
