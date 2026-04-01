@@ -110,7 +110,29 @@ const AffiliateManager = () => {
   };
 
   const deleteAffiliate = async (id: string) => {
-    if (!confirm('Remover esta afiliada?')) return;
+    if (!confirm('Remover esta afiliada? Os pedidos vinculados serão desvinculados.')) return;
+
+    // Desvincular pedidos
+    const { error: ordersErr } = await supabase
+      .from('orders')
+      .update({ affiliate_id: null, affiliate_code: null })
+      .eq('affiliate_id', id);
+    if (ordersErr) {
+      toast.error('Erro ao desvincular pedidos: ' + ordersErr.message);
+      return;
+    }
+
+    // Remover pagamentos de comissão
+    const { error: paymentsErr } = await supabase
+      .from('commission_payments')
+      .delete()
+      .eq('affiliate_id', id);
+    if (paymentsErr) {
+      toast.error('Erro ao remover pagamentos: ' + paymentsErr.message);
+      return;
+    }
+
+    // Excluir afiliado
     const { error } = await supabase.from('affiliates').delete().eq('id', id);
     if (error) {
       toast.error('Erro ao remover afiliada: ' + error.message);
