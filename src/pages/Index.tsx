@@ -79,7 +79,7 @@ const Index = () => {
       {/* HERO */}
       <section className="hero">
         <div className="hero-left">
-          <div className="hero-eyebrow">Painel da vida em movimento</div>
+          <div className="hero-eyebrow">Sua jornada em um painel</div>
           <h1 className="hero-title">PROJETO<br />80<span style={{ fontSize: '0.6em' }}>+</span></h1>
           <div className="hero-sub">
             Uma vida inteira em 4.160 quadrados.<br />
