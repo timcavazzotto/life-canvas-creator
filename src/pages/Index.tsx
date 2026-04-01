@@ -93,15 +93,15 @@ const Index = () => {
           <div className="hero-proof">
             <div className="proof-item">
               <div className="proof-val">4.160</div>
-              <div className="proof-lbl">Semanas de vida</div>
+              <div className="proof-lbl">Semanas em 80 anos</div>
             </div>
             <div className="proof-item">
-              <div className="proof-val">≥150</div>
-              <div className="proof-lbl">Min/sem recomendados</div>
+              <div className="proof-val">8</div>
+              <div className="proof-lbl">Temas para sua jornada</div>
             </div>
             <div className="proof-item">
-              <div className="proof-val">35%</div>
-              <div className="proof-lbl">Menos risco de morte prematura</div>
+              <div className="proof-val">100%</div>
+              <div className="proof-lbl">Personalizável por você</div>
             </div>
           </div>
         </div>
