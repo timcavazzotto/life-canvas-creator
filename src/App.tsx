@@ -35,6 +35,7 @@ const App = () => (
           </Route>
           <Route path="/afiliado/login" element={<AffiliateLogin />} />
           <Route path="/afiliado" element={<AffiliateDashboard />} />
+          <Route path="/afiliado/redefinir-senha" element={<AffiliateResetPassword />} />
           <Route path="/obrigado" element={<ThankYou />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
